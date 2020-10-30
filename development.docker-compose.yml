@@ -4,6 +4,8 @@ services:
   postgres:
     image: postgres:latest
     environment:
-      - POSTGRES_USER=development
-      - POSTGRES_PASSWORD=development
-      - POSTGRES_DB=micrach
+      POSTGRES_USER: development
+      POSTGRES_PASSWORD: development
+      POSTGRES_DB: ${BOARD}
+    ports:
+      - 5432:5432
