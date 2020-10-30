@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import * as Koa from 'koa';
 import { config } from './config';
 import { middlewares } from './middlewares';
