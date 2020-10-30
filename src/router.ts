@@ -1,4 +1,4 @@
-import { threads } from './modules/threads/router';
+import { threads } from './modules/threads/threads.router';
 
 export const routers = [
   threads,
