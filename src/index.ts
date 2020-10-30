@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import * as Koa from 'koa';
-import { config } from './config';
-import { middlewares } from './middlewares';
+import { config } from './common/config';
+import { middlewares } from './common/middlewares';
 import { routers } from './router';
 
 const app = new Koa();
