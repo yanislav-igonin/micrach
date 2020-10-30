@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start:dev": "nodemon -r dotenv/config --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
-    "lint": "eslint --fix --ext .ts ./src",
+    "lint": "eslint --ext .ts ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
