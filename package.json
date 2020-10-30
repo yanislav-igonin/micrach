@@ -40,7 +40,7 @@
     }
   },
   "lint-staged": {
-    "*.ts": "npm run lint"
+    "*.ts": "eslint"
   },
   "dependencies": {
     "koa": "^2.13.0",
