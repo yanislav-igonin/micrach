@@ -1,4 +1,5 @@
 import { getConnectionManager } from 'typeorm';
+import { Thread } from '../../modules/threads/thread.entity';
 import { config } from '../config';
 
 const connectionManager = getConnectionManager();
@@ -8,9 +9,9 @@ const connection = connectionManager.create({
   username: config.db.user,
   password: config.db.password,
   database: config.db.database,
-  // entities: [File, User],
-  // logging: app.dbLog,
-  // synchronize: app.dbSync,
+  entities: [Thread],
+  logging: true,
+  synchronize: true,
 });
 
 export { connection as db };
