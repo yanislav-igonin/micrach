@@ -1,0 +1,22 @@
+parser: "@typescript-eslint/parser"
+parserOptions:
+  project: tsconfig.json
+  ecmaVersion: 2018
+  sourceType: module
+extends:
+- airbnb-typescript/base
+- plugin:@typescript-eslint/recommended
+rules:
+  max-len:
+  - error
+  - code: 85
+    tabWidth: 2
+    ignoreComments: true
+  arrow-parens:
+  - error
+  - always
+  implicit-arrow-linebreak: 0
+  import/prefer-default-export: 'off'
+  "@typescript-eslint/explicit-function-return-type": 0
+env:
+  node: true

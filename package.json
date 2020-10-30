@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start:dev": "nodemon -r dotenv/config --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "lint": "eslint --fix --ext .ts ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,6 +22,7 @@
     "@typescript-eslint/parser": "^4.6.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.12.1",
+    "eslint-config-airbnb-typescript": "^12.0.0",
     "eslint-plugin-import": "^2.22.1",
     "husky": "^4.3.0",
     "lint-staged": "^10.5.0",
@@ -34,6 +36,6 @@
     }
   },
   "lint-staged": {
-    "*.ts": "eslint --cache --fix"
+    "*.ts": "npm run lint"
   }
 }
