@@ -1,5 +1,7 @@
 import { Context } from 'koa';
+import { ThreadsService } from './service';
 
 export const getAll = async (ctx: Context) => {
-  ctx.body = 'hello threads';
+  const service = new ThreadsService();
+  ctx.body = await service.getAll();
 };
