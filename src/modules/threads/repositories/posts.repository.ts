@@ -1,7 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { Post } from '../entities/post.entity';
 
-type PostData = Pick<Post, 'title' | 'text' | 'thread' | 'isSage'>;
+export type PostData = Pick<Post, 'title' | 'text' | 'thread' | 'isSage'>;
 
 @EntityRepository(Post)
 export class PostsRepository extends Repository<Post> {

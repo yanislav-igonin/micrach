@@ -1,4 +1,5 @@
 import { Context } from 'koa';
+import { PostData } from './repositories/posts.repository';
 import { ThreadsService } from './threads.service';
 
 export class ThreadsController {
@@ -13,6 +14,7 @@ export class ThreadsController {
   }
 
   async createOne(ctx: Context) {
-    ctx.body = await this.service.createOne();
+    const dto: Omit<PostData, 'thread'> = ctx.request.body;
+    ctx.body = await this.service.createOne(dto);
   }
 }

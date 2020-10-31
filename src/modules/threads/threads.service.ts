@@ -1,4 +1,4 @@
-import { PostsRepository } from './repositories/posts.repository';
+import { PostData, PostsRepository } from './repositories/posts.repository';
 import { ThreadsRepository } from './repositories/threads.repository';
 
 export class ThreadsService {
@@ -17,7 +17,10 @@ export class ThreadsService {
     return this.threadsRepository.getAll();
   }
 
-  createOne() {
-    return this.threadsRepository.createOne();
+  async createOne(data: Omit<PostData, 'thread'>) {
+    const thread = await this.threadsRepository.createOne();
+    const post = await this.postsRepository.createOne({ ...data, thread });
+    thread.posts = [post];
+    return thread;
   }
 }
