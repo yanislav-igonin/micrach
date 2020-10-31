@@ -9,17 +9,20 @@ const router = new Router({
   prefix: '/threads',
 });
 
-router.get('/', async (ctx: Context) => {
+const getController = () => {
   const repository = db.getCustomRepository(ThreadsRepository);
   const service = new ThreadsService(repository);
   const controller = new ThreadsController(service);
+  return controller;
+};
+
+router.get('/', async (ctx: Context) => {
+  const controller = getController();
   await controller.getAll(ctx);
 });
 
 router.post('/', async (ctx: Context) => {
-  const repository = db.getCustomRepository(ThreadsRepository);
-  const service = new ThreadsService(repository);
-  const controller = new ThreadsController(service);
+  const controller = getController();
   await controller.createOne(ctx);
 });
 
