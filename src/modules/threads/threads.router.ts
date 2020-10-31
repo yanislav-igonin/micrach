@@ -2,7 +2,7 @@ import { Context } from 'koa';
 import * as Router from 'koa-router';
 import { db } from '../../common/db';
 import { ThreadsController } from './threads.controller';
-import { ThreadsRepository } from './threads.repository';
+import { ThreadsRepository } from './repositories/threads.repository';
 import { ThreadsService } from './threads.service';
 
 const router = new Router({

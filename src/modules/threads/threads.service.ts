@@ -1,4 +1,4 @@
-import { ThreadsRepository } from './threads.repository';
+import { ThreadsRepository } from './repositories/threads.repository';
 
 export class ThreadsService {
   repository: ThreadsRepository;
