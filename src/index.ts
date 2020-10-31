@@ -6,8 +6,13 @@ import { routers } from './router';
 import { db } from './common/db';
 
 async function main() {
-  await db.connect();
-  console.log('db - online');
+  try {
+    await db.connect();
+    console.log('db - online');
+  } catch (err) {
+    console.error('db - offline');
+    throw err;
+  }
 
   const app = new Koa();
 
