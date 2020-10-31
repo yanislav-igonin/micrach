@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   ManyToOne,
+  Column,
 } from 'typeorm';
 import { Thread } from './thread.entity';
 
@@ -13,6 +14,15 @@ export class Post {
 
   @ManyToOne(() => Thread, (thread) => thread.posts)
   thread!: Thread;
+
+  @Column()
+  title!: string;
+
+  @Column()
+  text!: string;
+
+  @Column()
+  isSage!: boolean;
 
   @CreateDateColumn()
   createdAt!: string;
