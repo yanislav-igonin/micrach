@@ -1,15 +1,19 @@
 import { Context } from 'koa';
 import * as Router from 'koa-router';
+import { db } from '../../common/db';
 import { ThreadsController } from './threads.controller';
+import { ThreadsRepository } from './threads.repository';
 import { ThreadsService } from './threads.service';
 
 const router = new Router({
   prefix: '/threads',
 });
 
-const service = new ThreadsService();
-const controller = new ThreadsController(service);
-
-router.get('/', (ctx: Context) => { controller.getAll(ctx); });
+router.get('/', async (ctx: Context) => {
+  const repository = db.getCustomRepository(ThreadsRepository);
+  const service = new ThreadsService(repository);
+  const controller = new ThreadsController(service);
+  await controller.getAll(ctx);
+});
 
 export { router as threads };

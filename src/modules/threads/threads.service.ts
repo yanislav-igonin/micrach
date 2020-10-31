@@ -1,9 +1,13 @@
-const thread = (id: number) => ({ id, createdAt: (new Date()).toISOString() });
+import { ThreadsRepository } from './threads.repository';
 
 export class ThreadsService {
-  threads = [thread(1), thread(2)];
+  repository: ThreadsRepository;
+
+  constructor(repository: ThreadsRepository) {
+    this.repository = repository;
+  }
 
   async getAll() {
-    return this.threads;
+    return this.repository.getAll();
   }
 }
