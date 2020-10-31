@@ -11,4 +11,8 @@ export class ThreadsController {
   async getAll(ctx: Context) {
     ctx.body = await this.service.getAll();
   }
+
+  async createOne(ctx: Context) {
+    ctx.body = await this.service.createOne();
+  }
 }

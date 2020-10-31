@@ -7,7 +7,11 @@ export class ThreadsService {
     this.repository = repository;
   }
 
-  async getAll() {
+  getAll() {
     return this.repository.getAll();
+  }
+
+  createOne() {
+    return this.repository.createOne();
   }
 }

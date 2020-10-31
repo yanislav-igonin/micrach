@@ -16,4 +16,11 @@ router.get('/', async (ctx: Context) => {
   await controller.getAll(ctx);
 });
 
+router.post('/', async (ctx: Context) => {
+  const repository = db.getCustomRepository(ThreadsRepository);
+  const service = new ThreadsService(repository);
+  const controller = new ThreadsController(service);
+  await controller.createOne(ctx);
+});
+
 export { router as threads };

@@ -6,4 +6,8 @@ export class ThreadsRepository extends Repository<Thread> {
   getAll() {
     return this.find();
   }
+
+  createOne() {
+    return this.save({});
+  }
 }
