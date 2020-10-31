@@ -4,14 +4,16 @@ import { db } from '../../common/db';
 import { ThreadsController } from './threads.controller';
 import { ThreadsRepository } from './repositories/threads.repository';
 import { ThreadsService } from './threads.service';
+import { PostsRepository } from './repositories/posts.repository';
 
 const router = new Router({
   prefix: '/threads',
 });
 
 const getController = () => {
-  const repository = db.getCustomRepository(ThreadsRepository);
-  const service = new ThreadsService(repository);
+  const threadsRepository = db.getCustomRepository(ThreadsRepository);
+  const postsRepository = db.getCustomRepository(PostsRepository);
+  const service = new ThreadsService(threadsRepository, postsRepository);
   const controller = new ThreadsController(service);
   return controller;
 };

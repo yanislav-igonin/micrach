@@ -1,17 +1,23 @@
+import { PostsRepository } from './repositories/posts.repository';
 import { ThreadsRepository } from './repositories/threads.repository';
 
 export class ThreadsService {
-  repository: ThreadsRepository;
+  threadsRepository: ThreadsRepository;
+  postsRepository: PostsRepository;
 
-  constructor(repository: ThreadsRepository) {
-    this.repository = repository;
+  constructor(
+    threadsRepository: ThreadsRepository,
+    postsRepository: PostsRepository,
+  ) {
+    this.threadsRepository = threadsRepository;
+    this.postsRepository = postsRepository;
   }
 
   getAll() {
-    return this.repository.getAll();
+    return this.threadsRepository.getAll();
   }
 
   createOne() {
-    return this.repository.createOne();
+    return this.threadsRepository.createOne();
   }
 }
