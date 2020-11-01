@@ -11,7 +11,7 @@ const connection = connectionManager.create({
   password: config.db.password,
   database: config.db.database,
   entities: [Thread, Post],
-  logging: true,
+  // logging: true,
   synchronize: true,
 });
 
