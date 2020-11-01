@@ -7,7 +7,7 @@ import { errors } from './errros';
 export const middlewares = [
   errors,
   bodyParser(),
-  log,
+  // log,
   helmet(),
   cors(),
 ];
