@@ -21,5 +21,6 @@ rules:
   "@typescript-eslint/explicit-module-boundary-types": 0
   import/no-cycle: 0
   "@typescript-eslint/lines-between-class-members": 0
+  max-classes-per-file: 0
 env:
   node: true
