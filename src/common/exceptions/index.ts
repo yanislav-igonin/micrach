@@ -1,4 +1,6 @@
-export class MicrachException extends Error {}
+export class MicrachException extends Error {
+  code!: number;
+}
 
 export class NotFoundException extends MicrachException {
   code = 404;

@@ -1,3 +1,4 @@
+import { NotFoundException } from '../../common/exceptions';
 import { PostData, PostsRepository } from './repositories/posts.repository';
 import { ThreadsRepository } from './repositories/threads.repository';
 
@@ -17,9 +18,12 @@ export class ThreadsService {
     return this.threadsRepository.getAll(page);
   }
 
-  getOne(id: number) {
-    // TODO: add thread existence check
-    return this.threadsRepository.getOne(id);
+  async getOne(id: number) {
+    const thread = await this.threadsRepository.getOne(id);
+    if (thread === undefined) {
+      throw new NotFoundException('Thread not found');
+    }
+    return thread;
   }
 
   async createOne(data: Omit<PostData, 'threadId'>) {
@@ -33,10 +37,14 @@ export class ThreadsService {
   }
 
   async createPost(threadId: number, data: Omit<PostData, 'threadId'>) {
-    // TODO: add thread existence check
+    const thread = await this.threadsRepository.getOne(threadId);
+    if (thread === undefined) {
+      throw new NotFoundException('Thread not found');
+    }
+
     await this.postsRepository.createOne({
       ...data,
-      threadId,
+      threadId: thread.id,
     });
     return this.postsRepository.getThreadPosts(threadId);
   }
