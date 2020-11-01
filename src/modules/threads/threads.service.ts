@@ -18,6 +18,7 @@ export class ThreadsService {
   }
 
   getOne(id: number) {
+    // TODO: add thread existence check
     return this.threadsRepository.getOne(id);
   }
 
@@ -29,5 +30,14 @@ export class ThreadsService {
     });
     thread.posts = [post];
     return thread;
+  }
+
+  async createPost(threadId: number, data: Omit<PostData, 'threadId'>) {
+    // TODO: add thread existence check
+    await this.postsRepository.createOne({
+      ...data,
+      threadId,
+    });
+    return this.postsRepository.getThreadPosts(threadId);
   }
 }

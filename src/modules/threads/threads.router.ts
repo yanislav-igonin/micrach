@@ -32,4 +32,9 @@ router.post('/', async (ctx: Router.RouterContext) => {
   await controller.createOne(ctx);
 });
 
+router.post('/:id', async (ctx: Router.RouterContext) => {
+  const controller = getController();
+  await controller.createPost(ctx);
+});
+
 export { router as threads };

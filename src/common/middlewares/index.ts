@@ -6,14 +6,7 @@ import { errors } from './errros';
 
 export const middlewares = [
   errors,
-  koaBody({
-    multipart: true,
-    formidable: {
-      uploadDir: `${__dirname}/../../../uploads`,
-      keepExtensions: true,
-      multiples: true,
-    },
-  }),
+  koaBody({ multipart: true }),
   // log,
   helmet(),
   cors(),
