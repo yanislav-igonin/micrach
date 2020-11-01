@@ -1,4 +1,4 @@
-import { Context } from 'koa';
+import { RouterContext } from 'koa-router';
 import { PostData } from './repositories/posts.repository';
 import { ThreadsService } from './threads.service';
 
@@ -9,11 +9,16 @@ export class ThreadsController {
     this.service = service;
   }
 
-  async getAll(ctx: Context) {
+  async getAll(ctx: RouterContext) {
     ctx.body = await this.service.getAll();
   }
 
-  async createOne(ctx: Context) {
+  async getOne(ctx: RouterContext) {
+    const { id } = ctx.params;
+    ctx.body = await this.service.getOne(id);
+  }
+
+  async createOne(ctx: RouterContext) {
     const dto: Omit<PostData, 'thread'> = ctx.request.body;
     ctx.body = await this.service.createOne(dto);
   }

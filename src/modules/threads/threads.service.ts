@@ -17,6 +17,10 @@ export class ThreadsService {
     return this.threadsRepository.getAll();
   }
 
+  getOne(id: number) {
+    return this.threadsRepository.getOne(id);
+  }
+
   async createOne(data: Omit<PostData, 'threadId'>) {
     const thread = await this.threadsRepository.createOne();
     const post = await this.postsRepository.createOne({

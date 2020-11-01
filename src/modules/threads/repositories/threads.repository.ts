@@ -10,6 +10,10 @@ export class ThreadsRepository extends Repository<Thread> {
     });
   }
 
+  getOne(id: number) {
+    return this.findOne(id, { relations: ['posts'] });
+  }
+
   createOne() {
     return this.save({});
   }

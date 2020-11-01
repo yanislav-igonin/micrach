@@ -1,4 +1,3 @@
-import { Context } from 'koa';
 import * as Router from 'koa-router';
 import { db } from '../../common/db';
 import { ThreadsController } from './threads.controller';
@@ -18,12 +17,17 @@ const getController = () => {
   return controller;
 };
 
-router.get('/', async (ctx: Context) => {
+router.get('/', async (ctx: Router.RouterContext) => {
   const controller = getController();
   await controller.getAll(ctx);
 });
 
-router.post('/', async (ctx: Context) => {
+router.get('/:id', async (ctx: Router.RouterContext) => {
+  const controller = getController();
+  await controller.getOne(ctx);
+});
+
+router.post('/', async (ctx: Router.RouterContext) => {
   const controller = getController();
   await controller.createOne(ctx);
 });
