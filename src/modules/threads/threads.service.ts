@@ -46,6 +46,9 @@ export class ThreadsService {
       ...data,
       threadId: thread.id,
     });
+
+    // TODO: update thread updatedAt
+
     return this.postsRepository.getThreadPosts(threadId);
   }
 }
