@@ -20,7 +20,6 @@
   "homepage": "https://github.com/yanislav-igonin/micrach#readme",
   "devDependencies": {
     "@types/koa": "^2.11.6",
-    "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-helmet": "^6.0.1",
     "@types/koa-router": "^7.4.1",
     "@types/koa__cors": "^3.0.2",
@@ -49,7 +48,6 @@
     "@koa/cors": "^3.1.0",
     "koa": "^2.13.0",
     "koa-body": "^4.2.0",
-    "koa-bodyparser": "^4.3.0",
     "koa-helmet": "^6.0.0",
     "koa-router": "^9.4.0",
     "pg": "^8.4.2",
