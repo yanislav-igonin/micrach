@@ -10,7 +10,10 @@ export class ThreadsController {
   }
 
   async getAll(ctx: RouterContext) {
-    ctx.body = await this.service.getAll();
+    const { query } = ctx;
+    // TODO: add query validation
+    const { page } = query;
+    ctx.body = await this.service.getAll(page);
   }
 
   async getOne(ctx: RouterContext) {
@@ -19,6 +22,7 @@ export class ThreadsController {
   }
 
   async createOne(ctx: RouterContext) {
+    // TODO: add dto validation
     const dto: Omit<PostData, 'thread'> = ctx.request.body;
     ctx.body = await this.service.createOne(dto);
   }

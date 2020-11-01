@@ -13,8 +13,8 @@ export class ThreadsService {
     this.postsRepository = postsRepository;
   }
 
-  getAll() {
-    return this.threadsRepository.getAll();
+  getAll(page = 1) {
+    return this.threadsRepository.getAll(page);
   }
 
   getOne(id: number) {
