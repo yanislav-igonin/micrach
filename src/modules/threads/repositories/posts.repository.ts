@@ -1,18 +1,11 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { Post } from '../entities/post.entity';
 
-export type PostData = Pick<Post, 'title' | 'text' | 'thread' | 'isSage'>;
+export type PostData = Pick<Post, 'title' | 'text' | 'threadId' | 'isSage'>;
 
 @EntityRepository(Post)
 export class PostsRepository extends Repository<Post> {
   createOne(data: PostData) {
-    return this.save({
-      title: data.title,
-      text: data.text,
-      isSage: data.isSage,
-      thread: {
-        id: data.thread.id,
-      },
-    });
+    return this.save(data);
   }
 }

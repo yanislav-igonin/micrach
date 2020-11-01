@@ -12,8 +12,11 @@ export class Post {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Column()
+  threadId!: number;
+
   @ManyToOne(() => Thread, (thread) => thread.posts)
-  thread!: Thread;
+  thread?: Thread;
 
   @Column()
   title!: string;
