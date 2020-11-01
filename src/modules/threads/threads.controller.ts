@@ -23,7 +23,7 @@ export class ThreadsController {
 
   async createOne(ctx: RouterContext) {
     // TODO: add dto validation
-    const dto: Omit<PostData, 'thread'> = ctx.request.body;
+    const dto: Omit<PostData, 'threadId'> = ctx.request.body;
     ctx.body = await this.service.createOne(dto);
   }
 }
