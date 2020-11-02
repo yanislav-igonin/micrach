@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/yanislav-igonin/micrach#readme",
   "devDependencies": {
+    "@types/fs-extra": "^9.0.2",
     "@types/koa": "^2.11.6",
     "@types/koa-helmet": "^6.0.1",
     "@types/koa-router": "^7.4.1",
@@ -48,6 +49,7 @@
     "@koa/cors": "^3.1.0",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
+    "fs-extra": "^9.0.1",
     "koa": "^2.13.0",
     "koa-body": "^4.2.0",
     "koa-helmet": "^6.0.0",
