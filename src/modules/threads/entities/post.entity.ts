@@ -4,7 +4,9 @@ import {
   CreateDateColumn,
   ManyToOne,
   Column,
+  OneToMany,
 } from 'typeorm';
+import { File } from './file.entity';
 import { Thread } from './thread.entity';
 
 @Entity('posts')
@@ -29,4 +31,7 @@ export class Post {
 
   @CreateDateColumn()
   createdAt!: string;
+
+  @OneToMany(() => File, (file) => file.post)
+  files!: File[];
 }
