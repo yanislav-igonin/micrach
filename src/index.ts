@@ -4,8 +4,11 @@ import { config } from './common/config';
 import { middlewares } from './common/middlewares';
 import { routers } from './router';
 import { db } from './common/db';
+import { FilesRepository } from './modules/threads/repositories/files.repository';
 
 async function main() {
+  await FilesRepository.checkOrCreateUploadsDir();
+
   try {
     await db.connect();
     console.log('db - online');
