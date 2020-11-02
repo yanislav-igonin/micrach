@@ -7,13 +7,13 @@ export class ThreadsRepository extends Repository<Thread> {
     return this.find({
       skip: (page - 1) * 10,
       take: 10,
-      relations: ['posts'],
+      relations: ['posts', 'posts.files'],
       order: { updatedAt: 'DESC' },
     });
   }
 
   getOne(id: number) {
-    return this.findOne(id, { relations: ['posts'] });
+    return this.findOne(id, { relations: ['posts', 'posts.files'] });
   }
 
   createOne() {

@@ -10,6 +10,10 @@ export class PostsRepository extends Repository<Post> {
   }
 
   getThreadPosts(threadId: number) {
-    return this.find({ where: { threadId }, order: { createdAt: 'ASC' } });
+    return this.find({
+      where: { threadId },
+      order: { createdAt: 'ASC' },
+      relations: ['files'],
+    });
   }
 }
