@@ -5,7 +5,7 @@ import { Thread } from '../entities/thread.entity';
 export class ThreadsRepository extends Repository<Thread> {
   getAll(page: number) {
     return this.find({
-      skip: page * 10,
+      skip: (page - 1) * 10,
       take: 10,
       relations: ['posts'],
       order: { updatedAt: 'DESC' },
