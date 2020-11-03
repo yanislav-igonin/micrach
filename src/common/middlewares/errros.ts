@@ -13,6 +13,7 @@ export const errors = async (ctx: Context, next: Next) => {
         },
       };
     } else {
+      console.error(err);
       ctx.body = {
         error: {
           code: 500,

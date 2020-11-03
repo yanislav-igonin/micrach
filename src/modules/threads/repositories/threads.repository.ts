@@ -19,4 +19,11 @@ export class ThreadsRepository extends Repository<Thread> {
   createOne() {
     return this.save({});
   }
+
+  updateThreadTime(threadId: number) {
+    return this.query(
+      'UPDATE threads SET "updatedAt" = DEFAULT WHERE "id" IN ($1)',
+      [threadId],
+    );
+  }
 }
