@@ -43,27 +43,31 @@ describe('ThreadsService', () => {
         .mockResolvedValueOnce([]);
 
       const threads = await service.getAll();
-      expect(threads.length).toEqual(0);
+      expect(threads).toHaveLength(0);
     });
 
     it('should return 2 threads', async () => {
+      const existedThreads = [getThreadMock(1), getThreadMock(2)];
+
       jest
         .spyOn(threadsRepository, 'getAll')
-        .mockResolvedValueOnce([getThreadMock(1), getThreadMock(2)]);
+        .mockResolvedValueOnce(existedThreads);
 
       const threads = await service.getAll();
-      expect(threads.length).toEqual(2);
+      expect(threads).toHaveLength(2);
     });
   });
 
   describe('get one', () => {
     it('should return thread', async () => {
+      const existedThread = getThreadMock(1);
+
       jest
         .spyOn(threadsRepository, 'getOne')
-        .mockResolvedValueOnce(getThreadMock(1));
+        .mockResolvedValueOnce(existedThread);
 
       const thread = await service.getOne(1);
-      expect(thread).toBeDefined();
+      expect(thread).toStrictEqual(existedThread);
     });
 
     it('should throw NotFoundException for non-existent thread', async () => {
@@ -78,6 +82,24 @@ describe('ThreadsService', () => {
         expect(err).toBeInstanceOf(NotFoundException);
         expect(err.message).toEqual('Thread not found');
       }
+    });
+  });
+
+  describe('create one', () => {
+    it('should return new thread with post', async () => {
+      const newPost = getPostMock(1, 1);
+      const newThread = getThreadMock(1);
+      newThread.posts = [newPost];
+
+      jest
+        .spyOn(threadsRepository, 'createOne')
+        .mockResolvedValueOnce(newThread);
+      jest
+        .spyOn(postsRepository, 'createOne')
+        .mockResolvedValueOnce(newPost);
+
+      const thread = await service.createOne(newPost);
+      expect(thread).toStrictEqual(newThread);
     });
   });
 });
