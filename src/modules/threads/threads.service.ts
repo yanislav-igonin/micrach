@@ -14,7 +14,7 @@ export class ThreadsService {
     this.postsRepository = postsRepository;
   }
 
-  getAll(page: number) {
+  getAll(page = 1) {
     return this.threadsRepository.getAll(page);
   }
 
