@@ -18,8 +18,25 @@ jobs:
     - name: Lint
       run: npm run lint
 
-  build:
+  test:
     needs: lint
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Use Node.js 14
+      uses: actions/setup-node@v2-beta
+      with:
+        node-version: 14.x
+    - name: Install dependencies
+      run: npm ci
+    - name: Test
+      run: npm run test
+
+  build:
+    needs: test
 
     runs-on: ubuntu-latest
 
