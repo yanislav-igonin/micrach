@@ -59,17 +59,6 @@ describe('ThreadsService', () => {
   });
 
   describe('get one', () => {
-    it('should return thread', async () => {
-      const existedThread = getThreadMock(1);
-
-      jest
-        .spyOn(threadsRepository, 'getOne')
-        .mockResolvedValueOnce(existedThread);
-
-      const thread = await service.getOne(1);
-      expect(thread).toStrictEqual(existedThread);
-    });
-
     it('should throw NotFoundException for non-existent thread', async () => {
       jest
         .spyOn(threadsRepository, 'getOne')
@@ -82,6 +71,17 @@ describe('ThreadsService', () => {
         expect(err).toBeInstanceOf(NotFoundException);
         expect(err.message).toEqual('Thread not found');
       }
+    });
+
+    it('should return thread', async () => {
+      const existedThread = getThreadMock(1);
+
+      jest
+        .spyOn(threadsRepository, 'getOne')
+        .mockResolvedValueOnce(existedThread);
+
+      const thread = await service.getOne(1);
+      expect(thread).toStrictEqual(existedThread);
     });
   });
 
@@ -100,6 +100,44 @@ describe('ThreadsService', () => {
 
       const thread = await service.createOne(newPost);
       expect(thread).toStrictEqual(newThread);
+    });
+  });
+
+  describe('create post', () => {
+    it('should throw NotFoundException for non-existent thread', async () => {
+      jest
+        .spyOn(threadsRepository, 'getOne')
+        .mockResolvedValueOnce(undefined);
+
+      try {
+        await service.getOne(1);
+        expect(true).toBeFalsy();
+      } catch (err) {
+        expect(err).toBeInstanceOf(NotFoundException);
+        expect(err.message).toEqual('Thread not found');
+      }
+    });
+
+    it('should create new post and return all posts for this thread', async () => {
+      const existedThread = getThreadMock(1);
+      const newPost = getPostMock(existedThread.id, existedThread.posts.length);
+      existedThread.posts.push(newPost);
+
+      jest
+        .spyOn(threadsRepository, 'getOne')
+        .mockResolvedValueOnce(existedThread);
+      jest
+        .spyOn(postsRepository, 'createOne')
+        .mockResolvedValueOnce(newPost);
+      jest
+        .spyOn(threadsRepository, 'updateThreadTime')
+        .mockResolvedValueOnce(undefined);
+      jest
+        .spyOn(postsRepository, 'getThreadPosts')
+        .mockResolvedValueOnce(existedThread.posts);
+
+      const posts = await service.createPost(existedThread.id, newPost);
+      expect(posts).toStrictEqual(existedThread.posts);
     });
   });
 });
