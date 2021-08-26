@@ -8,7 +8,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 
 	Config "micrach/config"
-	// Controllers "micrach/controllers"
+	Controllers "micrach/controllers"
 	Db "micrach/db"
 	// Utils "micrach/utils"
 )
@@ -20,10 +20,10 @@ func main() {
 	gin.SetMode(Config.App.Env)
 
 	router := gin.Default()
-	// router.GET("/boards", Controllers.GetAllBoards)
-	// router.GET("/threads/:boardId", Controllers.GetThreads)
-	// router.POST("/threads/:boardId", Controllers.CreateThread)
-	// router.POST("/posts/:boardId/:threadId", Controllers.CreatePost)
+	router.GET("/", Controllers.GetThreads)
+	router.POST("/", Controllers.CreateThread)
+	router.GET("/:threadId", Controllers.GetThread)
+	router.POST("/:threadId", Controllers.UpdateThread)
 
 	log.Println("all systems nominal")
 
