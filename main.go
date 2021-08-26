@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 
 	Config "micrach/config"
 	// Controllers "micrach/controllers"
@@ -14,18 +14,9 @@ import (
 )
 
 func main() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Panicln(err)
-	}
-
 	Config.Init()
 	Db.Init()
 	defer Db.Pool.Close()
-	// err = Utils.CreateUploadsFolder()
-	if err != nil {
-		log.Panicln(err)
-	}
 	gin.SetMode(Config.App.Env)
 
 	router := gin.Default()

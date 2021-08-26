@@ -39,7 +39,7 @@ func getAppConfig() AppConfig {
 func getDbConfig() DbConfig {
 	url := os.Getenv("POSTGRES_URL")
 	if url == "" {
-		url = "postgresql://localhost/dumpach"
+		url = "postgresql://localhost/micrach"
 	}
 	return DbConfig{
 		Url: url,
