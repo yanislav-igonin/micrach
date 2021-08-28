@@ -13,6 +13,30 @@ jobs:
       uses: actions/setup-go@v2
     - name: Build
       run: go build .
-    - name: List dir
-      run: ls
+    - name: Upload build
+      uses: actions/upload-artifact@v2
+      with:
+        name: micrach
+        path: micrach
 
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Download build
+      uses: actions/download-artifact@v2
+      with:
+        name: micrach
+        path: micrach
+    - name: Build docker image and push to GitHub registry
+      uses: docker/build-push-action@v1
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: yanislav-igonin/micrach
+        dockerfile: Dockerfile
+        tags: latest
+        # build_args: CI_COMMIT_TAG=${{ github.event.release.tag_name }}
