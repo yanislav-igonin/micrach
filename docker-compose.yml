@@ -1,0 +1,41 @@
+version: "3.7"
+
+services:
+  app:
+    image: ghcr.io/yanislav-igonin/micrach-go/micrach:latest
+    networks:
+      - web
+    environment: 
+      ENV: release
+      PORT: ${PORT}
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      labels:
+        traefik.enable: "true"
+        traefik.docker.network: "web"
+        
+        traefik.http.services.micrach.loadbalancer.server.port: "80"
+
+        traefik.http.middlewares.micrach-https-redirect.redirectscheme.scheme: "https"
+
+        traefik.http.routers.micrach.entrypoints: "http"
+        traefik.http.routers.micrach.rule: "Host(`micrach.igonin.dev`)"
+        traefik.http.routers.micrach.middlewares: "micrach-https-redirect"
+
+        traefik.http.routers.micrach-secure.entrypoints: "https"
+        traefik.http.routers.micrach-secure.rule: "Host(`micrach.igonin.dev`)"
+        traefik.http.routers.micrach-secure.tls: "true"
+        traefik.http.routers.micrach-secure.service: "micrach"
+
+networks:
+  web:
+    driver: overlay
+    external: true
