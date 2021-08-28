@@ -20,6 +20,7 @@ func main() {
 	gin.SetMode(Config.App.Env)
 
 	router := gin.Default()
+	router.LoadHTMLGlob("templates/*.html")
 	router.GET("/", Controllers.GetThreads)
 	router.POST("/", Controllers.CreateThread)
 	router.GET("/:threadId", Controllers.GetThread)

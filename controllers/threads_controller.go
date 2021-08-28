@@ -7,7 +7,7 @@ import (
 )
 
 func GetThreads(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"route": "get threads"})
+	c.HTML(http.StatusOK, "index.html", nil)
 }
 
 func GetThread(c *gin.Context) {
