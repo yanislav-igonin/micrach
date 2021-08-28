@@ -22,7 +22,7 @@ services:
         traefik.enable: "true"
         traefik.docker.network: "web"
         
-        traefik.http.services.micrach.loadbalancer.server.port: "80"
+        traefik.http.services.micrach.loadbalancer.server.port: ${PORT}
 
         traefik.http.middlewares.micrach-https-redirect.redirectscheme.scheme: "https"
 
