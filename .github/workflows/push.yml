@@ -20,6 +20,8 @@ jobs:
         path: micrach
 
   release:
+    needs: build
+    
     runs-on: ubuntu-latest
 
     steps:
