@@ -21,8 +21,8 @@ func getPost(id, threadID int) Post {
 		Text:     "Basic Text",
 		IsSage:   false,
 		Files: []File{
-			getFile(2, id, "Screenshot 2020-08-14 at 23.17.29.png"),
-			getFile(1, id, "maxresdefault.jpg"),
+			getFile(2, id, "https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png"),
+			getFile(1, id, "https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png"),
 		},
 		CreatedAt: time.Now(),
 	}
