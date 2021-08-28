@@ -9,14 +9,14 @@ import (
 
 	Config "micrach/config"
 	Controllers "micrach/controllers"
-	Db "micrach/db"
+	// Db "micrach/db"
 	// Utils "micrach/utils"
 )
 
 func main() {
 	Config.Init()
-	Db.Init()
-	defer Db.Pool.Close()
+	// Db.Init()
+	// defer Db.Pool.Close()
 	gin.SetMode(Config.App.Env)
 
 	router := gin.Default()
@@ -27,7 +27,8 @@ func main() {
 	router.GET("/:threadId", Controllers.GetThread)
 	router.POST("/:threadId", Controllers.UpdateThread)
 
+	log.Println("port", Config.App.Port, "- online")
 	log.Println("all systems nominal")
 
-	router.Run("localhost:" + strconv.Itoa(Config.App.Port))
+	router.Run(":" + strconv.Itoa(Config.App.Port))
 }
