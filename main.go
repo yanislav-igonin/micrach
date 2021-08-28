@@ -21,6 +21,7 @@ func main() {
 
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*.html")
+	router.Static("/uploads", "./uploads")
 	router.GET("/", Controllers.GetThreads)
 	router.POST("/", Controllers.CreateThread)
 	router.GET("/:threadId", Controllers.GetThread)

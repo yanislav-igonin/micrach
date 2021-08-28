@@ -4,10 +4,13 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	Repositories "micrach/repositories"
 )
 
 func GetThreads(c *gin.Context) {
-	c.HTML(http.StatusOK, "index.html", nil)
+	threads := Repositories.Threads.Get()
+	c.HTML(http.StatusOK, "index.html", threads)
 }
 
 func GetThread(c *gin.Context) {
