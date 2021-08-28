@@ -21,7 +21,7 @@ jobs:
 
   release:
     needs: build
-    
+
     runs-on: ubuntu-latest
 
     steps:
@@ -38,7 +38,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: docker.pkg.github.com
-        repository: yanislav-igonin/micrach
+        repository: yanislav-igonin/micrach-go/micrach
         dockerfile: Dockerfile
         tags: latest
         # build_args: CI_COMMIT_TAG=${{ github.event.release.tag_name }}
