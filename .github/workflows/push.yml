@@ -42,3 +42,25 @@ jobs:
         dockerfile: Dockerfile
         tags: latest
         # build_args: CI_COMMIT_TAG=${{ github.event.release.tag_name }}
+
+
+  deploy:
+    needs: release
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      env:
+        REGISTRY: ghcr.io/yanislav-igonin/micrach-go/micrach
+        SERVICE_NAME: micrach_app
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_SSH_USERNAME }}
+        key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+        script: |
+          docker login -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }} ${{ env.REGISTRY }}
+          docker pull ${{ env.REGISTRY }}:${{ github.event.release.tag_name }}
+          docker pull ${{ env.REGISTRY }}:latest
+          docker service update --image ${{ env.REGISTRY }}:${{ github.event.release.tag_name }} ${{ env.SERVICE_NAME }}
