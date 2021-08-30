@@ -43,7 +43,7 @@ func getThread(id int) Thread {
 var ThreadsDb = []Thread{}
 
 func SeedMocks() {
-	for i := 1; i < 101; i++ {
+	for i := 1; i < 10; i++ {
 		ThreadsDb = append(ThreadsDb, getThread(i))
 	}
 }

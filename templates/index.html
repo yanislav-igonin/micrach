@@ -14,11 +14,16 @@
       integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
       crossorigin="anonymous">
     </script>
+    <link 
+      href="/static/index.css" 
+      rel="stylesheet" 
+    >
 
     <!-- Primary Meta Tags -->
     <title>Micrach</title>
     <meta name="title" content="Micrach">
     <meta name="description" content="Single board imageboard.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -39,26 +44,31 @@
   <h1 class="display-1 text-center">Welcome to Micrach</h1>
   
   <div class="container">
-  {{range $Thread := .}}
-    {{$FirstPost := index $Thread.Posts 0}}
+      <div class="row row-cols-auto gy-4">
+      
+        {{range $Thread := .}}
+        <div class="col col-sm-6 col-md-4 col-lg-3">
+          {{$FirstPost := index $Thread.Posts 0}}
+      
+          <div class="card">
+            {{$FirstFile := index $FirstPost.Files 0}}
+      
+            <img 
+              src="{{$FirstFile.Name}}" 
+              class="card-img-top"
+              alt="Uploaded picture"
+            >
+            <div class="card-body">
+              <h5 class="card-title">{{$FirstPost.Title}}</h5>
+              <p class="card-text">{{$FirstPost.Text}}</p>
+              <a href="/{{$Thread.ID}}" class="btn btn-primary">Open</a>
+            </div>
+          </div>
+        </div>
 
-    <div class="card" style="width: 18rem;">
-      {{$FirstFile := index $FirstPost.Files 0}}
-
-      <img 
-        src="{{$FirstFile.Name}}" 
-        class="card-img-top"
-        alt="Uploaded picture"
-      >
-      <div class="card-body">
-        <h5 class="card-title">{{$FirstPost.Title}}</h5>
-        <p class="card-text">{{$FirstPost.Text}}</p>
-        <a href="/{{$Thread.ID}}" class="btn btn-primary">Open</a>
-      </div>
+      {{end}}
     </div>
-
-  {{end}}
-</div>
+  </div>
 </body>
 
 </html>
