@@ -16,6 +16,7 @@
 
 .vscode/
 tmp/
+__debug_bin
 
 micrach
 

@@ -9,15 +9,17 @@ import (
 
 	Config "micrach/config"
 	Controllers "micrach/controllers"
-	// Db "micrach/db"
+	Db "micrach/db"
+	Repositories "micrach/repositories"
 	// Utils "micrach/utils"
 )
 
 func main() {
 	Config.Init()
-	// Db.Init()
-	// defer Db.Pool.Close()
+	Db.Init()
+	defer Db.Pool.Close()
 	gin.SetMode(Config.App.Env)
+	Repositories.SeedMocks()
 
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*.html")
