@@ -46,12 +46,10 @@
   <div class="container">
       <div class="row row-cols-auto gy-4">
       
-        {{range $Thread := .}}
+        {{range $Post := .}}
         <div class="col col-sm-6 col-md-4 col-lg-3">
-          {{$FirstPost := index $Thread.Posts 0}}
-      
           <div class="card">
-            {{$FirstFile := index $FirstPost.Files 0}}
+            {{$FirstFile := index $Post.Files 0}}
 
             <img 
               src="{{$FirstFile.Name}}" 
@@ -59,9 +57,9 @@
               alt="Uploaded picture"
             >
             <div class="card-body">
-              <h5 class="card-title">{{$FirstPost.Title}}</h5>
-              <p class="card-text">{{$FirstPost.Text}}</p>
-              <a href="/{{$Thread.ID}}" class="btn btn-outline-primary">Open</a>
+              <h5 class="card-title">{{$Post.Title}}</h5>
+              <p class="card-text">{{$Post.Text}}</p>
+              <a href="/{{$Post.ID}}" class="btn btn-outline-primary">Open</a>
             </div>
           </div>
         </div>

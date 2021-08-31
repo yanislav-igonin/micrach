@@ -26,39 +26,30 @@ func getFile(id, postId int, name string) File {
 	}
 }
 
-func getPost(id, threadID int) Post {
+func getPost(id int) Post {
 	return Post{
-		ID:       id,
-		ThreadID: threadID,
-		Title:    randSeq(rand.Intn(100)),
-		Text:     randSeq(rand.Intn(100)),
-		IsSage:   false,
+		ID:        id,
+		IsParent:  true,
+		ParentID:  0,
+		IsDeleted: false,
+		Title:     randSeq(rand.Intn(100)),
+		Text:      randSeq(rand.Intn(100)),
+		IsSage:    false,
 		Files: []File{
 			getFile(2, id, "https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png"),
 			getFile(1, id, "https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png"),
 		},
 		CreatedAt: time.Now(),
-	}
-}
-
-func getThread(id int) Thread {
-	return Thread{
-		ID:        id,
-		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		Posts: []Post{
-			getPost(1, id),
-			getPost(1, id),
-		},
 	}
 }
 
-var ThreadsDb = []Thread{}
+var PostsDb = []Post{}
 
 func SeedMocks() {
 	rand.Seed(time.Now().UnixNano())
 
-	for i := 1; i < 100; i++ {
-		ThreadsDb = append(ThreadsDb, getThread(i))
+	for i := 1; i < 10; i++ {
+		PostsDb = append(PostsDb, getPost(i))
 	}
 }

@@ -4,7 +4,7 @@ type ThreadsRepository struct{}
 
 var Threads ThreadsRepository
 
-func (r *ThreadsRepository) Get(limit, offset int) ([]Thread, error) {
+func (r *ThreadsRepository) Get(limit, offset int) ([]Post, error) {
 	// conn, err := Db.Pool.Acquire(context.TODO())
 	// if err != nil {
 	// 	return nil, err
@@ -76,7 +76,7 @@ func (r *ThreadsRepository) Get(limit, offset int) ([]Thread, error) {
 	// }
 	// rows.Close()
 
-	return ThreadsDb, nil
+	return PostsDb, nil
 	// return nil, nil
 }
 
