@@ -52,7 +52,7 @@
       
           <div class="card">
             {{$FirstFile := index $FirstPost.Files 0}}
-      
+
             <img 
               src="{{$FirstFile.Name}}" 
               class="card-img-top"
@@ -61,7 +61,7 @@
             <div class="card-body">
               <h5 class="card-title">{{$FirstPost.Title}}</h5>
               <p class="card-text">{{$FirstPost.Text}}</p>
-              <a href="/{{$Thread.ID}}" class="btn btn-primary">Open</a>
+              <a href="/{{$Thread.ID}}" class="btn btn-outline-primary">Open</a>
             </div>
           </div>
         </div>
