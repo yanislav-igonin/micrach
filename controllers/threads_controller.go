@@ -9,7 +9,7 @@ import (
 )
 
 func GetThreads(c *gin.Context) {
-	threads, err := Repositories.Threads.Get(10, 10)
+	threads, err := Repositories.Posts.Get(10, 10)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": true})
 		return

@@ -9,15 +9,15 @@ import (
 
 	Config "micrach/config"
 	Controllers "micrach/controllers"
+	Db "micrach/db"
 	Repositories "micrach/repositories"
-	// Db "micrach/db"
 	// Utils "micrach/utils"
 )
 
 func main() {
 	Config.Init()
-	// Db.Init()
-	// defer Db.Pool.Close()
+	Db.Init()
+	defer Db.Pool.Close()
 	gin.SetMode(Config.App.Env)
 	Repositories.SeedMocks()
 

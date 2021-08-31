@@ -5,9 +5,9 @@ CREATE TABLE posts
   id SERIAL NOT NULL,
 
   is_parent BOOLEAN NOT NULL,
-  parent_id INT REFERENCES posts (id),
+  parent_id INT REFERENCES posts (id) NULL,
 
-  is_deleted BOOLEAN NOT NULL,
+  is_deleted BOOLEAN DEFAULT false NOT NULL,
 
   title VARCHAR NOT NULL,
   text TEXT NOT NULL,
