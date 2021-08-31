@@ -84,33 +84,11 @@ func seedDbMocks() {
 	}
 
 	for _, post := range posts {
-		Posts.Create(post)
+		_, err := Posts.Create(post)
+		if err != nil {
+			log.Panicln(err)
+		}
 	}
-
-	// fileSql := `
-	// 	INSERT INTO files (post_id, name, ext, size)
-	// 	VALUES ($1, $2, $3, $4)
-	// `
-	// for _, post := range posts {
-	// 	if post.ParentID == 0 {
-	// 		conn.Query(context.Background(), postSql, post.ID, post.IsParent, nil, post.Title, post.Text, post.IsSage)
-	// 	} else {
-	// 		conn.Query(context.Background(), postSql, post.ID, post.IsParent, post.ParentID, post.Title, post.Text, post.IsSage)
-	// 	}
-
-	// if err != nil {
-	// 	log.Panicln(err)
-	// }
-
-	// for _, file := range post.Files {
-	// 	_, err = Db.Pool.Query(context.TODO(), fileSql, file.PostID, file.Name, file.Ext, file.Size)
-
-	// 	if err != nil {
-	// 		log.Panicln(err)
-	// 	}
-	// }
-	// }
-
 }
 
 func SeedMocks() {

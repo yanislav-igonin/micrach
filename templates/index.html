@@ -49,13 +49,16 @@
         {{range $Post := .}}
         <div class="col col-sm-6 col-md-4 col-lg-3">
           <div class="card">
-            {{$FirstFile := index $Post.Files 0}}
 
+            {{ $length := len $Post.Files }} {{ if gt $length 0 }}
+            {{$FirstFile := index $Post.Files 0}}
             <img 
               src="{{$FirstFile.Name}}" 
               class="card-img-top"
               alt="Uploaded picture"
             >
+            {{end}}
+
             <div class="card-body">
               <h5 class="card-title">{{$Post.Title}}</h5>
               <p class="card-text">{{$Post.Text}}</p>
