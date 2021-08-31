@@ -1,25 +1,22 @@
 -- UP
--- Threads
-CREATE TABLE threads
-(
-  id SERIAL NOT NULL,
-  is_deleted BOOLEAN NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  PRIMARY KEY (id)
-);
-
 -- Posts
 CREATE TABLE posts
 (
   id SERIAL NOT NULL,
-  thread_id INTEGER NOT NULL,
+
+  is_parent BOOLEAN NOT NULL,
+  parent_id INT REFERENCES posts (id),
+
+  is_deleted BOOLEAN NOT NULL,
+
   title VARCHAR NOT NULL,
   text TEXT NOT NULL,
   is_sage BOOLEAN NOT NULL,
+
 	created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (thread_id) REFERENCES threads (id)
+	updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+
+  PRIMARY KEY (id)
 );
 
 
@@ -40,4 +37,3 @@ CREATE TABLE files
 -- DOWN
 DROP TABLE files;
 DROP TABLE posts;
-DROP TABLE threads;
