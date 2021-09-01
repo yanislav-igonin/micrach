@@ -61,7 +61,7 @@ func getPost(id int, pid *int) Post {
 
 var PostsDb = []Post{}
 
-func seedLocalMocks() {
+func seedLocal() {
 	rand.Seed(time.Now().UnixNano())
 
 	for i := 1; i < 10; i++ {
@@ -69,7 +69,7 @@ func seedLocalMocks() {
 	}
 }
 
-func seedDbMocks() {
+func seedDb() {
 	var posts []Post
 	for i := 1; i < 10; i++ {
 		post := getPost(i, nil)
@@ -91,11 +91,11 @@ func seedDbMocks() {
 	}
 }
 
-func SeedMocks() {
+func Seed() {
 	if Db.Pool != nil {
-		seedDbMocks()
+		seedDb()
 	} else {
-		seedLocalMocks()
+		seedLocal()
 	}
 	log.Println("mocks - online")
 }

@@ -19,7 +19,7 @@ func main() {
 	Db.Init()
 	defer Db.Pool.Close()
 	gin.SetMode(Config.App.Env)
-	Repositories.SeedMocks()
+	Repositories.Seed()
 
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*.html")
