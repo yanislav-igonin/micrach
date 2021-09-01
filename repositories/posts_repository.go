@@ -16,6 +16,12 @@ func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
 		return PostsDb, nil
 	}
 
+	conn, err := Db.Pool.Acquire(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Release()
+
 	sql := `
 		SELECT id, title, text, created_at
 		FROM posts
@@ -25,12 +31,6 @@ func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
 		ORDER BY updated_at DESC
 		LIMIT $1
 	`
-
-	conn, err := Db.Pool.Acquire(context.TODO())
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Release()
 
 	rows, err := conn.Query(context.TODO(), sql, limit)
 	if err != nil {
@@ -55,17 +55,17 @@ func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
 }
 
 func (r *PostsRepository) Create(p Post) (int, error) {
-	sql := `
-		INSERT INTO posts (is_parent, parent_id, title, text, is_sage)
-		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id
-	`
-
 	conn, err := Db.Pool.Acquire(context.TODO())
 	if err != nil {
 		return 0, err
 	}
 	defer conn.Release()
+
+	sql := `
+		INSERT INTO posts (is_parent, parent_id, title, text, is_sage)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id
+	`
 
 	var row pgx.Row
 	if p.IsParent {
