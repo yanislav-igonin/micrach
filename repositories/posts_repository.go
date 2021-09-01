@@ -40,7 +40,8 @@ func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
 		return nil, err
 	}
 
-	var posts []Post
+	postsMap := make(map[int]Post)
+	var postIDs []int
 	for rows.Next() {
 		var post Post
 		err = rows.Scan(&post.ID, &post.Title, &post.Text, &post.CreatedAt)
@@ -48,6 +49,19 @@ func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
 			return nil, err
 		}
 
+		postsMap[post.ID] = post
+		postIDs = append(postIDs, post.ID)
+	}
+
+	filesMap, err := Files.GetByPostIDs(postIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	var posts []Post
+	for _, postID := range postIDs {
+		post := postsMap[postID]
+		post.Files = filesMap[postID]
 		posts = append(posts, post)
 	}
 
