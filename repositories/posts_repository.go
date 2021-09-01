@@ -77,9 +77,6 @@ func (r *PostsRepository) Create(p Post) (int, error) {
 			context.TODO(), sql, p.IsParent, p.ParentID, p.Title, p.Text, p.IsSage,
 		)
 	}
-	if err != nil {
-		return 0, nil
-	}
 
 	createdPost := new(Post)
 	row.Scan(&createdPost.ID)
