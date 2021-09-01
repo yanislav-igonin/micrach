@@ -28,6 +28,9 @@ func getFile(id, postId int, name string) File {
 	}
 }
 
+// Creates post mock with mock files in it
+//
+// id - post ID, pid - parent post ID.
 func getPost(id int, pid *int) Post {
 	var parentID int
 	if pid == nil {
@@ -70,24 +73,48 @@ func seedLocal() {
 }
 
 func seedDb() {
-	var posts []Post
+	// preparing seed data with parent posts with files
+	var parentPosts []Post
 	for i := 1; i < 10; i++ {
 		post := getPost(i, nil)
-		posts = append(posts, post)
+		parentPosts = append(parentPosts, post)
 	}
 
-	for _, parentPost := range posts {
-		for i := 0; i < 10; i++ {
-			childPost := getPost(parentPost.ID*10+i, &parentPost.ID)
-			posts = append(posts, childPost)
-		}
-	}
-
-	for _, post := range posts {
-		_, err := Posts.Create(post)
+	for _, parentPost := range parentPosts {
+		// saving parent post in db
+		parentPostID, err := Posts.Create(parentPost)
 		if err != nil {
 			log.Panicln(err)
 		}
+
+		// saving parent post files
+		for _, file := range parentPost.Files {
+			file.PostID = parentPostID
+			err = Files.Create(file)
+			if err != nil {
+				log.Panicln(err)
+			}
+		}
+
+		// making child posts
+		for i := 0; i < 10; i++ {
+			// getting child post with files
+			childPost := getPost(0, &parentPostID)
+			childPostID, err := Posts.Create(childPost)
+			if err != nil {
+				log.Panicln(err)
+			}
+
+			// saving child post files
+			for _, file := range childPost.Files {
+				file.PostID = childPostID
+				err = Files.Create(file)
+				if err != nil {
+					log.Panicln(err)
+				}
+			}
+		}
+
 	}
 }
 
