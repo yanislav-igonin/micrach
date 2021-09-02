@@ -5,6 +5,7 @@ import (
 	Db "micrach/db"
 
 	"github.com/jackc/pgtype"
+	"github.com/jackc/pgx/v4"
 )
 
 type FilesRepository struct{}
@@ -23,9 +24,14 @@ func (r *FilesRepository) Create(f File) error {
 		VALUES ($1, $2, $3, $4)
 	`
 
-	conn.QueryRow(
+	row := conn.QueryRow(
 		context.TODO(), sql, f.PostID, f.Name, f.Ext, f.Size,
 	)
+
+	err = row.Scan()
+	if err != nil && err != pgx.ErrNoRows {
+		return err
+	}
 
 	return nil
 }

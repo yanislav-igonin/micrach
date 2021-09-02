@@ -93,7 +93,10 @@ func (r *PostsRepository) Create(p Post) (int, error) {
 	}
 
 	createdPost := new(Post)
-	row.Scan(&createdPost.ID)
+	err = row.Scan(&createdPost.ID)
+	if err != nil {
+		return 0, err
+	}
 
 	return createdPost.ID, nil
 }
