@@ -101,5 +101,69 @@ func (r *PostsRepository) Create(p Post) (int, error) {
 	return createdPost.ID, nil
 }
 
+func (r *PostsRepository) GetThreadByPostID(ID int) ([]Post, error) {
+	conn, err := Db.Pool.Acquire(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Release()
+
+	sql := `
+		SELECT 
+			id,
+			title,
+			text,
+			is_sage,
+			created_at,
+			is_parent
+		FROM posts
+		WHERE
+				(id = $1 AND is_parent = true) OR parent_id = $1
+				AND is_deleted = false
+		ORDER BY created_at ASC
+	`
+
+	rows, err := conn.Query(context.TODO(), sql, ID)
+	if err != nil {
+		return nil, err
+	}
+	if rows.Err() != nil {
+		return nil, err
+	}
+
+	postsMap := make(map[int]Post)
+	var postIDs []int
+	for rows.Next() {
+		var post Post
+		err = rows.Scan(
+			&post.ID,
+			&post.Title,
+			&post.Text,
+			&post.IsSage,
+			&post.CreatedAt,
+			&post.IsParent,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		postsMap[post.ID] = post
+		postIDs = append(postIDs, post.ID)
+	}
+
+	filesMap, err := Files.GetByPostIDs(postIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	var posts []Post
+	for _, postID := range postIDs {
+		post := postsMap[postID]
+		post.Files = filesMap[postID]
+		posts = append(posts, post)
+	}
+
+	return posts, nil
+}
 // func (r *PostsRepository) GetByID() int {
 // }

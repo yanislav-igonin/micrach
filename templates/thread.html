@@ -1,0 +1,81 @@
+{{$FirstPost:= index . 0}}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>{{$FirstPost.Title}}</title>
+
+    <link 
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" 
+      rel="stylesheet" 
+      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" 
+      crossorigin="anonymous"
+    >
+    <script 
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+      crossorigin="anonymous">
+    </script>
+    <link 
+      href="/static/index.css" 
+      rel="stylesheet" 
+    >
+    <link rel="icon" href="/static/favicon.ico"/>
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="{{$FirstPost.Title}}">
+    <meta name="description" content="{{$FirstPost.Text}}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://micrach.igonin.dev/{{$FirstPost.ID}}">
+    <meta property="og:title" content="{{$FirstPost.Title}}">
+    <meta property="og:description" content="{{$FirstPost.Text}}">
+    <meta property="og:image" content="https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png">
+    <meta property="twitter:url" content="https://micrach.igonin.dev/{{$FirstPost.ID}}">
+    <meta property="twitter:title" content="{{$FirstPost.Title}}">
+    <meta property="twitter:description" content="{{$FirstPost.Text}}">
+    <meta property="twitter:image" content="https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png">
+</head>
+
+<body>
+  <h1 class="display-1 text-center">Welcome to Micrach</h1>
+  
+  <div class="container">
+    <form class="row row-cols-auto gy-4" action="/{{$FirstPost.ID}}" method="POST" enctype="multipart/form-data">
+        <input class="form-control" id="postTitle" placeholder="Title" name="title">
+        <textarea class="form-control" id="postText" rows="3" placeholder="Text" name="text"></textarea>
+        <input class="form-control" type="file" id="formFileMultiple" multiple name="files">
+    </form>
+    
+    <div class="row row-cols-auto gy-4">
+      {{range $Post := .}}
+      <div class="col col-sm-6 col-md-4 col-lg-3">
+        <div class="card">
+
+          {{ $length := len $Post.Files }} {{ if gt $length 0 }}
+          {{$FirstFile := index $Post.Files 0}}
+          <img 
+            src="{{$FirstFile.Name}}" 
+            class="card-img-top"
+            alt="Uploaded picture"
+          >
+          {{end}}
+
+          <div class="card-body">
+            <h5 class="card-title">{{$Post.Title}}</h5>
+            <p class="card-text">{{$Post.Text}}</p>
+          </div>
+        </div>
+      </div>
+      {{end}}
+    </div>
+    
+  </div>
+</body>
+
+</html>

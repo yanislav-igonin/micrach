@@ -32,8 +32,8 @@ func main() {
 	router.Static("/static", "./static")
 	router.GET("/", Controllers.GetThreads)
 	router.POST("/", Controllers.CreateThread)
-	router.GET("/:threadId", Controllers.GetThread)
-	router.POST("/:threadId", Controllers.UpdateThread)
+	router.GET("/:threadID", Controllers.GetThread)
+	router.POST("/:threadID", Controllers.UpdateThread)
 
 	log.Println("port", Config.App.Port, "- online")
 	log.Println("all systems nominal")
