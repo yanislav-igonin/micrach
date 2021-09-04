@@ -11,7 +11,7 @@ import (
 	Controllers "micrach/controllers"
 	Db "micrach/db"
 	Repositories "micrach/repositories"
-	// Utils "micrach/utils"
+	Utils "micrach/utils"
 )
 
 func main() {
@@ -20,6 +20,11 @@ func main() {
 	defer Db.Pool.Close()
 	gin.SetMode(Config.App.Env)
 	Repositories.Seed()
+
+	err := Utils.CreateUploadsFolder()
+	if err != nil {
+		log.Panicln(err)
+	}
 
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*.html")
