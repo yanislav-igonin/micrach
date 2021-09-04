@@ -75,7 +75,7 @@ func seedLocal() {
 func seedDb() {
 	// preparing seed data with parent posts with files
 	var parentPosts []Post
-	for i := 1; i < 100; i++ {
+	for i := 1; i < 10; i++ {
 		post := getPost(i, nil)
 		parentPosts = append(parentPosts, post)
 	}
@@ -97,7 +97,7 @@ func seedDb() {
 		}
 
 		// making child posts
-		for i := 0; i < 100; i++ {
+		for i := 0; i < 10; i++ {
 			// getting child post with files
 			childPost := getPost(0, &parentPostID)
 			childPostID, err := Posts.Create(childPost)
