@@ -8,6 +8,7 @@ services:
     environment: 
       ENV: release
       PORT: ${PORT}
+      POSTGRES_URL: ${POSTGRES_URL}
     deploy:
       mode: global
       placement:
