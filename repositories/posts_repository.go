@@ -165,5 +165,13 @@ func (r *PostsRepository) GetThreadByPostID(ID int) ([]Post, error) {
 
 	return posts, nil
 }
-// func (r *PostsRepository) GetByID() int {
+
+// func (r *PostsRepository) IsThreadExists(ID int) ([]Post, error) {
+// 	conn, err := Db.Pool.Acquire(context.TODO())
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer conn.Release()
+
+// 	sql
 // }
