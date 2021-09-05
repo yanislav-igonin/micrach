@@ -1,9 +1,14 @@
-.error-image {
+.error-image-link {
   max-width: 50%;
   max-height: 50%;
   transition: 0.2s;
 }
-.error-image:hover {
+.error-image-link:hover {
   max-width: 60%;
   max-height: 60%;
+}
+
+.error-image {
+  width: 100%;
+  height: 100%;
 }
