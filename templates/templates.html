@@ -1,0 +1,41 @@
+{{ define "static" }}
+  <link 
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" 
+    rel="stylesheet" 
+    integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" 
+    crossorigin="anonymous"
+  >
+  <script 
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+    crossorigin="anonymous">
+  </script>
+  <link 
+    href="/static/index.css" 
+    rel="stylesheet" 
+  >
+  <link rel="icon" href="/static/favicon.ico"/>
+{{ end }}
+
+{{ define "meta" }}
+  <title>{{ .Title }}</title>
+  <!-- Primary Meta Tags -->
+  <meta charset="UTF-8"/>
+  <meta name="title" content="{{ .Title }}">
+  <meta name="description" content="{{ .Text }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://micrach.igonin.dev/{{ .ID }}">
+  <meta property="og:title" content="{{ .Title }}">
+  <meta property="og:description" content="{{ .Text }}">
+  <meta property="og:image" content="https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png">
+  <meta property="twitter:url" content="https://micrach.igonin.dev/{{ .ID }}">
+  <meta property="twitter:title" content="{{ .Title }}">
+  <meta property="twitter:description" content="{{ .Text }}">
+  <meta property="twitter:image" content="https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png">
+{{ end }}
