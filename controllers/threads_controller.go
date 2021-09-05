@@ -13,9 +13,8 @@ import (
 func GetThreads(c *gin.Context) {
 	threads, err := Repositories.Posts.Get(10, 10)
 	if err != nil {
-		// TODO: рендерить шаблон 500
 		log.Println("error:", err)
-		c.JSON(http.StatusOK, gin.H{"error": true})
+		c.HTML(http.StatusOK, "500.html", nil)
 		return
 	}
 	c.HTML(http.StatusOK, "index.html", threads)
@@ -30,9 +29,8 @@ func GetThread(c *gin.Context) {
 	}
 	thread, err := Repositories.Posts.GetThreadByPostID(threadID)
 	if err != nil {
-		// TODO: рендерить шаблон 500
 		log.Println("error:", err)
-		c.JSON(http.StatusOK, gin.H{"error": true})
+		c.HTML(http.StatusOK, "500.html", nil)
 		return
 	}
 	if thread == nil {
