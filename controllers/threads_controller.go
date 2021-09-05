@@ -25,9 +25,7 @@ func GetThread(c *gin.Context) {
 	threadIDString := c.Param("threadID")
 	threadID, err := strconv.Atoi(threadIDString)
 	if err != nil {
-		// TODO: рендерить шаблон 404
-		log.Println("error:", err)
-		c.JSON(http.StatusOK, gin.H{"error": true})
+		c.HTML(http.StatusOK, "404.html", nil)
 		return
 	}
 	thread, err := Repositories.Posts.GetThreadByPostID(threadID)
@@ -38,7 +36,7 @@ func GetThread(c *gin.Context) {
 		return
 	}
 	if thread == nil {
-		// TODO: рендерить шаблон 404
+		c.HTML(http.StatusOK, "404.html", nil)
 		return
 	}
 	c.HTML(http.StatusOK, "thread.html", thread)

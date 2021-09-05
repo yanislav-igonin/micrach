@@ -1,0 +1,9 @@
+.error-image {
+  max-width: 50%;
+  max-height: 50%;
+  transition: 0.2s;
+}
+.error-image:hover {
+  max-width: 60%;
+  max-height: 60%;
+}
