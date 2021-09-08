@@ -3,7 +3,6 @@ package repositories
 import (
 	"log"
 	"math/rand"
-	Db "micrach/db"
 	"time"
 )
 
@@ -62,16 +61,6 @@ func getPost(id int, pid *int) Post {
 	}
 }
 
-var PostsDb = []Post{}
-
-func seedLocal() {
-	rand.Seed(time.Now().UnixNano())
-
-	for i := 1; i < 10; i++ {
-		PostsDb = append(PostsDb, getPost(i, nil))
-	}
-}
-
 func seedDb() {
 	// preparing seed data with parent posts with files
 	var parentPosts []Post
@@ -119,10 +108,6 @@ func seedDb() {
 }
 
 func Seed() {
-	if Db.Pool != nil {
-		seedDb()
-	} else {
-		seedLocal()
-	}
+	seedDb()
 	log.Println("mocks - online")
 }

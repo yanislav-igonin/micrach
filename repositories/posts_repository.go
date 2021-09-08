@@ -12,10 +12,6 @@ type PostsRepository struct{}
 var Posts PostsRepository
 
 func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
-	if Db.Pool == nil {
-		return PostsDb, nil
-	}
-
 	conn, err := Db.Pool.Acquire(context.TODO())
 	if err != nil {
 		return nil, err
