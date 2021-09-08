@@ -37,12 +37,6 @@ func (r *FilesRepository) Create(f File) error {
 }
 
 func (r *FilesRepository) GetByPostIDs(postIDs []int) (map[int][]File, error) {
-	conn, err := Db.Pool.Acquire(context.TODO())
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Release()
-
 	sql := `
 		SELECT post_id, name, size
 		FROM files
@@ -53,7 +47,7 @@ func (r *FilesRepository) GetByPostIDs(postIDs []int) (map[int][]File, error) {
 	ids := &pgtype.Int4Array{}
 	ids.Set(postIDs)
 
-	rows, err := conn.Query(context.TODO(), sql, ids)
+	rows, err := Db.Pool.Query(context.TODO(), sql, ids)
 	if err != nil {
 		return nil, err
 	}

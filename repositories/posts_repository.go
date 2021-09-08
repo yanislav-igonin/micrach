@@ -12,12 +12,6 @@ type PostsRepository struct{}
 var Posts PostsRepository
 
 func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
-	conn, err := Db.Pool.Acquire(context.TODO())
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Release()
-
 	sql := `
 		SELECT id, title, text, created_at
 		FROM posts
@@ -28,7 +22,7 @@ func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
 		LIMIT $1
 	`
 
-	rows, err := conn.Query(context.TODO(), sql, limit)
+	rows, err := Db.Pool.Query(context.TODO(), sql, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -65,12 +59,6 @@ func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
 }
 
 func (r *PostsRepository) Create(p Post) (int, error) {
-	conn, err := Db.Pool.Acquire(context.TODO())
-	if err != nil {
-		return 0, err
-	}
-	defer conn.Release()
-
 	sql := `
 		INSERT INTO posts (is_parent, parent_id, title, text, is_sage)
 		VALUES ($1, $2, $3, $4, $5)
@@ -79,17 +67,17 @@ func (r *PostsRepository) Create(p Post) (int, error) {
 
 	var row pgx.Row
 	if p.IsParent {
-		row = conn.QueryRow(
+		row = Db.Pool.QueryRow(
 			context.TODO(), sql, p.IsParent, nil, p.Title, p.Text, p.IsSage,
 		)
 	} else {
-		row = conn.QueryRow(
+		row = Db.Pool.QueryRow(
 			context.TODO(), sql, p.IsParent, p.ParentID, p.Title, p.Text, p.IsSage,
 		)
 	}
 
 	createdPost := new(Post)
-	err = row.Scan(&createdPost.ID)
+	err := row.Scan(&createdPost.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -98,12 +86,6 @@ func (r *PostsRepository) Create(p Post) (int, error) {
 }
 
 func (r *PostsRepository) GetThreadByPostID(ID int) ([]Post, error) {
-	conn, err := Db.Pool.Acquire(context.TODO())
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Release()
-
 	sql := `
 		SELECT 
 			id,
@@ -119,7 +101,7 @@ func (r *PostsRepository) GetThreadByPostID(ID int) ([]Post, error) {
 		ORDER BY created_at ASC
 	`
 
-	rows, err := conn.Query(context.TODO(), sql, ID)
+	rows, err := Db.Pool.Query(context.TODO(), sql, ID)
 	if err != nil {
 		return nil, err
 	}
