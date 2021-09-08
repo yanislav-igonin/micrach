@@ -11,6 +11,10 @@
     crossorigin="anonymous">
   </script>
   <link rel="icon" href="/static/favicon.ico"/>
+  <link 
+    href="/static/post-form.css" 
+    rel="stylesheet" 
+  >
 {{ end }}
 
 {{ define "meta" }}
@@ -57,4 +61,14 @@
   <meta property="twitter:title" content="Micrach">
   <meta property="twitter:description" content="Single board imageboard.">
   <meta property="twitter:image" content="https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png">
+{{ end }}
+
+{{ define "post-form" }}
+  <div class="col col-12">
+    <form id="postForm" action="/{{ . }}" method="POST" enctype="multipart/form-data">
+      <input class="form-control" id="postTitle" placeholder="Title" name="title">
+      <textarea class="form-control" id="postText" rows="5" placeholder="Text" name="text"></textarea>
+      <input class="form-control" type="file" id="postFiles" multiple name="files">
+    </form>
+  </div>
 {{ end }}

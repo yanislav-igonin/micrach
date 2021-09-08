@@ -10,11 +10,7 @@
   <h1 class="display-1 text-center">Welcome to Micrach</h1>
   
   <div class="container">
-    <form class="row row-cols-auto gy-4" action="/{{$FirstPost.ID}}" method="POST" enctype="multipart/form-data">
-        <input class="form-control" id="postTitle" placeholder="Title" name="title">
-        <textarea class="form-control" id="postText" rows="3" placeholder="Text" name="text"></textarea>
-        <input class="form-control" type="file" id="formFileMultiple" multiple name="files">
-    </form>
+    {{ template "post-form" $FirstPost.ID }}
     
     <div class="row row-cols-auto gy-4">
       {{range $Post := .}}
