@@ -7,9 +7,10 @@ import (
 )
 
 type AppConfig struct {
-	Env    string
-	Port   int
-	SeedDb bool
+	Env                  string
+	Port                 int
+	SeedDb               bool
+	IsRateLimiterEnabled bool
 }
 
 type DbConfig struct {
@@ -34,10 +35,14 @@ func getAppConfig() AppConfig {
 	seedDbString := os.Getenv("SEED_DB")
 	seedDb := seedDbString == "true"
 
+	isRateLimiterEnabledString := os.Getenv("IS_RATE_LIMITER_ENABLED")
+	isRateLimiterEnabled := isRateLimiterEnabledString == "true"
+
 	return AppConfig{
-		Env:    env,
-		Port:   port,
-		SeedDb: seedDb,
+		Env:                  env,
+		Port:                 port,
+		SeedDb:               seedDb,
+		IsRateLimiterEnabled: isRateLimiterEnabled,
 	}
 }
 

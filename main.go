@@ -43,7 +43,9 @@ func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*.html")
 	router.ForwardedByClientIP = true
-	router.Use(middleware)
+	if Config.App.IsRateLimiterEnabled {
+		router.Use(middleware)
+	}
 	router.Static("/uploads", "./uploads")
 	router.Static("/static", "./static")
 	router.GET("/", Controllers.GetThreads)
