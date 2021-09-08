@@ -7,8 +7,9 @@ import (
 )
 
 type AppConfig struct {
-	Env  string
-	Port int
+	Env    string
+	Port   int
+	SeedDb bool
 }
 
 type DbConfig struct {
@@ -30,9 +31,13 @@ func getAppConfig() AppConfig {
 		panic(fmt.Sprintf("Could not parse %s to int", portString))
 	}
 
+	seedDbString := os.Getenv("SEED_DB")
+	seedDb := seedDbString == "true"
+
 	return AppConfig{
-		Env:  env,
-		Port: port,
+		Env:    env,
+		Port:   port,
+		SeedDb: seedDb,
 	}
 }
 

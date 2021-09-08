@@ -19,7 +19,9 @@ func main() {
 	Db.Init()
 	defer Db.Pool.Close()
 	gin.SetMode(Config.App.Env)
-	Repositories.Seed()
+	if Config.App.SeedDb {
+		Repositories.Seed()
+	}
 
 	err := Utils.CreateUploadsFolder()
 	if err != nil {
