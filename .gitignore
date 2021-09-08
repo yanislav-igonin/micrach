@@ -23,3 +23,5 @@ micrach
 uploads/
 
 .env
+
+*.bin

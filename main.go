@@ -3,9 +3,13 @@ package main
 import (
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
+	limiter "github.com/ulule/limiter/v3"
+	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
+	memory "github.com/ulule/limiter/v3/drivers/store/memory"
 
 	Config "micrach/config"
 	Controllers "micrach/controllers"
@@ -28,8 +32,18 @@ func main() {
 		log.Panicln(err)
 	}
 
+	rate := limiter.Rate{
+		Period: 1 * time.Hour,
+		Limit:  1000,
+	}
+	store := memory.NewStore()
+	instance := limiter.New(store, rate)
+	middleware := mgin.NewMiddleware(instance)
+
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*.html")
+	router.ForwardedByClientIP = true
+	router.Use(middleware)
 	router.Static("/uploads", "./uploads")
 	router.Static("/static", "./static")
 	router.GET("/", Controllers.GetThreads)

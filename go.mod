@@ -7,4 +7,5 @@ require (
 	github.com/jackc/pgtype v1.8.1
 	github.com/jackc/pgx/v4 v4.13.0
 	github.com/joho/godotenv v1.3.0
+	github.com/ulule/limiter/v3 v3.8.0
 )
