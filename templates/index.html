@@ -15,19 +15,19 @@
   <div class="container">
     {{ template "post-form" }}
     
-    <div class="row row-cols-auto gy-4">
-      {{range $Post := .}}
+    <div id="" class="row row-cols-auto gy-4 mb-4">
+      {{ range $Post := .Threads }}
       <div class="col col-sm-6 col-md-4 col-lg-3">
         <div class="card">
 
           {{ $length := len $Post.Files }} {{ if gt $length 0 }}
-          {{$FirstFile := index $Post.Files 0}}
+          {{ $FirstFile := index $Post.Files 0 }}
           <img 
             src="{{$FirstFile.Name}}" 
             class="card-img-top"
             alt="Uploaded picture"
           >
-          {{end}}
+          {{ end }}
 
           <div class="card-body">
             <h5 class="card-title">{{$Post.Title}}</h5>
@@ -36,7 +36,20 @@
           </div>
         </div>
       </div>
-      {{end}}
+      {{ end }}
+    </div>
+
+    <div class="col col-12">
+      <nav aria-label="Page navigation">
+        <ul id="pagesList" class="pagination justify-content-center">
+          {{ $ActivePage := .Page }}
+          {{ range $i := Iterate .PagesCount }}
+            <li class="page-item {{ if (eq $i $ActivePage) }} active {{ end }}">
+              <a class="page-link" href="/?page={{ $i }}">{{ $i }}</a>
+            </li>
+          {{ end }}
+        </ul>
+      </nav>
     </div>
     
   </div>

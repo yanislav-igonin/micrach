@@ -23,3 +23,9 @@ type File struct {
 	Ext       string    `json:"-"`
 	Size      int       `json:"size"`
 }
+
+type IndexPageData struct {
+	Threads    []Post
+	PagesCount int
+	Page       int
+}

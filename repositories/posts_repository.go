@@ -19,10 +19,11 @@ func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
 			is_parent = true
 			AND is_deleted = false
 		ORDER BY updated_at DESC
-		LIMIT $1
+		OFFSET $1
+		LIMIT $2
 	`
 
-	rows, err := Db.Pool.Query(context.TODO(), sql, limit)
+	rows, err := Db.Pool.Query(context.TODO(), sql, offset, limit)
 	if err != nil {
 		return nil, err
 	}
@@ -56,6 +57,24 @@ func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
 	}
 
 	return posts, nil
+}
+
+func (r *PostsRepository) GetCount() (int, error) {
+	sql := `
+		SELECT COUNT(*)
+		FROM posts
+		WHERE 
+			is_parent = true
+			AND is_deleted = false
+	`
+
+	row := Db.Pool.QueryRow(context.TODO(), sql)
+	var count int
+	err := row.Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
 func (r *PostsRepository) Create(p Post) (int, error) {

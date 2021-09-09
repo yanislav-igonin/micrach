@@ -2,6 +2,7 @@ package controlers
 
 import (
 	"log"
+	"math"
 	"net/http"
 	"strconv"
 
@@ -11,13 +12,34 @@ import (
 )
 
 func GetThreads(c *gin.Context) {
-	threads, err := Repositories.Posts.Get(10, 10)
+	pageString := c.Query("page")
+	page, err := strconv.Atoi(pageString)
 	if err != nil {
 		log.Println("error:", err)
 		c.HTML(http.StatusOK, "500.html", nil)
 		return
 	}
-	c.HTML(http.StatusOK, "index.html", threads)
+	limit := 10
+	offset := limit * (page - 1)
+	threads, err := Repositories.Posts.Get(limit, offset)
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusOK, "500.html", nil)
+		return
+	}
+	count, err := Repositories.Posts.GetCount()
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusOK, "500.html", nil)
+		return
+	}
+
+	data := Repositories.IndexPageData{
+		Threads:    threads,
+		PagesCount: int(math.Ceil(float64(count) / 10)),
+		Page:       page,
+	}
+	c.HTML(http.StatusOK, "index.html", data)
 }
 
 func GetThread(c *gin.Context) {

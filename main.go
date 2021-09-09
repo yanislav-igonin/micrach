@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"strconv"
 	"time"
@@ -41,6 +42,16 @@ func main() {
 	middleware := mgin.NewMiddleware(instance)
 
 	router := gin.Default()
+	router.SetFuncMap(template.FuncMap{
+		"Iterate": func(count int) []int {
+			var i int
+			var Items []int
+			for i = 1; i < count; i++ {
+				Items = append(Items, i)
+			}
+			return Items
+		},
+	})
 	router.LoadHTMLGlob("templates/*.html")
 	router.ForwardedByClientIP = true
 	if Config.App.IsRateLimiterEnabled {
