@@ -46,7 +46,7 @@ func main() {
 		"Iterate": func(count int) []int {
 			var i int
 			var Items []int
-			for i = 1; i < count; i++ {
+			for i = 1; i < count+1; i++ {
 				Items = append(Items, i)
 			}
 			return Items

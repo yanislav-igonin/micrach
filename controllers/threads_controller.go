@@ -12,6 +12,7 @@ import (
 )
 
 func GetThreads(c *gin.Context) {
+	// TODO: fix empty query
 	pageString := c.Query("page")
 	page, err := strconv.Atoi(pageString)
 	if err != nil {
@@ -34,6 +35,7 @@ func GetThreads(c *gin.Context) {
 		return
 	}
 
+	// TODO: if page > pagescount render 404
 	data := Repositories.IndexPageData{
 		Threads:    threads,
 		PagesCount: int(math.Ceil(float64(count) / 10)),
