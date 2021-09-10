@@ -9,6 +9,8 @@ services:
       ENV: release
       PORT: ${PORT}
       POSTGRES_URL: ${POSTGRES_URL}
+    volumes:
+      - /root/micrach-go/uploads:/app/micrach/uploads
     deploy:
       mode: global
       placement:
