@@ -12,8 +12,7 @@ import (
 )
 
 func GetThreads(c *gin.Context) {
-	// TODO: fix empty query
-	pageString := c.Query("page")
+	pageString := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageString)
 	if err != nil {
 		log.Println("error:", err)
