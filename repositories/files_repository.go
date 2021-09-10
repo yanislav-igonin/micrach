@@ -69,3 +69,21 @@ func (r *FilesRepository) GetByPostIDs(postIDs []int) (map[int][]File, error) {
 
 	return filesMapByPostId, nil
 }
+
+func (r *FilesRepository) CreateInTx(tx pgx.Tx, f File) error {
+	sql := `
+		INSERT INTO files (post_id, name, ext, size)
+		VALUES ($1, $2, $3, $4)
+	`
+
+	row := tx.QueryRow(
+		context.TODO(), sql, f.PostID, f.Name, f.Ext, f.Size,
+	)
+
+	err := row.Scan()
+	if err != nil && err != pgx.ErrNoRows {
+		return err
+	}
+
+	return nil
+}

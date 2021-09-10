@@ -20,14 +20,16 @@
           {{ $length := len $Post.Files }} {{ if gt $length 0 }}
           {{$FirstFile := index $Post.Files 0}}
           <img 
-            src="{{$FirstFile.Name}}" 
+            src="/uploads/{{$Post.ID}}/{{$FirstFile.Name}}" 
             class="card-img-top"
             alt="Uploaded picture"
           >
           {{end}}
 
           <div class="card-body">
+            {{ if ne $Post.Title "" }}
             <h5 class="card-title">{{$Post.Title}}</h5>
+            {{ end }}
             <p class="card-text">{{$Post.Text}}</p>
           </div>
         </div>

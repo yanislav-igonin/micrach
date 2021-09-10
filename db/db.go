@@ -13,7 +13,7 @@ var Pool *pgxpool.Pool
 
 func Init() {
 	var err error
-	Pool, err = pgxpool.Connect(context.Background(), Config.Db.Url)
+	Pool, err = pgxpool.Connect(context.TODO(), Config.Db.Url)
 	if err != nil {
 		log.Println("database - offline")
 		log.Panicln(err)

@@ -163,12 +163,29 @@ func (r *PostsRepository) GetThreadByPostID(ID int) ([]Post, error) {
 	return posts, nil
 }
 
-// func (r *PostsRepository) IsThreadExists(ID int) ([]Post, error) {
-// 	conn, err := Db.Pool.Acquire(context.TODO())
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer conn.Release()
+func (r *PostsRepository) CreateInTx(tx pgx.Tx, p Post) (int, error) {
+	sql := `
+		INSERT INTO posts (is_parent, parent_id, title, text, is_sage)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id
+	`
 
-// 	sql
-// }
+	var row pgx.Row
+	if p.IsParent {
+		row = tx.QueryRow(
+			context.TODO(), sql, p.IsParent, nil, p.Title, p.Text, p.IsSage,
+		)
+	} else {
+		row = tx.QueryRow(
+			context.TODO(), sql, p.IsParent, p.ParentID, p.Title, p.Text, p.IsSage,
+		)
+	}
+
+	createdPost := new(Post)
+	err := row.Scan(&createdPost.ID)
+	if err != nil {
+		return 0, err
+	}
+
+	return createdPost.ID, nil
+}

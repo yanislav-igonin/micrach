@@ -1,14 +1,18 @@
 package controlers
 
 import (
+	"context"
 	"log"
 	"math"
 	"net/http"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 
+	Db "micrach/db"
 	Repositories "micrach/repositories"
+	Utils "micrach/utils"
 )
 
 func GetThreads(c *gin.Context) {
@@ -40,7 +44,7 @@ func GetThreads(c *gin.Context) {
 	}
 
 	pagesCount := int(math.Ceil(float64(count) / 10))
-	if page > pagesCount {
+	if page > pagesCount && len(threads) != 0 {
 		c.HTML(http.StatusNotFound, "404.html", nil)
 		return
 	}
@@ -75,25 +79,84 @@ func GetThread(c *gin.Context) {
 func CreateThread(c *gin.Context) {
 	form, err := c.MultipartForm()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Problem uploading file!",
-		})
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
 		return
 	}
 
 	// TODO: dat shit crashes if no fields in request
-	// text := form.Value["text"][0]
-	// title := form.Value["title"][0]
-	// isSageString := form.Value["isSage"][0]
-	// isSage, err := strconv.ParseBool(isSageString)
-	// if err != nil {
-	// 	// TODO: validation error
-	// 	response := Dto.GetInternalServerErrorResponse()
-	// 	c.JSON(http.StatusInternalServerError, response)
-	// 	return
-	// }
+	text := form.Value["text"][0]
+	title := form.Value["title"][0]
+	filesInRequest := form.File["files"]
 
-	c.JSON(http.StatusOK, gin.H{"route": form})
+	conn, err := Db.Pool.Acquire(context.TODO())
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		return
+	}
+	defer conn.Release()
+
+	tx, err := conn.Begin(context.TODO())
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		return
+	}
+	defer tx.Rollback(context.TODO())
+
+	post := Repositories.Post{
+		IsParent: true,
+		Title:    title,
+		Text:     text,
+		IsSage:   false,
+	}
+	postID, err := Repositories.Posts.CreateInTx(tx, post)
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		return
+	}
+
+	err = Utils.CreateThreadFolder(postID)
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		return
+	}
+
+	for _, fileInRequest := range filesInRequest {
+		path := filepath.Join(
+			Utils.UPLOADS_DIR_PATH,
+			strconv.Itoa(postID),
+			fileInRequest.Filename,
+		)
+		log.Println(path)
+		file := Repositories.File{
+			PostID: postID,
+			Name:   fileInRequest.Filename,
+			Ext:    fileInRequest.Header["Content-Type"][0],
+			Size:   int(fileInRequest.Size),
+		}
+
+		err := Repositories.Files.CreateInTx(tx, file)
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
+
+		err = c.SaveUploadedFile(fileInRequest, path)
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
+	}
+
+	tx.Commit(context.TODO())
+
+	c.Redirect(http.StatusFound, "/"+strconv.Itoa(postID))
 }
 
 func UpdateThread(c *gin.Context) {
