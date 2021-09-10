@@ -10,7 +10,7 @@ services:
       PORT: ${PORT}
       POSTGRES_URL: ${POSTGRES_URL}
     volumes:
-      - /root/micrach-go/uploads:/app/micrach/uploads
+      - /root/micrach-go/uploads:/app/uploads
     deploy:
       mode: global
       placement:
