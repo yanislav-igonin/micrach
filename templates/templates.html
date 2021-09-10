@@ -69,6 +69,27 @@
       <input class="form-control" id="postTitle" placeholder="Title" name="title">
       <textarea class="form-control" id="postText" rows="5" placeholder="Text" name="text"></textarea>
       <input class="form-control" type="file" id="postFiles" multiple name="files">
+
+      <div class="row">
+        {{ if ne . nil }}
+        <div class="col">
+          <input class="form-check-input" type="checkbox" value="" id="postSage" name="sage">
+          <label class="form-check-label" for="postSage">
+            Sage
+          </label>
+        </div>
+        {{ end }}
+
+        <div class="col text-end">
+          <button class="col btn btn-outline-primary" type="submit" >
+            {{ if ne . nil }}
+            Send
+            {{ else }}
+            Create thread
+            {{ end }}
+          </button>
+        </div>
+      </div>
     </form>
   </div>
 {{ end }}
