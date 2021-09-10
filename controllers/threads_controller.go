@@ -15,29 +15,38 @@ func GetThreads(c *gin.Context) {
 	pageString := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageString)
 	if err != nil {
-		log.Println("error:", err)
-		c.HTML(http.StatusOK, "500.html", nil)
+		c.HTML(http.StatusNotFound, "404.html", nil)
 		return
 	}
+
+	if page <= 0 {
+		c.HTML(http.StatusNotFound, "404.html", nil)
+		return
+	}
+
 	limit := 10
 	offset := limit * (page - 1)
 	threads, err := Repositories.Posts.Get(limit, offset)
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusOK, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
 		return
 	}
 	count, err := Repositories.Posts.GetCount()
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusOK, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
 		return
 	}
 
-	// TODO: if page > pagescount render 404
+	pagesCount := int(math.Ceil(float64(count) / 10))
+	if page > pagesCount {
+		c.HTML(http.StatusNotFound, "404.html", nil)
+		return
+	}
 	data := Repositories.IndexPageData{
 		Threads:    threads,
-		PagesCount: int(math.Ceil(float64(count) / 10)),
+		PagesCount: pagesCount,
 		Page:       page,
 	}
 	c.HTML(http.StatusOK, "index.html", data)
@@ -47,17 +56,17 @@ func GetThread(c *gin.Context) {
 	threadIDString := c.Param("threadID")
 	threadID, err := strconv.Atoi(threadIDString)
 	if err != nil {
-		c.HTML(http.StatusOK, "404.html", nil)
+		c.HTML(http.StatusNotFound, "404.html", nil)
 		return
 	}
 	thread, err := Repositories.Posts.GetThreadByPostID(threadID)
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusOK, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
 		return
 	}
 	if thread == nil {
-		c.HTML(http.StatusOK, "404.html", nil)
+		c.HTML(http.StatusNotFound, "404.html", nil)
 		return
 	}
 	c.HTML(http.StatusOK, "thread.html", thread)
