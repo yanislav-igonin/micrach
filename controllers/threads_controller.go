@@ -44,7 +44,7 @@ func GetThreads(c *gin.Context) {
 	}
 
 	pagesCount := int(math.Ceil(float64(count) / 10))
-	if page > pagesCount && len(threads) != 0 {
+	if page > pagesCount && count != 0 {
 		c.HTML(http.StatusNotFound, "404.html", nil)
 		return
 	}
