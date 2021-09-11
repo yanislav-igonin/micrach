@@ -85,6 +85,7 @@ func CreateThread(c *gin.Context) {
 	}
 
 	// TODO: dat shit crashes if no fields in request
+	// TODO: add validation (title or text)
 	text := form.Value["text"][0]
 	title := form.Value["title"][0]
 	filesInRequest := form.File["files"]
@@ -131,7 +132,6 @@ func CreateThread(c *gin.Context) {
 			strconv.Itoa(postID),
 			fileInRequest.Filename,
 		)
-		log.Println(path)
 		file := Repositories.File{
 			PostID: postID,
 			Name:   fileInRequest.Filename,
@@ -160,5 +160,91 @@ func CreateThread(c *gin.Context) {
 }
 
 func UpdateThread(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"route": "update thread"})
+	threadIDString := c.Param("threadID")
+	threadID, err := strconv.Atoi(threadIDString)
+	if err != nil {
+		c.HTML(http.StatusNotFound, "500.html", nil)
+		return
+	}
+
+	form, err := c.MultipartForm()
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		return
+	}
+
+	// TODO: dat shit crashes if no fields in request
+	// TODO: add validation (title or text)
+	text := form.Value["text"][0]
+	title := form.Value["title"][0]
+	filesInRequest := form.File["files"]
+	isSageField := form.Value["sage"]
+	var isSageString string
+	if len(isSageField) != 0 {
+		isSageString = isSageField[0]
+	}
+	isSage := isSageString == "true"
+
+	conn, err := Db.Pool.Acquire(context.TODO())
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		return
+	}
+	defer conn.Release()
+
+	tx, err := conn.Begin(context.TODO())
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		return
+	}
+	defer tx.Rollback(context.TODO())
+
+	post := Repositories.Post{
+		IsParent: false,
+		ParentID: threadID,
+		Title:    title,
+		Text:     text,
+		IsSage:   isSage,
+	}
+	postID, err := Repositories.Posts.CreateInTx(tx, post)
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		return
+	}
+
+	for _, fileInRequest := range filesInRequest {
+		path := filepath.Join(
+			Utils.UPLOADS_DIR_PATH,
+			strconv.Itoa(threadID),
+			fileInRequest.Filename,
+		)
+		file := Repositories.File{
+			PostID: postID,
+			Name:   fileInRequest.Filename,
+			Ext:    fileInRequest.Header["Content-Type"][0],
+			Size:   int(fileInRequest.Size),
+		}
+
+		err := Repositories.Files.CreateInTx(tx, file)
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
+
+		err = c.SaveUploadedFile(fileInRequest, path)
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
+	}
+
+	tx.Commit(context.TODO())
+
+	c.Redirect(http.StatusFound, "/"+strconv.Itoa(threadID))
 }

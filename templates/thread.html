@@ -1,4 +1,4 @@
-{{$FirstPost:= index . 0}}
+{{ $FirstPost:= index . 0 }}
 
 <html lang="en">
 <head>
@@ -20,7 +20,7 @@
           {{ $length := len $Post.Files }} {{ if gt $length 0 }}
           {{$FirstFile := index $Post.Files 0}}
           <img 
-            src="/uploads/{{$Post.ID}}/{{$FirstFile.Name}}" 
+            src="/uploads/{{$FirstPost.ID}}/{{$FirstFile.Name}}" 
             class="card-img-top"
             alt="Uploaded picture"
           >
