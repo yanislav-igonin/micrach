@@ -86,9 +86,14 @@ func CreateThread(c *gin.Context) {
 	}
 
 	// TODO: dat shit crashes if no fields in request
-	// TODO: add validation (title or text)
 	text := form.Value["text"][0]
 	title := form.Value["title"][0]
+	isPostValid := Utils.ValidatePost(title, text)
+	if !isPostValid {
+		c.HTML(http.StatusBadRequest, "400.html", nil)
+		return
+	}
+
 	filesInRequest := form.File["files"]
 
 	conn, err := Db.Pool.Acquire(context.TODO())
@@ -177,9 +182,14 @@ func UpdateThread(c *gin.Context) {
 	}
 
 	// TODO: dat shit crashes if no fields in request
-	// TODO: add validation (title or text)
 	text := form.Value["text"][0]
 	title := form.Value["title"][0]
+	isPostValid := Utils.ValidatePost(title, text)
+	if !isPostValid {
+		c.HTML(http.StatusBadRequest, "400.html", nil)
+		return
+	}
+
 	filesInRequest := form.File["files"]
 	isSageField := form.Value["sage"]
 	var isSageString string

@@ -46,3 +46,7 @@ func CreateThreadFolder(postID int) error {
 
 	return nil
 }
+
+func ValidatePost(title, text string) bool {
+	return (title == "" && text != "") || (title != "" && text == "")
+}

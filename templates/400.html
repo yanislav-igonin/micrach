@@ -1,0 +1,26 @@
+<html lang="en">
+<head>
+  {{ template "static" }}
+  <link 
+    href="/static/error-image.css" 
+    rel="stylesheet" 
+  >
+
+  {{ template "static-meta" }}
+</head>
+
+<body>
+  <div class="h-100 d-flex justify-content-center align-items-center flex-column">
+    <h1>400</h1>
+    <h1>TITLE OR TEXT SHOULD NOT BE EMPTY</h1>
+    <a href="/" class="error-image-link">
+      <img
+        class="error-image"
+        src="/static/images/errors/404.png"
+        alt="Bad request"
+      >
+    </a>
+  </div>
+</body>
+
+</html>
