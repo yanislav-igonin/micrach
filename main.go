@@ -41,7 +41,8 @@ func main() {
 	instance := limiter.New(store, rate)
 	middleware := mgin.NewMiddleware(instance)
 
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Recovery())
 	router.SetFuncMap(template.FuncMap{
 		"Iterate": func(count int) []int {
 			var i int
