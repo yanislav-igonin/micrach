@@ -20,7 +20,7 @@
           {{ $length := len $Post.Files }} {{ if gt $length 0 }}
           {{$FirstFile := index $Post.Files 0}}
           <img 
-            src="/uploads/{{$FirstPost.ID}}/{{$FirstFile.Name}}" 
+            src="/uploads/{{$FirstPost.ID}}/{{$FirstFile.ID}}.{{$FirstFile.Ext}}" 
             class="card-img-top"
             alt="Uploaded picture"
           >

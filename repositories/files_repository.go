@@ -32,7 +32,7 @@ func (r *FilesRepository) Create(f File) error {
 
 func (r *FilesRepository) GetByPostIDs(postIDs []int) (map[int][]File, error) {
 	sql := `
-		SELECT post_id, name, size
+		SELECT id, post_id, name, size, ext
 		FROM files
 		WHERE post_id = ANY ($1)
 		ORDER BY id ASC
@@ -52,7 +52,7 @@ func (r *FilesRepository) GetByPostIDs(postIDs []int) (map[int][]File, error) {
 	filesMapByPostId := make(map[int][]File)
 	for rows.Next() {
 		var file File
-		err = rows.Scan(&file.PostID, &file.Name, &file.Size)
+		err = rows.Scan(&file.ID, &file.PostID, &file.Name, &file.Size, &file.Ext)
 		if err != nil {
 			return nil, err
 		}
@@ -70,20 +70,22 @@ func (r *FilesRepository) GetByPostIDs(postIDs []int) (map[int][]File, error) {
 	return filesMapByPostId, nil
 }
 
-func (r *FilesRepository) CreateInTx(tx pgx.Tx, f File) error {
+func (r *FilesRepository) CreateInTx(tx pgx.Tx, f File) (int, error) {
 	sql := `
 		INSERT INTO files (post_id, name, ext, size)
 		VALUES ($1, $2, $3, $4)
+		RETURNING id
 	`
 
 	row := tx.QueryRow(
 		context.TODO(), sql, f.PostID, f.Name, f.Ext, f.Size,
 	)
 
-	err := row.Scan()
+	createdFile := new(File)
+	err := row.Scan(&createdFile.ID)
 	if err != nil && err != pgx.ErrNoRows {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return createdFile.ID, nil
 }

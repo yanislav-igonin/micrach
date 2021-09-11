@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -127,25 +128,26 @@ func CreateThread(c *gin.Context) {
 	}
 
 	for _, fileInRequest := range filesInRequest {
-		path := filepath.Join(
-			Utils.UPLOADS_DIR_PATH,
-			strconv.Itoa(postID),
-			fileInRequest.Filename,
-		)
 		file := Repositories.File{
 			PostID: postID,
 			Name:   fileInRequest.Filename,
-			Ext:    fileInRequest.Header["Content-Type"][0],
-			Size:   int(fileInRequest.Size),
+			// image/jpeg -> jpeg
+			Ext:  strings.Split(fileInRequest.Header["Content-Type"][0], "/")[1],
+			Size: int(fileInRequest.Size),
 		}
 
-		err := Repositories.Files.CreateInTx(tx, file)
+		fileID, err := Repositories.Files.CreateInTx(tx, file)
 		if err != nil {
 			log.Println("error:", err)
 			c.HTML(http.StatusInternalServerError, "500.html", nil)
 			return
 		}
 
+		path := filepath.Join(
+			Utils.UPLOADS_DIR_PATH,
+			strconv.Itoa(postID),
+			strconv.Itoa(fileID)+"."+file.Ext,
+		)
 		err = c.SaveUploadedFile(fileInRequest, path)
 		if err != nil {
 			log.Println("error:", err)
@@ -217,25 +219,26 @@ func UpdateThread(c *gin.Context) {
 	}
 
 	for _, fileInRequest := range filesInRequest {
-		path := filepath.Join(
-			Utils.UPLOADS_DIR_PATH,
-			strconv.Itoa(threadID),
-			fileInRequest.Filename,
-		)
 		file := Repositories.File{
 			PostID: postID,
 			Name:   fileInRequest.Filename,
-			Ext:    fileInRequest.Header["Content-Type"][0],
-			Size:   int(fileInRequest.Size),
+			// image/jpeg -> jpeg
+			Ext:  strings.Split(fileInRequest.Header["Content-Type"][0], "/")[1],
+			Size: int(fileInRequest.Size),
 		}
 
-		err := Repositories.Files.CreateInTx(tx, file)
+		fileID, err := Repositories.Files.CreateInTx(tx, file)
 		if err != nil {
 			log.Println("error:", err)
 			c.HTML(http.StatusInternalServerError, "500.html", nil)
 			return
 		}
 
+		path := filepath.Join(
+			Utils.UPLOADS_DIR_PATH,
+			strconv.Itoa(threadID),
+			strconv.Itoa(fileID)+"."+file.Ext,
+		)
 		err = c.SaveUploadedFile(fileInRequest, path)
 		if err != nil {
 			log.Println("error:", err)
