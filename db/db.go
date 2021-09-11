@@ -19,5 +19,7 @@ func Init() {
 		log.Panicln(err)
 	}
 
+	Pool.Config().MaxConns = 5
+
 	log.Println("database - online")
 }
