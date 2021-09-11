@@ -4,36 +4,50 @@
 <head>
   {{ template "static" }}
   {{ template "meta" $FirstPost }}
+  <link 
+    href="/static/post.css" 
+    rel="stylesheet" 
+  >
 </head>
 
 <body>
-  <h1 class="display-1 text-center">Welcome to Micrach</h1>
+  <h1 class="display-1 text-center">
+    {{ if ne $FirstPost.Title "" }}
+      {{$FirstPost.Title}}
+    {{ else }}
+      Welcome to Micrach
+    {{ end }}
+  </h1>
   
   <div class="container">
     {{ template "post-form" $FirstPost.ID }}
     
-    <div class="row row-cols-auto gy-4 mb-4">
+    <div id="postsСontainer">
       {{range $Post := .}}
-      <div class="col col-sm-6 col-md-4 col-lg-3">
-        <div class="card">
+        <div class="post-container mb-4">
 
-          {{ $length := len $Post.Files }} {{ if gt $length 0 }}
-          {{$FirstFile := index $Post.Files 0}}
-          <img 
-            src="/uploads/{{$FirstPost.ID}}/{{$FirstFile.ID}}.{{$FirstFile.Ext}}" 
-            class="card-img-top"
-            alt="Uploaded picture"
-          >
-          {{end}}
-
-          <div class="card-body">
-            {{ if ne $Post.Title "" }}
-            <h5 class="card-title">{{$Post.Title}}</h5>
+          {{ $filesLength := len $Post.Files }} 
+          {{ if gt $filesLength 0 }}
+          <div class="files-container">
+            {{ range $File := $Post.Files }}
+            <div class="file-container">
+              <a href="/uploads/{{$FirstPost.ID}}/{{$File.ID}}.{{$File.Ext}}" target="blank">
+                <img 
+                  src="/uploads/{{$FirstPost.ID}}/{{$File.ID}}.{{$File.Ext}}" 
+                  class="file"
+                  alt="Uploaded picture"
+                >
+              </a>
+            </div>
             {{ end }}
+          </div>
+          {{ end }}
+
+          <div class="data-container p-2">
             <p class="card-text">{{$Post.Text}}</p>
           </div>
+
         </div>
-      </div>
       {{end}}
     </div>
     
