@@ -118,14 +118,14 @@ func CreateThread(c *gin.Context) {
 		Text:     text,
 		IsSage:   false,
 	}
-	postID, err := Repositories.Posts.CreateInTx(tx, post)
+	threadID, err := Repositories.Posts.CreateInTx(tx, post)
 	if err != nil {
 		log.Println("error:", err)
 		c.HTML(http.StatusInternalServerError, "500.html", nil)
 		return
 	}
 
-	err = Utils.CreateThreadFolder(postID)
+	err = Utils.CreateThreadFolder(threadID)
 	if err != nil {
 		log.Println("error:", err)
 		c.HTML(http.StatusInternalServerError, "500.html", nil)
@@ -134,7 +134,7 @@ func CreateThread(c *gin.Context) {
 
 	for _, fileInRequest := range filesInRequest {
 		file := Repositories.File{
-			PostID: postID,
+			PostID: threadID,
 			Name:   fileInRequest.Filename,
 			// image/jpeg -> jpeg
 			Ext:  strings.Split(fileInRequest.Header["Content-Type"][0], "/")[1],
@@ -150,7 +150,7 @@ func CreateThread(c *gin.Context) {
 
 		path := filepath.Join(
 			Utils.UPLOADS_DIR_PATH,
-			strconv.Itoa(postID),
+			strconv.Itoa(threadID),
 			"o",
 			strconv.Itoa(fileID)+"."+file.Ext,
 		)
@@ -160,11 +160,25 @@ func CreateThread(c *gin.Context) {
 			c.HTML(http.StatusInternalServerError, "500.html", nil)
 			return
 		}
+		// creating thumbnail
+		thumbImg, err := Utils.MakeImageThumbnail(path, file.Ext, threadID, fileID)
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
+		// saving thumbnail
+		err = Utils.SaveImageThumbnail(thumbImg, threadID, fileID, file.Ext)
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
 	}
 
 	tx.Commit(context.TODO())
 
-	c.Redirect(http.StatusFound, "/"+strconv.Itoa(postID))
+	c.Redirect(http.StatusFound, "/"+strconv.Itoa(threadID))
 }
 
 func UpdateThread(c *gin.Context) {
@@ -184,8 +198,8 @@ func UpdateThread(c *gin.Context) {
 
 	// TODO: dat shit crashes if no fields in request
 	text := form.Value["text"][0]
-	title := form.Value["title"][0]
-	isPostValid := Utils.ValidatePost(title, text)
+	// title := form.Value["title"][0]
+	isPostValid := Utils.ValidatePost("", text)
 	if !isPostValid {
 		c.HTML(http.StatusBadRequest, "400.html", nil)
 		return
@@ -218,7 +232,7 @@ func UpdateThread(c *gin.Context) {
 	post := Repositories.Post{
 		IsParent: false,
 		ParentID: threadID,
-		Title:    title,
+		Title:    "",
 		Text:     text,
 		IsSage:   isSage,
 	}
@@ -252,6 +266,20 @@ func UpdateThread(c *gin.Context) {
 			strconv.Itoa(fileID)+"."+file.Ext,
 		)
 		err = c.SaveUploadedFile(fileInRequest, path)
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
+		// creating thumbnail
+		thumbImg, err := Utils.MakeImageThumbnail(path, file.Ext, threadID, fileID)
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
+		// saving thumbnail
+		err = Utils.SaveImageThumbnail(thumbImg, threadID, fileID, file.Ext)
 		if err != nil {
 			log.Println("error:", err)
 			c.HTML(http.StatusInternalServerError, "500.html", nil)

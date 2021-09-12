@@ -2,9 +2,14 @@ package utils
 
 import (
 	"errors"
+	"image"
+	"image/jpeg"
+	"image/png"
 	"os"
 	"path/filepath"
 	"strconv"
+
+	"github.com/disintegration/imaging"
 )
 
 var UPLOADS_DIR_PATH = "uploads"
@@ -62,4 +67,41 @@ func ValidatePost(title, text string) bool {
 	return (title == "" && text != "") ||
 		(title != "" && text == "") ||
 		(title != "" && text != "")
+}
+
+func MakeImageThumbnail(originalPath, ext string, threadID, fileID int) (*image.NRGBA, error) {
+	img, err := imaging.Open(originalPath, imaging.AutoOrientation(true))
+	if err != nil {
+		return nil, err
+	}
+	dstImage := imaging.Resize(img, 0, 150, imaging.NearestNeighbor)
+
+	return dstImage, nil
+}
+
+func SaveImageThumbnail(img *image.NRGBA, threadID, fileID int, ext string) error {
+	thumbnailPath := filepath.Join(
+		UPLOADS_DIR_PATH,
+		strconv.Itoa(threadID),
+		"t",
+		strconv.Itoa(fileID)+"."+ext,
+	)
+
+	f, err := os.Create(thumbnailPath)
+	if err != nil {
+		return err
+	}
+
+	switch ext {
+	case "png":
+		err = png.Encode(f, img)
+	case "jpeg":
+		err = jpeg.Encode(f, img, nil)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
