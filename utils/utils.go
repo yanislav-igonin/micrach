@@ -44,6 +44,17 @@ func CreateThreadFolder(postID int) error {
 		return err
 	}
 
+	originalsFolder := filepath.Join(threadDirPath, "o")
+	err = os.Mkdir(originalsFolder, 0755)
+	if err != nil {
+		return err
+	}
+	thumbnailsFolder := filepath.Join(threadDirPath, "t")
+	err = os.Mkdir(thumbnailsFolder, 0755)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

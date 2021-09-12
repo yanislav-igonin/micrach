@@ -31,9 +31,9 @@
           <div class="files-container">
             {{ range $File := $Post.Files }}
             <div class="file-container">
-              <a href="/uploads/{{$FirstPost.ID}}/{{$File.ID}}.{{$File.Ext}}" target="blank">
+              <a href="/uploads/{{$FirstPost.ID}}/o/{{$File.ID}}.{{$File.Ext}}" target="blank">
                 <img 
-                  src="/uploads/{{$FirstPost.ID}}/{{$File.ID}}.{{$File.Ext}}" 
+                  src="/uploads/{{$FirstPost.ID}}/o/{{$File.ID}}.{{$File.Ext}}" 
                   class="file"
                   alt="Uploaded picture"
                 >

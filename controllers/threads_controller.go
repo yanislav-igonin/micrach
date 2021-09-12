@@ -151,6 +151,7 @@ func CreateThread(c *gin.Context) {
 		path := filepath.Join(
 			Utils.UPLOADS_DIR_PATH,
 			strconv.Itoa(postID),
+			"o",
 			strconv.Itoa(fileID)+"."+file.Ext,
 		)
 		err = c.SaveUploadedFile(fileInRequest, path)
@@ -247,6 +248,7 @@ func UpdateThread(c *gin.Context) {
 		path := filepath.Join(
 			Utils.UPLOADS_DIR_PATH,
 			strconv.Itoa(threadID),
+			"o",
 			strconv.Itoa(fileID)+"."+file.Ext,
 		)
 		err = c.SaveUploadedFile(fileInRequest, path)
