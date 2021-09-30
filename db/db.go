@@ -19,8 +19,5 @@ func Init() {
 		log.Panicln(err)
 	}
 
-	// TODO: take from config from env var
-	Pool.Config().MaxConns = 5
-
 	log.Println("database - online")
 }
