@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	csrf "github.com/utrack/gin-csrf"
 
 	Db "micrach/db"
 	Repositories "micrach/repositories"
@@ -54,6 +55,9 @@ func GetThreads(c *gin.Context) {
 		PagesCount: pagesCount,
 		Page:       page,
 	}
+
+	csrfToken := csrf.GetToken(c)
+	c.SetCookie("csrf", csrfToken, 60, "/", "", true, true)
 	c.HTML(http.StatusOK, "index.html", data)
 }
 
@@ -74,6 +78,9 @@ func GetThread(c *gin.Context) {
 		c.HTML(http.StatusNotFound, "404.html", nil)
 		return
 	}
+
+	csrfToken := csrf.GetToken(c)
+	c.SetCookie("csrf", csrfToken, 60, "/", "", true, true)
 	c.HTML(http.StatusOK, "thread.html", thread)
 }
 
