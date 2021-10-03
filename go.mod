@@ -3,6 +3,7 @@ module micrach
 go 1.15
 
 require (
+	github.com/dchest/captcha v0.0.0-20200903113550-03f5f0333e1f
 	github.com/disintegration/imaging v1.6.2
 	github.com/gin-contrib/sessions v0.0.0-20190101140330-dc5246754963
 	github.com/gin-gonic/gin v1.7.4

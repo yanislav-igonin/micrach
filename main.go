@@ -86,6 +86,7 @@ func main() {
 	router.POST("/", Controllers.CreateThread)
 	router.GET("/:threadID", Controllers.GetThread)
 	router.POST("/:threadID", Controllers.UpdateThread)
+	router.GET("/captcha/:captchaID", Controllers.GetCaptcha)
 
 	log.Println("port", Config.App.Port, "- online")
 	log.Println("all systems nominal")

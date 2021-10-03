@@ -1,4 +1,4 @@
-package controlers
+package controllers
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"
 	csrf "github.com/utrack/gin-csrf"
 
@@ -58,6 +59,8 @@ func GetThreads(c *gin.Context) {
 
 	csrfToken := csrf.GetToken(c)
 	c.SetCookie("csrf", csrfToken, 60, "/", "", true, true)
+	captchaID := captcha.New()
+	log.Println(captchaID)
 	c.HTML(http.StatusOK, "index.html", data)
 }
 
