@@ -65,6 +65,7 @@
 
 {{ define "post-form" }}
   <div class="col col-12">
+
     {{ if eq .FirstPostID 0 }}
     <form id="postForm" action="/" method="POST" enctype="multipart/form-data">
     {{ else }}
@@ -72,13 +73,17 @@
     {{ end }}
 
       {{ if eq .FirstPostID 0 }}
-        <input class="form-control" id="postTitle" placeholder="Title" name="title">
+      <input class="form-control" id="postTitle" placeholder="Title" name="title">
       {{ end }}
+
       <textarea class="form-control" id="postText" rows="5" placeholder="Text" name="text"></textarea>
       <input class="form-control" type="file" id="postFiles" multiple name="files">
+      
+      <div class="captcha-container text-center">
+        <img src="/captcha/{{ .CaptchaID }}" alt="Captcha">
+      </div>
       <input class="form-control" type="hidden" id="postCaptcha" name="captchaId" value="{{ .CaptchaID }}">
-
-      <img src="/captcha/{{ .CaptchaID }}" alt="Captcha">
+      <input class="form-control" id="postCaptcha" placeholder="Captcha" name="captcha">
 
       <div class="row">
         {{ if ne .FirstPostID 0 }}
