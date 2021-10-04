@@ -51,17 +51,20 @@ func GetThreads(c *gin.Context) {
 		c.HTML(http.StatusNotFound, "404.html", nil)
 		return
 	}
-	data := Repositories.IndexPageData{
-		Threads:    threads,
-		PagesCount: pagesCount,
-		Page:       page,
-	}
 
 	csrfToken := csrf.GetToken(c)
 	c.SetCookie("csrf", csrfToken, 60, "/", "", true, true)
+
 	captchaID := captcha.New()
-	log.Println(captchaID)
-	c.HTML(http.StatusOK, "index.html", data)
+	htmlData := Repositories.GetThreadsHtmlData{
+		Threads:    threads,
+		PagesCount: pagesCount,
+		Page:       page,
+		FormData: Repositories.HtmlFormData{
+			CaptchaID: captchaID,
+		},
+	}
+	c.HTML(http.StatusOK, "index.html", htmlData)
 }
 
 func GetThread(c *gin.Context) {
@@ -84,7 +87,17 @@ func GetThread(c *gin.Context) {
 
 	csrfToken := csrf.GetToken(c)
 	c.SetCookie("csrf", csrfToken, 60, "/", "", true, true)
-	c.HTML(http.StatusOK, "thread.html", thread)
+
+	firstPost := thread[0]
+	captchaID := captcha.New()
+	htmlData := Repositories.GetThreadHtmlData{
+		Thread: thread,
+		FormData: Repositories.HtmlFormData{
+			FirstPostID: firstPost.ID,
+			CaptchaID:   captchaID,
+		},
+	}
+	c.HTML(http.StatusOK, "thread.html", htmlData)
 }
 
 func CreateThread(c *gin.Context) {

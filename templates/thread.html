@@ -1,4 +1,4 @@
-{{ $FirstPost:= index . 0 }}
+{{ $FirstPost:= index .Thread 0 }}
 
 <html lang="en">
 <head>
@@ -20,10 +20,10 @@
   </h1>
   
   <div class="container">
-    {{ template "post-form" $FirstPost.ID }}
+    {{ template "post-form" .FormData }}
     
     <div id="postsСontainer">
-      {{range $Post := .}}
+      {{ range $Post := .Thread }}
         <div class="post-container mb-4">
 
           {{ $filesLength := len $Post.Files }} 

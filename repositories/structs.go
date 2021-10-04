@@ -2,6 +2,10 @@ package repositories
 
 import "time"
 
+// DB Structs
+// DB Structs
+// DB Structs
+
 type Post struct {
 	ID        int       `json:"id"`
 	IsParent  bool      `json:"-"`
@@ -24,8 +28,23 @@ type File struct {
 	Size      int       `json:"size"`
 }
 
-type IndexPageData struct {
+// HTML Templates Structs
+// HTML Templates Structs
+// HTML Templates Structs
+
+type HtmlFormData struct {
+	FirstPostID int
+	CaptchaID   string
+}
+
+type GetThreadHtmlData struct {
+	Thread   []Post
+	FormData HtmlFormData
+}
+
+type GetThreadsHtmlData struct {
 	Threads    []Post
 	PagesCount int
 	Page       int
+	FormData   HtmlFormData
 }

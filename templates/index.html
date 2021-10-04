@@ -13,7 +13,7 @@
   <h1 class="display-1 text-center">Welcome to Micrach</h1>
   
   <div class="container">
-    {{ template "post-form" }}
+    {{ template "post-form" .FormData }}
     
     <div id="" class="row row-cols-auto gy-4 mb-4">
       {{ range $Post := .Threads }}
