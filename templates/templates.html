@@ -76,6 +76,7 @@
       {{ end }}
       <textarea class="form-control" id="postText" rows="5" placeholder="Text" name="text"></textarea>
       <input class="form-control" type="file" id="postFiles" multiple name="files">
+      <input class="form-control" type="hidden" id="postCaptcha" name="captchaId" value="{{ .CaptchaID }}">
 
       <img src="/captcha/{{ .CaptchaID }}" alt="Captcha">
 
