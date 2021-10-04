@@ -108,6 +108,15 @@ func CreateThread(c *gin.Context) {
 		return
 	}
 
+	captchaID := form.Value["captchaId"][0]
+	captchaString := form.Value["captcha"][0]
+	isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
+	if !isCaptchaValid {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "400.html", nil)
+		return
+	}
+
 	// TODO: dat shit crashes if no fields in request
 	text := form.Value["text"][0]
 	title := form.Value["title"][0]
@@ -216,6 +225,15 @@ func UpdateThread(c *gin.Context) {
 	if err != nil {
 		log.Println("error:", err)
 		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		return
+	}
+
+	captchaID := form.Value["captchaId"][0]
+	captchaString := form.Value["captcha"][0]
+	isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
+	if !isCaptchaValid {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "400.html", nil)
 		return
 	}
 
