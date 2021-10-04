@@ -77,6 +77,8 @@
       <textarea class="form-control" id="postText" rows="5" placeholder="Text" name="text"></textarea>
       <input class="form-control" type="file" id="postFiles" multiple name="files">
 
+      <img src="/captcha/{{ .CaptchaID }}" alt="Captcha">
+
       <div class="row">
         {{ if ne .FirstPostID 0 }}
         <div class="col">
