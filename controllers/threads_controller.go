@@ -105,8 +105,10 @@ func CreateThread(c *gin.Context) {
 	captchaString := form.Value["captcha"][0]
 	isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
 	if !isCaptchaValid {
-		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "400.html", nil)
+		errorHtmlData := Repositories.BadRequestHtmlData{
+			Message: Repositories.InvalidCaptchaErrorMessage,
+		}
+		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
 		return
 	}
 
@@ -115,7 +117,10 @@ func CreateThread(c *gin.Context) {
 	title := form.Value["title"][0]
 	isPostValid := Utils.ValidatePost(title, text)
 	if !isPostValid {
-		c.HTML(http.StatusBadRequest, "400.html", nil)
+		errorHtmlData := Repositories.BadRequestHtmlData{
+			Message: Repositories.InvalidTitleOrTextErrorMessage,
+		}
+		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
 		return
 	}
 
@@ -225,17 +230,21 @@ func UpdateThread(c *gin.Context) {
 	captchaString := form.Value["captcha"][0]
 	isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
 	if !isCaptchaValid {
-		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "400.html", nil)
+		errorHtmlData := Repositories.BadRequestHtmlData{
+			Message: Repositories.InvalidCaptchaErrorMessage,
+		}
+		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
 		return
 	}
 
 	// TODO: dat shit crashes if no fields in request
 	text := form.Value["text"][0]
-	// title := form.Value["title"][0]
 	isPostValid := Utils.ValidatePost("", text)
 	if !isPostValid {
-		c.HTML(http.StatusBadRequest, "400.html", nil)
+		errorHtmlData := Repositories.BadRequestHtmlData{
+			Message: Repositories.InvalidTitleOrTextErrorMessage,
+		}
+		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
 		return
 	}
 

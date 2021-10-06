@@ -32,19 +32,30 @@ type File struct {
 // HTML Templates Structs
 // HTML Templates Structs
 
+// post-form.html
 type HtmlFormData struct {
 	FirstPostID int
 	CaptchaID   string
 }
 
+// thread.html
 type GetThreadHtmlData struct {
 	Thread   []Post
 	FormData HtmlFormData
 }
 
+// index.html
 type GetThreadsHtmlData struct {
 	Threads    []Post
 	PagesCount int
 	Page       int
 	FormData   HtmlFormData
 }
+
+// 400.html
+type BadRequestHtmlData struct {
+	Message string
+}
+
+var InvalidTitleOrTextErrorMessage = "TITLE OR TEXT SHOULD NOT BE EMPTY"
+var InvalidCaptchaErrorMessage = "INVALID CAPTCHA"
