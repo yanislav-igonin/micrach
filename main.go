@@ -12,10 +12,6 @@ import (
 	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
 	memory "github.com/ulule/limiter/v3/drivers/store/memory"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
-	csrf "github.com/utrack/gin-csrf"
-
 	Config "micrach/config"
 	Controllers "micrach/controllers"
 	Db "micrach/db"
@@ -47,23 +43,6 @@ func main() {
 
 	router := gin.New()
 	router.Use(gin.Recovery())
-
-	sessionStore := cookie.NewStore([]byte("secret"))
-	router.Use(sessions.Sessions("mysession", sessionStore))
-	router.Use(csrf.Middleware(csrf.Options{
-		Secret: "secret123",
-		TokenGetter: func(c *gin.Context) string {
-			token, err := c.Cookie("csrf")
-			if err != nil {
-				return ""
-			}
-			return token
-		},
-		ErrorFunc: func(c *gin.Context) {
-			c.String(400, "CSRF token mismatch")
-			c.Abort()
-		},
-	}))
 
 	router.SetFuncMap(template.FuncMap{
 		"Iterate": func(count int) []int {

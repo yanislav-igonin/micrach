@@ -11,7 +11,6 @@ import (
 
 	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"
-	csrf "github.com/utrack/gin-csrf"
 
 	Db "micrach/db"
 	Repositories "micrach/repositories"
@@ -52,9 +51,6 @@ func GetThreads(c *gin.Context) {
 		return
 	}
 
-	csrfToken := csrf.GetToken(c)
-	c.SetCookie("csrf", csrfToken, 60, "/", "", true, true)
-
 	captchaID := captcha.New()
 	htmlData := Repositories.GetThreadsHtmlData{
 		Threads:    threads,
@@ -84,9 +80,6 @@ func GetThread(c *gin.Context) {
 		c.HTML(http.StatusNotFound, "404.html", nil)
 		return
 	}
-
-	csrfToken := csrf.GetToken(c)
-	c.SetCookie("csrf", csrfToken, 60, "/", "", true, true)
 
 	firstPost := thread[0]
 	captchaID := captcha.New()
