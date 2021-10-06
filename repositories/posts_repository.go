@@ -187,22 +187,20 @@ func (r *PostsRepository) CreateInTx(tx pgx.Tx, p Post) (int, error) {
 		return 0, err
 	}
 
-	// TODO: fix dat shit
 	// updating parent post `updated_at`
-	// if !p.IsParent {
-	// 	sql = `
-	// 		UPDATE posts
-	// 		SET updated_at = now()
-	// 		WHERE id = $1
-	// 	`
-	// 	rows, err := tx.Query(context.TODO(), sql, p.ParentID)
-	// 	if err != nil {
-	// 		return 0, err
-	// 	}
-	// 	if rows.Err() != nil {
-	// 		return 0, err
-	// 	}
-	// }
+	if !p.IsParent {
+		sql = `
+			UPDATE posts
+			SET updated_at = now()
+			WHERE id = $1
+		`
+		row := tx.QueryRow(context.TODO(), sql, p.ParentID)
+		var msg string
+		err = row.Scan(&msg)
+		if err != nil && err != pgx.ErrNoRows {
+			return 0, err
+		}
+	}
 
 	return createdPost.ID, nil
 }
