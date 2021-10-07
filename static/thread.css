@@ -1,0 +1,6 @@
+.thread-title-link {
+  text-decoration: none;
+}
+.thread-title-link:hover {
+  text-decoration: underline;
+}

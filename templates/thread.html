@@ -4,16 +4,14 @@
 <head>
   {{ template "static" }}
   {{ template "meta-tags-dynamic" $FirstPost }}
-  <link 
-    href="/static/post.css" 
-    rel="stylesheet" 
-  >
+  <link href="/static/thread.css" rel="stylesheet" >
+  <link href="/static/post.css" rel="stylesheet" >
 </head>
 
 <body>
-  <a href="/">
+  <a href="/" class="thread-title-link">
     <h1 class="display-1 text-center">
-      ↵
+      ⤶
       {{ if ne $FirstPost.Title "" }}
         {{$FirstPost.Title}}
       {{ else }}
