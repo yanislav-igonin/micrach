@@ -11,13 +11,16 @@
 </head>
 
 <body>
-  <h1 class="display-1 text-center">
-    {{ if ne $FirstPost.Title "" }}
-      {{$FirstPost.Title}}
-    {{ else }}
-      Welcome to Micrach
-    {{ end }}
-  </h1>
+  <a href="/">
+    <h1 class="display-1 text-center">
+      ↰
+      {{ if ne $FirstPost.Title "" }}
+        {{$FirstPost.Title}}
+      {{ else }}
+        Welcome to Micrach
+      {{ end }}
+    </h1>
+  </a>
   
   <div class="container">
     {{ template "post-form" .FormData }}
