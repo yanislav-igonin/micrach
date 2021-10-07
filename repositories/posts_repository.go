@@ -188,7 +188,7 @@ func (r *PostsRepository) CreateInTx(tx pgx.Tx, p Post) (int, error) {
 	}
 
 	// updating parent post `updated_at`
-	if !p.IsParent {
+	if !p.IsParent && !p.IsSage {
 		sql = `
 			UPDATE posts
 			SET updated_at = now()
@@ -197,6 +197,8 @@ func (r *PostsRepository) CreateInTx(tx pgx.Tx, p Post) (int, error) {
 		row := tx.QueryRow(context.TODO(), sql, p.ParentID)
 		var msg string
 		err = row.Scan(&msg)
+		// UPDATE always return `no rows`
+		// so we need to check this condition
 		if err != nil && err != pgx.ErrNoRows {
 			return 0, err
 		}

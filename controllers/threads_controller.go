@@ -254,7 +254,7 @@ func UpdateThread(c *gin.Context) {
 	if len(isSageField) != 0 {
 		isSageString = isSageField[0]
 	}
-	isSage := isSageString == "true"
+	isSage := isSageString == "on"
 
 	conn, err := Db.Pool.Acquire(context.TODO())
 	if err != nil {
