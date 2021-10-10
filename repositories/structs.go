@@ -59,4 +59,5 @@ type BadRequestHtmlData struct {
 
 const InvalidTitleOrTextErrorMessage = "TITLE OR TEXT SHOULD NOT BE EMPTY"
 const InvalidCaptchaErrorMessage = "INVALID CAPTCHA"
-const InvalidFileSizeMessage = "FILE SIZE EXCIDED (3MB PER FILE)"
+const InvalidFileSizeErrorMessage = "FILE SIZE EXCIDED (3MB PER FILE)"
+const InvalidFileExtErrorMessage = "AVALIABLE FILE EXT: PNG, JPG"

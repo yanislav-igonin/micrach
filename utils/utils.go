@@ -15,6 +15,9 @@ import (
 
 const UPLOADS_DIR_PATH = "uploads"
 const FILE_SIZE_IN_BYTES = 3145728 // 3MB
+type stringSlice []string
+
+var PERMITTED_FILE_EXTS = stringSlice{"image/jpeg", "image/png"} // 3MB
 
 // Check dir existence.
 func CheckIfFolderExists(path string) bool {
@@ -82,9 +85,25 @@ func CheckFilesSize(files []*multipart.FileHeader) bool {
 	return true
 }
 
-// func CheckFilesExt(){
+func CheckFilesExt(files []*multipart.FileHeader) bool {
+	for _, file := range files {
+		ext := file.Header.Get("Content-Type")
+		if !PERMITTED_FILE_EXTS.includes(ext) {
+			return false
+		}
+	}
 
-// }
+	return true
+}
+
+func (ss stringSlice) includes(toCheck string) bool {
+	for _, s := range ss {
+		if toCheck == s {
+			return true
+		}
+	}
+	return false
+}
 
 func MakeImageThumbnail(originalPath, ext string, threadID, fileID int) (*image.NRGBA, error) {
 	img, err := imaging.Open(originalPath, imaging.AutoOrientation(true))

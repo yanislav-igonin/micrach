@@ -125,10 +125,18 @@ func CreateThread(c *gin.Context) {
 	}
 
 	filesInRequest := form.File["files"]
+	isFilesExtsValid := Utils.CheckFilesExt(filesInRequest)
+	if !isFilesExtsValid {
+		errorHtmlData := Repositories.BadRequestHtmlData{
+			Message: Repositories.InvalidFileExtErrorMessage,
+		}
+		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
+		return
+	}
 	isFilesSizesNotToBig := Utils.CheckFilesSize(filesInRequest)
 	if !isFilesSizesNotToBig {
 		errorHtmlData := Repositories.BadRequestHtmlData{
-			Message: Repositories.InvalidFileSizeMessage,
+			Message: Repositories.InvalidFileSizeErrorMessage,
 		}
 		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
 		return
@@ -257,10 +265,18 @@ func UpdateThread(c *gin.Context) {
 	}
 
 	filesInRequest := form.File["files"]
+	isFilesExtsValid := Utils.CheckFilesExt(filesInRequest)
+	if !isFilesExtsValid {
+		errorHtmlData := Repositories.BadRequestHtmlData{
+			Message: Repositories.InvalidFileExtErrorMessage,
+		}
+		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
+		return
+	}
 	isFilesSizesNotToBig := Utils.CheckFilesSize(filesInRequest)
 	if !isFilesSizesNotToBig {
 		errorHtmlData := Repositories.BadRequestHtmlData{
-			Message: Repositories.InvalidFileSizeMessage,
+			Message: Repositories.InvalidFileSizeErrorMessage,
 		}
 		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
 		return
