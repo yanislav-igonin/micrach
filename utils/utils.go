@@ -13,8 +13,8 @@ import (
 	"github.com/disintegration/imaging"
 )
 
-var UPLOADS_DIR_PATH = "uploads"
-var FILE_SIZE_IN_BYTES = 3145728 // 3MB
+const UPLOADS_DIR_PATH = "uploads"
+const FILE_SIZE_IN_BYTES = 3145728 // 3MB
 
 // Check dir existence.
 func CheckIfFolderExists(path string) bool {

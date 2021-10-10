@@ -57,6 +57,6 @@ type BadRequestHtmlData struct {
 	Message string
 }
 
-var InvalidTitleOrTextErrorMessage = "TITLE OR TEXT SHOULD NOT BE EMPTY"
-var InvalidCaptchaErrorMessage = "INVALID CAPTCHA"
-var InvalidFileSizeMessage = "FILE SIZE EXCIDED (3MB PER FILE)"
+const InvalidTitleOrTextErrorMessage = "TITLE OR TEXT SHOULD NOT BE EMPTY"
+const InvalidCaptchaErrorMessage = "INVALID CAPTCHA"
+const InvalidFileSizeMessage = "FILE SIZE EXCIDED (3MB PER FILE)"
