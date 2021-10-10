@@ -125,6 +125,14 @@ func CreateThread(c *gin.Context) {
 	}
 
 	filesInRequest := form.File["files"]
+	isFilesSizesNotToBig := Utils.CheckFilesSize(filesInRequest)
+	if !isFilesSizesNotToBig {
+		errorHtmlData := Repositories.BadRequestHtmlData{
+			Message: Repositories.InvalidFileSizeMessage,
+		}
+		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
+		return
+	}
 
 	conn, err := Db.Pool.Acquire(context.TODO())
 	if err != nil {
@@ -249,6 +257,15 @@ func UpdateThread(c *gin.Context) {
 	}
 
 	filesInRequest := form.File["files"]
+	isFilesSizesNotToBig := Utils.CheckFilesSize(filesInRequest)
+	if !isFilesSizesNotToBig {
+		errorHtmlData := Repositories.BadRequestHtmlData{
+			Message: Repositories.InvalidFileSizeMessage,
+		}
+		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
+		return
+	}
+
 	isSageField := form.Value["sage"]
 	var isSageString string
 	if len(isSageField) != 0 {

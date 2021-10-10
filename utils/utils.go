@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/jpeg"
 	"image/png"
+	"mime/multipart"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 )
 
 var UPLOADS_DIR_PATH = "uploads"
+var FILE_SIZE_IN_BYTES = 3145728 // 3MB
 
 // Check dir existence.
 func CheckIfFolderExists(path string) bool {
@@ -63,11 +65,26 @@ func CreateThreadFolder(postID int) error {
 	return nil
 }
 
+// TODO: add files length check
 func ValidatePost(title, text string) bool {
 	return (title == "" && text != "") ||
 		(title != "" && text == "") ||
 		(title != "" && text != "")
 }
+
+func CheckFilesSize(files []*multipart.FileHeader) bool {
+	for _, file := range files {
+		if file.Size > int64(FILE_SIZE_IN_BYTES) {
+			return false
+		}
+	}
+
+	return true
+}
+
+// func CheckFilesExt(){
+
+// }
 
 func MakeImageThumbnail(originalPath, ext string, threadID, fileID int) (*image.NRGBA, error) {
 	img, err := imaging.Open(originalPath, imaging.AutoOrientation(true))
