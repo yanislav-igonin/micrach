@@ -5,6 +5,7 @@ import (
 	"image"
 	"image/jpeg"
 	"image/png"
+	Repositories "micrach/repositories"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -13,10 +14,10 @@ import (
 	"github.com/disintegration/imaging"
 )
 
-const UPLOADS_DIR_PATH = "uploads"
-const FILE_SIZE_IN_BYTES = 3145728 // 3MB
 type stringSlice []string
 
+const UPLOADS_DIR_PATH = "uploads"
+const FILE_SIZE_IN_BYTES = 3145728                               // 3MB
 var PERMITTED_FILE_EXTS = stringSlice{"image/jpeg", "image/png"} // 3MB
 
 // Check dir existence.
@@ -68,11 +69,34 @@ func CreateThreadFolder(postID int) error {
 	return nil
 }
 
-// TODO: add files length check
-func ValidatePost(title, text string) bool {
-	return (title == "" && text != "") ||
-		(title != "" && text == "") ||
-		(title != "" && text != "")
+func ValidatePost(title, text string, files []*multipart.FileHeader) string {
+	if text == "" && len(files) == 0 {
+		return Repositories.InvalidTextOrFilesErrorMessage
+	}
+
+	if len(title) > 100 {
+		return Repositories.InvalidTitleLengthErrorMessage
+	}
+
+	if len(text) > 1000 {
+		return Repositories.InvalidTextLengthErrorMessage
+	}
+
+	if len(files) > 4 {
+		return Repositories.InvalidFilesLengthErrorMessage
+	}
+
+	isFilesExtsValid := CheckFilesExt(files)
+	if !isFilesExtsValid {
+		return Repositories.InvalidFileExtErrorMessage
+	}
+
+	isFilesSizesNotToBig := CheckFilesSize(files)
+	if !isFilesSizesNotToBig {
+		return Repositories.InvalidFileSizeErrorMessage
+	}
+
+	return ""
 }
 
 func CheckFilesSize(files []*multipart.FileHeader) bool {

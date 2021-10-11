@@ -115,28 +115,11 @@ func CreateThread(c *gin.Context) {
 	// TODO: dat shit crashes if no fields in request
 	text := form.Value["text"][0]
 	title := form.Value["title"][0]
-	isPostValid := Utils.ValidatePost(title, text)
-	if !isPostValid {
-		errorHtmlData := Repositories.BadRequestHtmlData{
-			Message: Repositories.InvalidTitleOrTextErrorMessage,
-		}
-		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
-		return
-	}
-
 	filesInRequest := form.File["files"]
-	isFilesExtsValid := Utils.CheckFilesExt(filesInRequest)
-	if !isFilesExtsValid {
+	validationErrorMessage := Utils.ValidatePost(title, text, filesInRequest)
+	if validationErrorMessage != "" {
 		errorHtmlData := Repositories.BadRequestHtmlData{
-			Message: Repositories.InvalidFileExtErrorMessage,
-		}
-		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
-		return
-	}
-	isFilesSizesNotToBig := Utils.CheckFilesSize(filesInRequest)
-	if !isFilesSizesNotToBig {
-		errorHtmlData := Repositories.BadRequestHtmlData{
-			Message: Repositories.InvalidFileSizeErrorMessage,
+			Message: validationErrorMessage,
 		}
 		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
 		return
@@ -255,28 +238,11 @@ func UpdateThread(c *gin.Context) {
 
 	// TODO: dat shit crashes if no fields in request
 	text := form.Value["text"][0]
-	isPostValid := Utils.ValidatePost("", text)
-	if !isPostValid {
-		errorHtmlData := Repositories.BadRequestHtmlData{
-			Message: Repositories.InvalidTitleOrTextErrorMessage,
-		}
-		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
-		return
-	}
-
 	filesInRequest := form.File["files"]
-	isFilesExtsValid := Utils.CheckFilesExt(filesInRequest)
-	if !isFilesExtsValid {
+	validationErrorMessage := Utils.ValidatePost("", text, filesInRequest)
+	if validationErrorMessage != "" {
 		errorHtmlData := Repositories.BadRequestHtmlData{
-			Message: Repositories.InvalidFileExtErrorMessage,
-		}
-		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
-		return
-	}
-	isFilesSizesNotToBig := Utils.CheckFilesSize(filesInRequest)
-	if !isFilesSizesNotToBig {
-		errorHtmlData := Repositories.BadRequestHtmlData{
-			Message: Repositories.InvalidFileSizeErrorMessage,
+			Message: validationErrorMessage,
 		}
 		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
 		return

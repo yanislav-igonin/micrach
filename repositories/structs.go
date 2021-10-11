@@ -57,7 +57,10 @@ type BadRequestHtmlData struct {
 	Message string
 }
 
-const InvalidTitleOrTextErrorMessage = "TITLE OR TEXT SHOULD NOT BE EMPTY"
 const InvalidCaptchaErrorMessage = "INVALID CAPTCHA"
+const InvalidTextOrFilesErrorMessage = "TEXT OR FILES SHOULD NOT BE EMPTY"
+const InvalidTitleLengthErrorMessage = "TITLE SHOULD NOT EXCEED 100 CHARS"
+const InvalidTextLengthErrorMessage = "TEXT SHOULD NOT EXCEED 1000 CHARS"
+const InvalidFilesLengthErrorMessage = "MAXIMUM 4 FILES CAN BE UPLOADED"
 const InvalidFileSizeErrorMessage = "FILE SIZE EXCIDED (3MB PER FILE)"
 const InvalidFileExtErrorMessage = "AVALIABLE FILE EXT: PNG, JPG"
