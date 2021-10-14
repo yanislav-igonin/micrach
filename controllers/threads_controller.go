@@ -331,5 +331,5 @@ func UpdateThread(c *gin.Context) {
 
 	tx.Commit(context.TODO())
 
-	c.Redirect(http.StatusFound, "/"+strconv.Itoa(threadID))
+	c.Header("Refresh", "0")
 }
