@@ -52,10 +52,12 @@ func getPost(id int, pid *int) Post {
 		Title:     randSeq(rand.Intn(100)),
 		Text:      randSeq(rand.Intn(100)),
 		IsSage:    false,
-		Files: []File{
-			getFile(2, id, "https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png"),
-			getFile(1, id, "https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png"),
-		},
+		// Maybe somewhen else I'll add url field for files
+		// Files: []File{
+		// 	getFile(2, id, "https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png"),
+		// 	getFile(1, id, "https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png"),
+		// },
+		Files:     []File{},
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
