@@ -1,10 +1,8 @@
 .error-image-link {
-  max-width: 200px;
   max-height: 200px;
   transition: 0.2s;
 }
 .error-image-link:hover {
-  max-width: 300px;
   max-height: 300px;
 }
 
