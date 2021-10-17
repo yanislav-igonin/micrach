@@ -31,9 +31,3 @@ CREATE TABLE files
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
   FOREIGN KEY (post_id) REFERENCES posts (id)
 );
-
-
-
--- DOWN
-DROP TABLE files;
-DROP TABLE posts;
