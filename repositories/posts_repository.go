@@ -17,7 +17,7 @@ func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
 		FROM posts
 		WHERE
 			is_parent = true
-			AND is_deleted = false
+			AND is_deleted != true
 		ORDER BY updated_at DESC
 		OFFSET $1
 		LIMIT $2
@@ -65,7 +65,7 @@ func (r *PostsRepository) GetCount() (int, error) {
 		FROM posts
 		WHERE 
 			is_parent = true
-			AND is_deleted = false
+			AND is_deleted != true
 	`
 
 	row := Db.Pool.QueryRow(context.TODO(), sql)
@@ -116,7 +116,7 @@ func (r *PostsRepository) GetThreadByPostID(ID int) ([]Post, error) {
 		FROM posts
 		WHERE
 				(id = $1 AND is_parent = true) OR parent_id = $1
-				AND is_deleted = false
+				AND is_deleted != true
 		ORDER BY created_at ASC
 	`
 
