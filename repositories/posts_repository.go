@@ -115,8 +115,8 @@ func (r *PostsRepository) GetThreadByPostID(ID int) ([]Post, error) {
 			is_parent
 		FROM posts
 		WHERE
-				(id = $1 AND is_parent = true) OR parent_id = $1
-				AND is_deleted != true
+				(id = $1 AND is_parent = true AND is_deleted != true)
+				OR (parent_id = $1 AND is_deleted != true)
 		ORDER BY created_at ASC
 	`
 
