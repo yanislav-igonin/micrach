@@ -1,4 +1,13 @@
 {{ define "meta-tags-dynamic" }}
+
+{{ $SeoImageUrl := "" }}
+{{ if .Files }}
+  {{ $FirstFile := index .Files 0 }}ы
+  {{ $SeoImageUrl = printf "https://micrach.igonin.dev/uploads/%d/t/%d.%s" .ID $FirstFile.ID $FirstFile.Ext }}
+{{ else }}
+  {{ $SeoImageUrl = "https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png" }}
+{{ end }}
+
 <title>{{ .Title }}</title>
 <!-- Primary Meta Tags -->
 <meta charset="UTF-8"/>
@@ -11,12 +20,12 @@
 <meta property="og:url" content="https://micrach.igonin.dev/{{ .ID }}">
 <meta property="og:title" content="{{ .Title }}">
 <meta property="og:description" content="{{ .Text }}">
-<meta property="og:image" content="https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png">
+<meta property="og:image" content="{{ $SeoImageUrl }}">
 
 <!-- Twitter -->
-<meta property="twitter:card" content="https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png">
+<meta property="twitter:card" content="{{ $SeoImageUrl }}">
 <meta property="twitter:url" content="https://micrach.igonin.dev/{{ .ID }}">
 <meta property="twitter:title" content="{{ .Title }}">
 <meta property="twitter:description" content="{{ .Text }}">
-<meta property="twitter:image" content="https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png">
+<meta property="twitter:image" content="{{ $SeoImageUrl }}">
 {{ end }}
