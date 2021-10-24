@@ -26,6 +26,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    if: github.ref == 'refs/heads/master'
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -50,6 +52,8 @@ jobs:
     needs: release
 
     runs-on: ubuntu-latest
+    
+    if: github.ref == 'refs/heads/master'
 
     steps:
     - name: Deploy
