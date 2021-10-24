@@ -2,7 +2,7 @@
 
 {{ $SeoImageUrl := "" }}
 {{ if .Files }}
-  {{ $FirstFile := index .Files 0 }}ы
+  {{ $FirstFile := index .Files 0 }}
   {{ $SeoImageUrl = printf "https://micrach.igonin.dev/uploads/%d/t/%d.%s" .ID $FirstFile.ID $FirstFile.Ext }}
 {{ else }}
   {{ $SeoImageUrl = "https://memepedia.ru/wp-content/uploads/2018/03/ebanyy-rot-etogo-kazino.png" }}
