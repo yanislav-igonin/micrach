@@ -1,5 +1,5 @@
 name: Push
-
+# TODO: Need to be changed into separate configs after
 on: [push, release]
 
 jobs:
@@ -26,6 +26,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # TODO: Need to be removed after separate configs are made
+    if: github.ref == 'refs/heads/master'
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -50,6 +53,9 @@ jobs:
     needs: release
 
     runs-on: ubuntu-latest
+
+    # TODO: Need to be removed after separate configs are made
+    if: github.ref == 'refs/heads/master'
 
     steps:
     - name: Deploy
