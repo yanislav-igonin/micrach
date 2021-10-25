@@ -19,7 +19,7 @@
         <img src="/captcha/{{ .CaptchaID }}" alt="Captcha">
       </div>
       <input class="form-control" type="hidden" name="captchaId" value="{{ .CaptchaID }}">
-      <input class="form-control" id="postCaptcha" placeholder="Captcha" name="captcha">
+      <input class="form-control" id="postCaptcha" type="tel" pattern="\d+" placeholder="Captcha" name="captcha">
 
       <div class="row">
         {{ if ne .FirstPostID 0 }}
