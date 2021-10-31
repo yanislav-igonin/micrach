@@ -1,5 +1,3 @@
--- UP
--- Posts
 CREATE TABLE posts
 (
   id SERIAL NOT NULL,
@@ -19,8 +17,6 @@ CREATE TABLE posts
   PRIMARY KEY (id)
 );
 
-
--- Files
 CREATE TABLE files
 (
   id SERIAL PRIMARY KEY,
