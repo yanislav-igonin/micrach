@@ -1,2 +1,2 @@
 ALTER TABLE posts
-ADD is_archived BOOLEAN DEFAULT false;
+ADD COLUMN is_archived BOOLEAN DEFAULT false;
