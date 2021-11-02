@@ -101,17 +101,6 @@ func CreateThread(c *gin.Context) {
 		return
 	}
 
-	captchaID := form.Value["captchaId"][0]
-	captchaString := form.Value["captcha"][0]
-	isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
-	if !isCaptchaValid {
-		errorHtmlData := Repositories.BadRequestHtmlData{
-			Message: Repositories.InvalidCaptchaErrorMessage,
-		}
-		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
-		return
-	}
-
 	// TODO: dat shit crashes if no fields in request
 	text := form.Value["text"][0]
 	title := form.Value["title"][0]
@@ -120,6 +109,17 @@ func CreateThread(c *gin.Context) {
 	if validationErrorMessage != "" {
 		errorHtmlData := Repositories.BadRequestHtmlData{
 			Message: validationErrorMessage,
+		}
+		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
+		return
+	}
+
+	captchaID := form.Value["captchaId"][0]
+	captchaString := form.Value["captcha"][0]
+	isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
+	if !isCaptchaValid {
+		errorHtmlData := Repositories.BadRequestHtmlData{
+			Message: Repositories.InvalidCaptchaErrorMessage,
 		}
 		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
 		return
@@ -225,17 +225,6 @@ func UpdateThread(c *gin.Context) {
 		return
 	}
 
-	captchaID := form.Value["captchaId"][0]
-	captchaString := form.Value["captcha"][0]
-	isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
-	if !isCaptchaValid {
-		errorHtmlData := Repositories.BadRequestHtmlData{
-			Message: Repositories.InvalidCaptchaErrorMessage,
-		}
-		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
-		return
-	}
-
 	// TODO: dat shit crashes if no fields in request
 	text := form.Value["text"][0]
 	filesInRequest := form.File["files"]
@@ -243,6 +232,17 @@ func UpdateThread(c *gin.Context) {
 	if validationErrorMessage != "" {
 		errorHtmlData := Repositories.BadRequestHtmlData{
 			Message: validationErrorMessage,
+		}
+		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
+		return
+	}
+
+	captchaID := form.Value["captchaId"][0]
+	captchaString := form.Value["captcha"][0]
+	isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
+	if !isCaptchaValid {
+		errorHtmlData := Repositories.BadRequestHtmlData{
+			Message: Repositories.InvalidCaptchaErrorMessage,
 		}
 		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
 		return
