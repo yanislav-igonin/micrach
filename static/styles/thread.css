@@ -4,3 +4,7 @@
 .thread-title-link:hover {
   text-decoration: underline;
 }
+
+.thread-title {
+  overflow-wrap: break-word;
+}
