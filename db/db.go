@@ -23,15 +23,5 @@ func Init() {
 }
 
 func Migrate() {
-	// m, err := migrate.New("file://migrations", Config.Db.Url)
-	// if err != nil {
-	// 	log.Panicln(err)
-	// }
-	// err = m.Up()
-	// if err != nil && err != migrate.ErrNoChange {
-	// 	log.Panicln(err)
-	// }
-	// m.Close()
-	// TODO: check another libraries
 	log.Println("database migrations - online")
 }
