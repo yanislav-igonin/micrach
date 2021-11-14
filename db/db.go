@@ -3,8 +3,11 @@ package db
 import (
 	"context"
 	"log"
+	"path/filepath"
+	"strings"
 
 	Config "micrach/config"
+	Files "micrach/files"
 
 	"github.com/jackc/pgx/v4/pgxpool"
 )
@@ -23,5 +26,14 @@ func Init() {
 }
 
 func Migrate() {
+	migrations := Files.GetFullFilePathsInFolder("migrations")
+	log.Println(migrations)
+	for _, m := range migrations {
+		filename := filepath.Base(m)
+		splitted := strings.Split(filename, "-")
+		id, name := splitted[0], splitted[1]
+		log.Println(id, name)
+		log.Println(Files.ReadFileText(m))
+	}
 	log.Println("database migrations - online")
 }
