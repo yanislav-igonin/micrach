@@ -42,6 +42,7 @@ func Migrate() {
 		if err != nil {
 			log.Panicln(err)
 		}
+		// Get name without extension
 		name := strings.Split(splitted[1], ".")[0]
 
 		if _, ok := dbMigrations[id]; !ok {
