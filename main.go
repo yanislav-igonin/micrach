@@ -22,6 +22,7 @@ import (
 func main() {
 	Config.Init()
 	Db.Init()
+	Db.Migrate()
 	defer Db.Pool.Close()
 	gin.SetMode(Config.App.Env)
 	if Config.App.SeedDb {

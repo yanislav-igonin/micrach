@@ -1,5 +1,3 @@
--- UP
--- Posts
 CREATE TABLE posts
 (
   id SERIAL NOT NULL,
@@ -19,8 +17,6 @@ CREATE TABLE posts
   PRIMARY KEY (id)
 );
 
-
--- Files
 CREATE TABLE files
 (
   id SERIAL PRIMARY KEY,
@@ -31,3 +27,10 @@ CREATE TABLE files
   created_at TIMESTAMP DEFAULT NOW() NOT NULL,
   FOREIGN KEY (post_id) REFERENCES posts (id)
 );
+
+CREATE TABLE migrations
+(
+  id INT NOT NULL,
+  name VARCHAR NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL
+)
