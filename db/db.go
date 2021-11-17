@@ -45,8 +45,9 @@ func Migrate() {
 		// Get name without extension
 		name := strings.Split(splitted[1], ".")[0]
 
-		if _, ok := dbMigrations[id]; !ok {
-			_, err = Pool.Query(context.TODO(), Files.ReadFileText(m))
+		_, isMigrationInDb := dbMigrations[id]
+		if !isMigrationInDb {
+			_, err := Pool.Exec(context.TODO(), Files.ReadFileText(m))
 			if err != nil {
 				log.Panicln(err)
 			}
@@ -56,6 +57,7 @@ func Migrate() {
 			if err != nil {
 				log.Panicln(err)
 			}
+			log.Println("database migration - " + name + " - online")
 		}
 	}
 
