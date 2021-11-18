@@ -66,6 +66,7 @@ func (r *PostsRepository) GetCount() (int, error) {
 		WHERE 
 			is_parent = true
 			AND is_deleted != true
+			AND is_archived != true
 	`
 
 	row := Db.Pool.QueryRow(context.TODO(), sql)
