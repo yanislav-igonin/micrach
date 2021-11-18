@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 )
@@ -11,6 +12,7 @@ type AppConfig struct {
 	Port                 int
 	SeedDb               bool
 	IsRateLimiterEnabled bool
+	ThreadsMaxCount      int
 }
 
 type DbConfig struct {
@@ -29,7 +31,7 @@ func getAppConfig() AppConfig {
 	}
 	port, err := strconv.Atoi(portString)
 	if err != nil {
-		panic(fmt.Sprintf("Could not parse %s to int", portString))
+		log.Panicln(fmt.Sprintf("Could not parse %s to int", portString))
 	}
 
 	seedDbString := os.Getenv("SEED_DB")
@@ -38,11 +40,18 @@ func getAppConfig() AppConfig {
 	isRateLimiterEnabledString := os.Getenv("IS_RATE_LIMITER_ENABLED")
 	isRateLimiterEnabled := isRateLimiterEnabledString == "true"
 
+	threadsMaxCountString := os.Getenv("THREADS_MAX_COUNT")
+	threadsMaxCount, err := strconv.Atoi(threadsMaxCountString)
+	if err != nil {
+		log.Panicln(fmt.Sprintf("Could not parse %s to int", threadsMaxCountString))
+	}
+
 	return AppConfig{
 		Env:                  env,
 		Port:                 port,
 		SeedDb:               seedDb,
 		IsRateLimiterEnabled: isRateLimiterEnabled,
+		ThreadsMaxCount:      threadsMaxCount,
 	}
 }
 
