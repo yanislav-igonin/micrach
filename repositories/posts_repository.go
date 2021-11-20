@@ -2,7 +2,9 @@ package repositories
 
 import (
 	"context"
+	Config "micrach/config"
 	Db "micrach/db"
+	"time"
 
 	"github.com/jackc/pgx/v4"
 )
@@ -66,6 +68,7 @@ func (r *PostsRepository) GetCount() (int, error) {
 		WHERE 
 			is_parent = true
 			AND is_deleted != true
+			AND is_archived != true
 	`
 
 	row := Db.Pool.QueryRow(context.TODO(), sql)
@@ -79,19 +82,19 @@ func (r *PostsRepository) GetCount() (int, error) {
 
 func (r *PostsRepository) Create(p Post) (int, error) {
 	sql := `
-		INSERT INTO posts (is_parent, parent_id, title, text, is_sage)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO posts (is_parent, parent_id, title, text, is_sage, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id
 	`
 
 	var row pgx.Row
 	if p.IsParent {
 		row = Db.Pool.QueryRow(
-			context.TODO(), sql, p.IsParent, nil, p.Title, p.Text, p.IsSage,
+			context.TODO(), sql, p.IsParent, nil, p.Title, p.Text, p.IsSage, time.Now(),
 		)
 	} else {
 		row = Db.Pool.QueryRow(
-			context.TODO(), sql, p.IsParent, p.ParentID, p.Title, p.Text, p.IsSage,
+			context.TODO(), sql, p.IsParent, p.ParentID, p.Title, p.Text, p.IsSage, nil,
 		)
 	}
 
@@ -165,19 +168,19 @@ func (r *PostsRepository) GetThreadByPostID(ID int) ([]Post, error) {
 
 func (r *PostsRepository) CreateInTx(tx pgx.Tx, p Post) (int, error) {
 	sql := `
-		INSERT INTO posts (is_parent, parent_id, title, text, is_sage)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO posts (is_parent, parent_id, title, text, is_sage, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id
 	`
 
 	var row pgx.Row
 	if p.IsParent {
 		row = tx.QueryRow(
-			context.TODO(), sql, p.IsParent, nil, p.Title, p.Text, p.IsSage,
+			context.TODO(), sql, p.IsParent, nil, p.Title, p.Text, p.IsSage, time.Now(),
 		)
 	} else {
 		row = tx.QueryRow(
-			context.TODO(), sql, p.IsParent, p.ParentID, p.Title, p.Text, p.IsSage,
+			context.TODO(), sql, p.IsParent, p.ParentID, p.Title, p.Text, p.IsSage, nil,
 		)
 	}
 
@@ -205,4 +208,39 @@ func (r *PostsRepository) CreateInTx(tx pgx.Tx, p Post) (int, error) {
 	}
 
 	return createdPost.ID, nil
+}
+
+func (r *PostsRepository) GetOldestThreadUpdatedAt() (time.Time, error) {
+	sql := `
+		SELECT updated_at
+		FROM posts
+		WHERE 
+			is_parent = true
+			AND is_deleted != true
+			AND is_archived != true
+		ORDER BY updated_at DESC
+		OFFSET $1 - 1
+		LIMIT 1
+	`
+
+	row := Db.Pool.QueryRow(context.TODO(), sql, Config.App.ThreadsMaxCount)
+	var updatedAt time.Time
+	err := row.Scan(&updatedAt)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return updatedAt, nil
+}
+
+func (r *PostsRepository) ArchiveThreadsFrom(t time.Time) error {
+	sql := `
+		UPDATE posts
+		SET is_archived = true
+		WHERE
+			is_archived != true
+			AND updated_at <= $1
+	`
+
+	_, err := Db.Pool.Exec(context.TODO(), sql, t)
+	return err
 }

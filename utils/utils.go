@@ -1,3 +1,4 @@
+// TODO: move all functions to different packages
 package utils
 
 import (

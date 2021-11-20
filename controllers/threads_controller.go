@@ -12,6 +12,7 @@ import (
 	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"
 
+	Config "micrach/config"
 	Db "micrach/db"
 	Repositories "micrach/repositories"
 	Utils "micrach/utils"
@@ -132,6 +133,28 @@ func CreateThread(c *gin.Context) {
 		return
 	}
 	defer conn.Release()
+
+	threadsCount, err := Repositories.Posts.GetCount()
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		return
+	}
+
+	if threadsCount >= Config.App.ThreadsMaxCount {
+		oldestThreadUpdatedAt, err := Repositories.Posts.GetOldestThreadUpdatedAt()
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
+		err = Repositories.Posts.ArchiveThreadsFrom(oldestThreadUpdatedAt)
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
+	}
 
 	tx, err := conn.Begin(context.TODO())
 	if err != nil {
