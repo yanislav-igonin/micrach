@@ -16,5 +16,6 @@
   width: 100%;
 }
 
-.data-container {
+.line-break {
+  white-space: pre-line;
 }
