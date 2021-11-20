@@ -140,9 +140,20 @@ func CreateThread(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "500.html", nil)
 		return
 	}
+
 	if threadsCount >= Config.App.ThreadsMaxCount {
-		// получить дату последнего неархивируемого треда
-		// сделать SET для тредов старше этой даты
+		oldestThreadUpdatedAt, err := Repositories.Posts.GetOldestThreadUpdatedAt()
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
+		err = Repositories.Posts.ArchiveThreadsFrom(oldestThreadUpdatedAt)
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
 	}
 
 	tx, err := conn.Begin(context.TODO())

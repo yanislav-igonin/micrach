@@ -210,7 +210,7 @@ func (r *PostsRepository) CreateInTx(tx pgx.Tx, p Post) (int, error) {
 	return createdPost.ID, nil
 }
 
-func (r *PostsRepository) GetOldestThreadUpdateAt() (time.Time, error) {
+func (r *PostsRepository) GetOldestThreadUpdatedAt() (time.Time, error) {
 	sql := `
 		SELECT updated_at
 		FROM posts
@@ -237,10 +237,8 @@ func (r *PostsRepository) ArchiveThreadsFrom(t time.Time) error {
 		UPDATE posts
 		SET is_archived = true
 		WHERE
-			is_parent = true
-			AND is_deleted != true
-			AND is_archived != true
-			AND updated_at > $1
+			is_archived != true
+			AND updated_at <= $1
 	`
 
 	_, err := Db.Pool.Exec(context.TODO(), sql, t)
