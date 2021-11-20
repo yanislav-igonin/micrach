@@ -230,3 +230,17 @@ func (r *PostsRepository) GetOldestThreadUpdateAt() (time.Time, error) {
 	return updatedAt, nil
 }
 
+func (r *PostsRepository) ArchiveThreadsFrom(t time.Time) error {
+	sql := `
+		UPDATE posts
+		SET is_archived = true
+		WHERE
+			is_parent = true
+			AND is_deleted != true
+			AND is_archived != true
+			AND updated_at > $1
+	`
+
+	_, err := Db.Pool.Exec(context.TODO(), sql, t)
+	return err
+}
