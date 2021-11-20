@@ -207,3 +207,26 @@ func (r *PostsRepository) CreateInTx(tx pgx.Tx, p Post) (int, error) {
 
 	return createdPost.ID, nil
 }
+
+func (r *PostsRepository) GetOldestThreadUpdateAt() (time.Time, error) {
+	sql := `
+		SELECT updated_at
+		FROM posts
+		WHERE 
+			is_parent = true
+			AND is_deleted != true
+			AND is_archived != true
+		ORDER BY updated_at DESC
+		OFFSET $1 - 1
+		LIMIT 1
+	`
+
+	row := Db.Pool.QueryRow(context.TODO(), sql, Config.App.ThreadsMaxCount)
+	var updatedAt time.Time
+	err := row.Scan(&updatedAt)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return updatedAt, nil
+}
+
