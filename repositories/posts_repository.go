@@ -2,7 +2,9 @@ package repositories
 
 import (
 	"context"
+	Config "micrach/config"
 	Db "micrach/db"
+	"time"
 
 	"github.com/jackc/pgx/v4"
 )
@@ -80,19 +82,19 @@ func (r *PostsRepository) GetCount() (int, error) {
 
 func (r *PostsRepository) Create(p Post) (int, error) {
 	sql := `
-		INSERT INTO posts (is_parent, parent_id, title, text, is_sage)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO posts (is_parent, parent_id, title, text, is_sage, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id
 	`
 
 	var row pgx.Row
 	if p.IsParent {
 		row = Db.Pool.QueryRow(
-			context.TODO(), sql, p.IsParent, nil, p.Title, p.Text, p.IsSage,
+			context.TODO(), sql, p.IsParent, nil, p.Title, p.Text, p.IsSage, time.Now(),
 		)
 	} else {
 		row = Db.Pool.QueryRow(
-			context.TODO(), sql, p.IsParent, p.ParentID, p.Title, p.Text, p.IsSage,
+			context.TODO(), sql, p.IsParent, p.ParentID, p.Title, p.Text, p.IsSage, nil,
 		)
 	}
 
@@ -166,19 +168,19 @@ func (r *PostsRepository) GetThreadByPostID(ID int) ([]Post, error) {
 
 func (r *PostsRepository) CreateInTx(tx pgx.Tx, p Post) (int, error) {
 	sql := `
-		INSERT INTO posts (is_parent, parent_id, title, text, is_sage)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO posts (is_parent, parent_id, title, text, is_sage, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id
 	`
 
 	var row pgx.Row
 	if p.IsParent {
 		row = tx.QueryRow(
-			context.TODO(), sql, p.IsParent, nil, p.Title, p.Text, p.IsSage,
+			context.TODO(), sql, p.IsParent, nil, p.Title, p.Text, p.IsSage, time.Now(),
 		)
 	} else {
 		row = tx.QueryRow(
-			context.TODO(), sql, p.IsParent, p.ParentID, p.Title, p.Text, p.IsSage,
+			context.TODO(), sql, p.IsParent, p.ParentID, p.Title, p.Text, p.IsSage, nil,
 		)
 	}
 
