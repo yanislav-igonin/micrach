@@ -20,6 +20,7 @@ jobs:
       with:
         name: micrach
         path: micrach
+        retention-days: 1
 
   release:
     needs: build
