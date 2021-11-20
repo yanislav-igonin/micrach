@@ -19,32 +19,37 @@ type DbConfig struct {
 	Url string
 }
 
+func getValueOrDefaultBoolean(value string, defaultValue bool) bool {
+	if value == "" {
+		return defaultValue
+	}
+	return value == "true"
+}
+
+func getValueOrDefaultInt(value string, defaultValue int) int {
+	if value == "" {
+		return defaultValue
+	}
+	intValue, err := strconv.Atoi(value)
+	if err != nil {
+		log.Panicln(fmt.Sprintf("Could not parse %s to int", value))
+	}
+	return intValue
+}
+
+func getValueOrDefaultString(value string, defaultValue string) string {
+	if value == "" {
+		return defaultValue
+	}
+	return value
+}
+
 func getAppConfig() AppConfig {
-	env := os.Getenv("ENV")
-	if env == "" {
-		env = "release"
-	}
-
-	portString := os.Getenv("PORT")
-	if portString == "" {
-		portString = "3000"
-	}
-	port, err := strconv.Atoi(portString)
-	if err != nil {
-		log.Panicln(fmt.Sprintf("Could not parse %s to int", portString))
-	}
-
-	seedDbString := os.Getenv("SEED_DB")
-	seedDb := seedDbString == "true"
-
-	isRateLimiterEnabledString := os.Getenv("IS_RATE_LIMITER_ENABLED")
-	isRateLimiterEnabled := isRateLimiterEnabledString == "true"
-
-	threadsMaxCountString := os.Getenv("THREADS_MAX_COUNT")
-	threadsMaxCount, err := strconv.Atoi(threadsMaxCountString)
-	if err != nil {
-		log.Panicln(fmt.Sprintf("Could not parse %s to int", threadsMaxCountString))
-	}
+	env := getValueOrDefaultString(os.Getenv("ENV"), "release")
+	port := getValueOrDefaultInt(os.Getenv("PORT"), 3000)
+	seedDb := getValueOrDefaultBoolean(os.Getenv("SEED_DB"), false)
+	isRateLimiterEnabled := getValueOrDefaultBoolean(os.Getenv("IS_RATE_LIMITER_ENABLED"), true)
+	threadsMaxCount := getValueOrDefaultInt(os.Getenv("THREADS_MAX_COUNT"), 50)
 
 	return AppConfig{
 		Env:                  env,
@@ -56,10 +61,8 @@ func getAppConfig() AppConfig {
 }
 
 func getDbConfig() DbConfig {
-	url := os.Getenv("POSTGRES_URL")
-	if url == "" {
-		url = "postgresql://localhost/micrach"
-	}
+	url := getValueOrDefaultString(os.Getenv("POSTGRES_URL"), "postgresql://localhost/micrach")
+
 	return DbConfig{
 		Url: url,
 	}

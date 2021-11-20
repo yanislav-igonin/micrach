@@ -8,6 +8,9 @@ services:
     environment: 
       ENV: release
       PORT: ${PORT}
+      SEED_DB: ${SEED_DB}
+      IS_RATE_LIMITER_ENABLED: ${IS_RATE_LIMITER_ENABLED}
+      THREADS_MAX_COUNT: ${THREADS_MAX_COUNT}
       POSTGRES_URL: ${POSTGRES_URL}
     volumes:
       - /root/micrach-go/uploads:/app/uploads
