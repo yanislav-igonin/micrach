@@ -236,8 +236,9 @@ func (r *PostsRepository) ArchiveThreadsFrom(t time.Time) error {
 	sql := `
 		UPDATE posts
 		SET is_archived = true
-		WHERE
-			is_archived != true
+		WHERE 
+			is_parent = true
+			AND is_archived != true
 			AND updated_at <= $1
 	`
 
