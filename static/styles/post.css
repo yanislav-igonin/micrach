@@ -19,3 +19,7 @@
 .line-break {
   white-space: pre-line;
 }
+
+.word-wrap {
+  word-break: break-word;
+}
