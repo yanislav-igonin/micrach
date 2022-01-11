@@ -12,6 +12,7 @@ import (
 	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
 	memory "github.com/ulule/limiter/v3/drivers/store/memory"
 
+	Build "micrach/build"
 	Config "micrach/config"
 	Controllers "micrach/controllers"
 	Db "micrach/db"
@@ -27,6 +28,10 @@ func main() {
 	gin.SetMode(Config.App.Env)
 	if Config.App.SeedDb {
 		Repositories.Seed()
+	}
+
+	if Config.App.Env == "release" {
+		Build.RenameCss()
 	}
 
 	err := Utils.CreateUploadsFolder()
