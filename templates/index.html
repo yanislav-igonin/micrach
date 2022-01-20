@@ -35,7 +35,14 @@
             {{ if ne $Post.Title "" }}
             <h5 class="card-title">{{$Post.Title}}</h5>
             {{ end }}
+
+            {{ $textLength := len $Post.Text }}
+            {{ if gt $textLength 300 }}
+            <p class="card-text">{{ slice $Post.Text 0 300 }} ...</p>
+            {{ else }}
             <p class="card-text">{{$Post.Text}}</p>
+            {{ end }}
+
             <a href="/{{$Post.ID}}" class="btn btn-outline-primary">Open</a>
           </div>
         </div>
