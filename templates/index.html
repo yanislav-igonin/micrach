@@ -1,34 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   {{ template "static" }}
-  <link 
-    href="/static/styles/index.css" 
-    rel="stylesheet" 
-  >
-  
+  <link href="/static/styles/index.css" rel="stylesheet">
+
   {{ template "meta-tags-static" }}
 </head>
 
 <body>
   <h1 class="display-1 text-center">Welcome to Micrach</h1>
-  
+
   <div class="container">
     {{ template "post-form" .FormData }}
-    
+
     <div id="" class="row row-cols-auto gy-4 mb-4 justify-content-center">
       {{ range $Post := .Threads }}
       <div class="col col-sm-6 col-md-4 col-lg-3">
         <div class="card">
 
-          {{ $length := len $Post.Files }} 
+          {{ $length := len $Post.Files }}
           {{ if gt $length 0 }}
           {{ $FirstFile := index $Post.Files 0 }}
-          <img 
-            src="/uploads/{{$Post.ID}}/t/{{$FirstFile.ID}}.{{$FirstFile.Ext}}" 
-            class="card-img-top"
-            alt="Uploaded picture"
-          >
+          <img src="/uploads/{{$Post.ID}}/t/{{$FirstFile.ID}}.{{$FirstFile.Ext}}" class="card-img-top"
+            alt="Uploaded picture">
           {{ end }}
 
           <div class="card-body">
@@ -38,9 +33,9 @@
 
             {{ $textLength := len $Post.Text }}
             {{ if gt $textLength 300 }}
-            <p class="card-text">{{ slice $Post.Text 0 300 }} ...</p>
+            <p class="card-text line-break text-break">{{ slice $Post.Text 0 300 }} ...</p>
             {{ else }}
-            <p class="card-text">{{$Post.Text}}</p>
+            <p class="card-text line-break text-break">{{$Post.Text}}</p>
             {{ end }}
 
             <a href="/{{$Post.ID}}" class="btn btn-outline-primary">Open</a>
@@ -55,9 +50,9 @@
         <ul id="pagesList" class="pagination justify-content-center">
           {{ $ActivePage := .Page }}
           {{ range $i := Iterate .PagesCount }}
-            <li class="page-item {{ if (eq $i $ActivePage) }} active {{ end }}">
-              <a class="page-link" href="/?page={{ $i }}">{{ $i }}</a>
-            </li>
+          <li class="page-item {{ if (eq $i $ActivePage) }} active {{ end }}">
+            <a class="page-link" href="/?page={{ $i }}">{{ $i }}</a>
+          </li>
           {{ end }}
         </ul>
       </nav>
