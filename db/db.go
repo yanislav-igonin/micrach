@@ -47,21 +47,26 @@ func Migrate() {
 
 		_, isMigrationInDb := dbMigrations[id]
 		if !isMigrationInDb {
-			_, err := Pool.Exec(context.TODO(), Files.ReadFileText(m))
-			if err != nil {
-				log.Panicln(err)
-			}
-
-			sql := `INSERT INTO migrations (id, name) VALUES ($1, $2)`
-			_, err = Pool.Query(context.TODO(), sql, id, name)
-			if err != nil {
-				log.Panicln(err)
-			}
+			sql := Files.ReadFileText(m)
+			runMigration(id, name, sql)
 			log.Println("database migration - " + name + " - online")
 		}
 	}
 
 	log.Println("database migrations - online")
+}
+
+func runMigration(mid int, mname, msql string) {
+	_, err := Pool.Exec(context.TODO(), msql)
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	sql := `INSERT INTO migrations (id, name) VALUES ($1, $2)`
+	_, err = Pool.Query(context.TODO(), sql, mid, mname)
+	if err != nil {
+		log.Panicln(err)
+	}
 }
 
 func getDbMigrations() MigrationsMap {
