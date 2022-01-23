@@ -166,6 +166,24 @@ func (r *PostsRepository) GetThreadByPostID(ID int) ([]Post, error) {
 	return posts, nil
 }
 
+// Check if thread is archived
+func (r *PostsRepository) GetIfThreadIsArchived(ID int) (bool, error) {
+	sql := `
+		SELECT is_archived
+		FROM posts
+		WHERE id = $1
+		LIMIT 1
+	`
+
+	row := Db.Pool.QueryRow(context.TODO(), sql, ID)
+	var isArchived bool
+	err := row.Scan(&isArchived)
+	if err != nil {
+		return false, err
+	}
+	return isArchived, nil
+}
+
 func (r *PostsRepository) CreateInTx(tx pgx.Tx, p Post) (int, error) {
 	sql := `
 		INSERT INTO posts (is_parent, parent_id, title, text, is_sage, updated_at)

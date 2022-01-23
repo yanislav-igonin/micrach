@@ -111,7 +111,7 @@ func CreateThread(c *gin.Context) {
 		errorHtmlData := Repositories.BadRequestHtmlData{
 			Message: validationErrorMessage,
 		}
-		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
+		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
 		return
 	}
 
@@ -122,7 +122,7 @@ func CreateThread(c *gin.Context) {
 		errorHtmlData := Repositories.BadRequestHtmlData{
 			Message: Repositories.InvalidCaptchaErrorMessage,
 		}
-		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
+		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
 		return
 	}
 
@@ -233,11 +233,26 @@ func CreateThread(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/"+strconv.Itoa(threadID))
 }
 
+// Add new post in thread
 func UpdateThread(c *gin.Context) {
 	threadIDString := c.Param("threadID")
 	threadID, err := strconv.Atoi(threadIDString)
 	if err != nil {
 		c.HTML(http.StatusNotFound, "500.html", nil)
+		return
+	}
+
+	isArchived, err := Repositories.Posts.GetIfThreadIsArchived(threadID)
+	if isArchived {
+		errorHtmlData := Repositories.BadRequestHtmlData{
+			Message: Repositories.ThreadIsArchivedErrorMessage,
+		}
+		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
+		return
+	}
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
 		return
 	}
 
@@ -256,7 +271,7 @@ func UpdateThread(c *gin.Context) {
 		errorHtmlData := Repositories.BadRequestHtmlData{
 			Message: validationErrorMessage,
 		}
-		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
+		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
 		return
 	}
 
@@ -267,7 +282,7 @@ func UpdateThread(c *gin.Context) {
 		errorHtmlData := Repositories.BadRequestHtmlData{
 			Message: Repositories.InvalidCaptchaErrorMessage,
 		}
-		c.HTML(http.StatusInternalServerError, "400.html", errorHtmlData)
+		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
 		return
 	}
 
