@@ -64,53 +64,6 @@ func GetThreads(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", htmlData)
 }
 
-// func GetThreadsApi(c *gin.Context) {
-// 	pageString := c.DefaultQuery("page", "1")
-// 	page, err := strconv.Atoi(pageString)
-// 	if err != nil {
-// 		c.HTML(http.StatusNotFound, "404.html", nil)
-// 		return
-// 	}
-
-// 	if page <= 0 {
-// 		c.HTML(http.StatusNotFound, "404.html", nil)
-// 		return
-// 	}
-
-// 	limit := 10
-// 	offset := limit * (page - 1)
-// 	threads, err := Repositories.Posts.Get(limit, offset)
-// 	if err != nil {
-// 		log.Println("error:", err)
-// 		c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 		return
-// 	}
-// 	count, err := Repositories.Posts.GetCount()
-// 	if err != nil {
-// 		log.Println("error:", err)
-// 		c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 		return
-// 	}
-
-// 	pagesCount := int(math.Ceil(float64(count) / 10))
-// 	if page > pagesCount && count != 0 {
-// 		c.HTML(http.StatusNotFound, "404.html", nil)
-// 		return
-// 	}
-
-// 	captchaID := captcha.New()
-// 	htmlData := Repositories.GetThreadsHtmlData{
-// 		Threads:    threads,
-// 		PagesCount: pagesCount,
-// 		Page:       page,
-// 		FormData: Repositories.HtmlFormData{
-// 			CaptchaID: captchaID,
-// 		},
-// 	}
-// 	// c.HTML(http.StatusOK, "index.html", htmlData)
-// 	c.JSON(http.StatusOK, htmlData)
-// }
-
 func GetThread(c *gin.Context) {
 	threadIDString := c.Param("threadID")
 	threadID, err := strconv.Atoi(threadIDString)
