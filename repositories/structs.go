@@ -46,9 +46,9 @@ type GetThreadHtmlData struct {
 
 // index.html
 type GetThreadsHtmlData struct {
-	Threads    []Post
-	PagesCount int
-	Page       int
+	Threads    []Post `json:"threads"`
+	PagesCount int    `json:"pagesCount"`
+	Page       int    `json:"page"`
 	FormData   HtmlFormData
 }
 
