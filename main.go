@@ -69,7 +69,7 @@ func main() {
 	router.Static("/static", "./static")
 	router.GET("/", Controllers.GetThreads)
 	router.POST("/", Controllers.CreateThread)
-	router.GET("/api", Controllers.GetThreadsApi)
+	// router.GET("/api", Controllers.GetThreadsApi)
 	router.GET("/:threadID", Controllers.GetThread)
 	router.POST("/:threadID", Controllers.UpdateThread)
 	router.GET("/captcha/:captchaID", Controllers.GetCaptcha)
