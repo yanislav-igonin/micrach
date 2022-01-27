@@ -208,23 +208,6 @@ func (r *PostsRepository) CreateInTx(tx pgx.Tx, p Post) (int, error) {
 		return 0, err
 	}
 
-	// updating parent post `updated_at`
-	if !p.IsParent && !p.IsSage {
-		sql = `
-			UPDATE posts
-			SET updated_at = now()
-			WHERE id = $1
-		`
-		row := tx.QueryRow(context.TODO(), sql, p.ParentID)
-		var msg string
-		err = row.Scan(&msg)
-		// UPDATE always return `no rows`
-		// so we need to check this condition
-		if err != nil && err != pgx.ErrNoRows {
-			return 0, err
-		}
-	}
-
 	return createdPost.ID, nil
 }
 
@@ -261,5 +244,36 @@ func (r *PostsRepository) ArchiveThreadsFrom(t time.Time) error {
 	`
 
 	_, err := Db.Pool.Exec(context.TODO(), sql, t)
+	return err
+}
+
+// Returns count of posts in thread by thread ID
+func (r *PostsRepository) GetThreadPostsCount(id int) (int, error) {
+	sql := `
+		SELECT COUNT(*)
+		FROM posts
+		WHERE
+			(id = $1 AND is_parent = true AND is_deleted != true)
+			OR (parent_id = $1 AND is_deleted != true)
+	`
+
+	row := Db.Pool.QueryRow(context.TODO(), sql, id)
+	var count int
+	err := row.Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+// Updates threads updated at time by thread ID
+func (r *PostsRepository) BumpThreadInTx(tx pgx.Tx, id int) error {
+	sql := `
+		UPDATE posts
+		SET updated_at = now()
+		WHERE id = $1
+	`
+
+	_, err := tx.Query(context.TODO(), sql, id)
 	return err
 }

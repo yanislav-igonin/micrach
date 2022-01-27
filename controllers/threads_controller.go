@@ -309,6 +309,11 @@ func UpdateThread(c *gin.Context) {
 	}
 	defer tx.Rollback(context.TODO())
 
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		return
+	}
 	post := Repositories.Post{
 		IsParent: false,
 		ParentID: threadID,
@@ -321,6 +326,23 @@ func UpdateThread(c *gin.Context) {
 		log.Println("error:", err)
 		c.HTML(http.StatusInternalServerError, "500.html", nil)
 		return
+	}
+
+	postsCountInThread, err := Repositories.Posts.GetThreadPostsCount(threadID)
+	if err != nil {
+		log.Println("error:", err)
+		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		return
+	}
+	isBumpLimit := postsCountInThread >= Config.App.ThreadBumpLimit
+	isThreadBumped := !isBumpLimit && !isSage && !post.IsParent
+	if isThreadBumped {
+		err = Repositories.Posts.BumpThreadInTx(tx, threadID)
+		if err != nil {
+			log.Println("error:", err)
+			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			return
+		}
 	}
 
 	for _, fileInRequest := range filesInRequest {
