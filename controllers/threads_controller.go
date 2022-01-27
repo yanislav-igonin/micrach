@@ -58,7 +58,8 @@ func GetThreads(c *gin.Context) {
 		PagesCount: pagesCount,
 		Page:       page,
 		FormData: Repositories.HtmlFormData{
-			CaptchaID: captchaID,
+			CaptchaID:       captchaID,
+			IsCaptchaActive: Config.App.IsCaptchaActive,
 		},
 	}
 	c.HTML(http.StatusOK, "index.html", htmlData)
@@ -87,8 +88,9 @@ func GetThread(c *gin.Context) {
 	htmlData := Repositories.GetThreadHtmlData{
 		Thread: thread,
 		FormData: Repositories.HtmlFormData{
-			FirstPostID: firstPost.ID,
-			CaptchaID:   captchaID,
+			FirstPostID:     firstPost.ID,
+			CaptchaID:       captchaID,
+			IsCaptchaActive: Config.App.IsCaptchaActive,
 		},
 	}
 	c.HTML(http.StatusOK, "thread.html", htmlData)

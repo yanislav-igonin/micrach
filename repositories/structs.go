@@ -34,8 +34,9 @@ type File struct {
 
 // post-form.html
 type HtmlFormData struct {
-	FirstPostID int
-	CaptchaID   string
+	FirstPostID     int
+	CaptchaID       string
+	IsCaptchaActive bool
 }
 
 // thread.html

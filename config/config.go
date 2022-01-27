@@ -14,6 +14,7 @@ type AppConfig struct {
 	IsRateLimiterEnabled bool
 	ThreadsMaxCount      int
 	ThreadBumpLimit      int
+	IsCaptchaActive      bool
 }
 
 type DbConfig struct {
@@ -52,6 +53,7 @@ func getAppConfig() AppConfig {
 	isRateLimiterEnabled := getValueOrDefaultBoolean(os.Getenv("IS_RATE_LIMITER_ENABLED"), true)
 	threadsMaxCount := getValueOrDefaultInt(os.Getenv("THREADS_MAX_COUNT"), 50)
 	threadBumpLimit := getValueOrDefaultInt(os.Getenv("THREAD_BUMP_LIMIT"), 500)
+	isCaptchaActive := getValueOrDefaultBoolean(os.Getenv("IS_CAPTCHA_ACTIVE"), true)
 
 	return AppConfig{
 		Env:                  env,
@@ -60,6 +62,7 @@ func getAppConfig() AppConfig {
 		IsRateLimiterEnabled: isRateLimiterEnabled,
 		ThreadsMaxCount:      threadsMaxCount,
 		ThreadBumpLimit:      threadBumpLimit,
+		IsCaptchaActive:      isCaptchaActive,
 	}
 }
 
