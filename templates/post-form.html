@@ -16,11 +16,7 @@
       <input class="form-control" type="file" id="postFiles" multiple name="files">
       
       {{ if .IsCaptchaActive }}
-      <div class="captcha-container text-center">
-        <img src="/captcha/{{ .CaptchaID }}" alt="Captcha">
-      </div>
-      <input class="form-control" type="hidden" name="captchaId" value="{{ .CaptchaID }}">
-      <input class="form-control" id="postCaptcha" type="tel" pattern="\d+" placeholder="Captcha" name="captcha">
+      {{ template "captcha" .CaptchaID}}
       {{ end }}
 
       <div class="row">

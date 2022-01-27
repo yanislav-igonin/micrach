@@ -1,0 +1,7 @@
+{{ define "captcha" }}
+<div class="captcha-container text-center">
+  <img src="/captcha/{{ . }}" alt="Captcha">
+</div>
+<input class="form-control" type="hidden" name="captchaId" value="{{ . }}">
+<input class="form-control" id="postCaptcha" type="tel" pattern="\d+" placeholder="Captcha" name="captcha">
+{{ end }}
