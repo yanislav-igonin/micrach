@@ -1,4 +1,4 @@
-# micrach-go
+# micrach
 Go tryout. Single board imageboard.
 
 # Motivation
