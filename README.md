@@ -1,7 +1,7 @@
 # micrach
 Go tryout. Single board imageboard.
 
-# Motivation
+## Motivation
 Tired of a fucking SPAs, so I decided to write this simple and lightweight imageboard (microboard, actually) with as less JS as possible.  
 Also, I wanted to learn Go, so I decided to write this in Go.
 
