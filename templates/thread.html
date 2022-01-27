@@ -11,19 +11,11 @@
 </head>
 
 <body>
-  <a href="/" class="thread-title-link">
-    <h1 class="display-1 text-center thread-title">
-      {{ if ne $FirstPost.Title "" }}
-      {{$FirstPost.Title}}
-      {{ else }}
-      Welcome to Micrach
-      {{ end }}
-    </h1>
-  </a>
+  {{ template "header" $FirstPost.Title }}
 
   <div class="container">
     {{ template "post-form" .FormData }}
-
+    
     <div id="postsСontainer">
       {{ range $Post := .Thread }}
       <div class="post-container mb-4">
