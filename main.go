@@ -60,7 +60,7 @@ func main() {
 			return Items
 		},
 	})
-	router.LoadHTMLGlob("templates/*.html")
+	router.LoadHTMLGlob("templates/**/*")
 	router.ForwardedByClientIP = true
 	if Config.App.IsRateLimiterEnabled {
 		router.Use(middleware)
