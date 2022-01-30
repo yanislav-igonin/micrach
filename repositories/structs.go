@@ -39,6 +39,11 @@ type HtmlFormData struct {
 	IsCaptchaActive bool
 }
 
+type HtmlPaginationData struct {
+	PagesCount int
+	Page       int
+}
+
 // thread.html
 type GetThreadHtmlData struct {
 	Thread   []Post
@@ -48,8 +53,7 @@ type GetThreadHtmlData struct {
 // index.html
 type GetThreadsHtmlData struct {
 	Threads    []Post `json:"threads"`
-	PagesCount int    `json:"pagesCount"`
-	Page       int    `json:"page"`
+	Pagination HtmlPaginationData
 	FormData   HtmlFormData
 }
 
