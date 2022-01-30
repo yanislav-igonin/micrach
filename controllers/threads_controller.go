@@ -22,12 +22,12 @@ func GetThreads(c *gin.Context) {
 	pageString := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageString)
 	if err != nil {
-		c.HTML(http.StatusNotFound, "404.html", nil)
+		c.HTML(http.StatusNotFound, "page_404.html", nil)
 		return
 	}
 
 	if page <= 0 {
-		c.HTML(http.StatusNotFound, "404.html", nil)
+		c.HTML(http.StatusNotFound, "page_404.html", nil)
 		return
 	}
 
@@ -36,19 +36,19 @@ func GetThreads(c *gin.Context) {
 	threads, err := Repositories.Posts.Get(limit, offset)
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 	count, err := Repositories.Posts.GetCount()
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 
 	pagesCount := int(math.Ceil(float64(count) / 10))
 	if page > pagesCount && count != 0 {
-		c.HTML(http.StatusNotFound, "404.html", nil)
+		c.HTML(http.StatusNotFound, "page_404.html", nil)
 		return
 	}
 
@@ -62,24 +62,24 @@ func GetThreads(c *gin.Context) {
 			IsCaptchaActive: Config.App.IsCaptchaActive,
 		},
 	}
-	c.HTML(http.StatusOK, "index.html", htmlData)
+	c.HTML(http.StatusOK, "page_index.html", htmlData)
 }
 
 func GetThread(c *gin.Context) {
 	threadIDString := c.Param("threadID")
 	threadID, err := strconv.Atoi(threadIDString)
 	if err != nil {
-		c.HTML(http.StatusNotFound, "404.html", nil)
+		c.HTML(http.StatusNotFound, "page_404.html", nil)
 		return
 	}
 	thread, err := Repositories.Posts.GetThreadByPostID(threadID)
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 	if thread == nil {
-		c.HTML(http.StatusNotFound, "404.html", nil)
+		c.HTML(http.StatusNotFound, "page_404.html", nil)
 		return
 	}
 
@@ -93,14 +93,14 @@ func GetThread(c *gin.Context) {
 			IsCaptchaActive: Config.App.IsCaptchaActive,
 		},
 	}
-	c.HTML(http.StatusOK, "thread.html", htmlData)
+	c.HTML(http.StatusOK, "page_thread.html", htmlData)
 }
 
 func CreateThread(c *gin.Context) {
 	form, err := c.MultipartForm()
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 
@@ -113,7 +113,7 @@ func CreateThread(c *gin.Context) {
 		errorHtmlData := Repositories.BadRequestHtmlData{
 			Message: validationErrorMessage,
 		}
-		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
+		c.HTML(http.StatusBadRequest, "page_400.html", errorHtmlData)
 		return
 	}
 
@@ -124,14 +124,14 @@ func CreateThread(c *gin.Context) {
 		errorHtmlData := Repositories.BadRequestHtmlData{
 			Message: Repositories.InvalidCaptchaErrorMessage,
 		}
-		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
+		c.HTML(http.StatusBadRequest, "page_400.html", errorHtmlData)
 		return
 	}
 
 	conn, err := Db.Pool.Acquire(context.TODO())
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 	defer conn.Release()
@@ -139,7 +139,7 @@ func CreateThread(c *gin.Context) {
 	threadsCount, err := Repositories.Posts.GetCount()
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 
@@ -147,13 +147,13 @@ func CreateThread(c *gin.Context) {
 		oldestThreadUpdatedAt, err := Repositories.Posts.GetOldestThreadUpdatedAt()
 		if err != nil {
 			log.Println("error:", err)
-			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 			return
 		}
 		err = Repositories.Posts.ArchiveThreadsFrom(oldestThreadUpdatedAt)
 		if err != nil {
 			log.Println("error:", err)
-			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 			return
 		}
 	}
@@ -161,7 +161,7 @@ func CreateThread(c *gin.Context) {
 	tx, err := conn.Begin(context.TODO())
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 	defer tx.Rollback(context.TODO())
@@ -175,14 +175,14 @@ func CreateThread(c *gin.Context) {
 	threadID, err := Repositories.Posts.CreateInTx(tx, post)
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 
 	err = Utils.CreateThreadFolder(threadID)
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 
@@ -198,7 +198,7 @@ func CreateThread(c *gin.Context) {
 		fileID, err := Repositories.Files.CreateInTx(tx, file)
 		if err != nil {
 			log.Println("error:", err)
-			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 			return
 		}
 
@@ -211,21 +211,21 @@ func CreateThread(c *gin.Context) {
 		err = c.SaveUploadedFile(fileInRequest, path)
 		if err != nil {
 			log.Println("error:", err)
-			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 			return
 		}
 		// creating thumbnail
 		thumbImg, err := Utils.MakeImageThumbnail(path, file.Ext, threadID, fileID)
 		if err != nil {
 			log.Println("error:", err)
-			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 			return
 		}
 		// saving thumbnail
 		err = Utils.SaveImageThumbnail(thumbImg, threadID, fileID, file.Ext)
 		if err != nil {
 			log.Println("error:", err)
-			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 			return
 		}
 	}
@@ -240,7 +240,7 @@ func UpdateThread(c *gin.Context) {
 	threadIDString := c.Param("threadID")
 	threadID, err := strconv.Atoi(threadIDString)
 	if err != nil {
-		c.HTML(http.StatusNotFound, "500.html", nil)
+		c.HTML(http.StatusNotFound, "page_500.html", nil)
 		return
 	}
 
@@ -249,19 +249,19 @@ func UpdateThread(c *gin.Context) {
 		errorHtmlData := Repositories.BadRequestHtmlData{
 			Message: Repositories.ThreadIsArchivedErrorMessage,
 		}
-		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
+		c.HTML(http.StatusBadRequest, "page_400.html", errorHtmlData)
 		return
 	}
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 
 	form, err := c.MultipartForm()
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 
@@ -273,7 +273,7 @@ func UpdateThread(c *gin.Context) {
 		errorHtmlData := Repositories.BadRequestHtmlData{
 			Message: validationErrorMessage,
 		}
-		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
+		c.HTML(http.StatusBadRequest, "page_400.html", errorHtmlData)
 		return
 	}
 
@@ -284,7 +284,7 @@ func UpdateThread(c *gin.Context) {
 		errorHtmlData := Repositories.BadRequestHtmlData{
 			Message: Repositories.InvalidCaptchaErrorMessage,
 		}
-		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
+		c.HTML(http.StatusBadRequest, "page_400.html", errorHtmlData)
 		return
 	}
 
@@ -298,7 +298,7 @@ func UpdateThread(c *gin.Context) {
 	conn, err := Db.Pool.Acquire(context.TODO())
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 	defer conn.Release()
@@ -306,14 +306,14 @@ func UpdateThread(c *gin.Context) {
 	tx, err := conn.Begin(context.TODO())
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 	defer tx.Rollback(context.TODO())
 
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 	post := Repositories.Post{
@@ -326,14 +326,14 @@ func UpdateThread(c *gin.Context) {
 	postID, err := Repositories.Posts.CreateInTx(tx, post)
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 
 	postsCountInThread, err := Repositories.Posts.GetThreadPostsCount(threadID)
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 		return
 	}
 	isBumpLimit := postsCountInThread >= Config.App.ThreadBumpLimit
@@ -342,7 +342,7 @@ func UpdateThread(c *gin.Context) {
 		err = Repositories.Posts.BumpThreadInTx(tx, threadID)
 		if err != nil {
 			log.Println("error:", err)
-			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 			return
 		}
 	}
@@ -359,7 +359,7 @@ func UpdateThread(c *gin.Context) {
 		fileID, err := Repositories.Files.CreateInTx(tx, file)
 		if err != nil {
 			log.Println("error:", err)
-			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 			return
 		}
 
@@ -372,21 +372,21 @@ func UpdateThread(c *gin.Context) {
 		err = c.SaveUploadedFile(fileInRequest, path)
 		if err != nil {
 			log.Println("error:", err)
-			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 			return
 		}
 		// creating thumbnail
 		thumbImg, err := Utils.MakeImageThumbnail(path, file.Ext, threadID, fileID)
 		if err != nil {
 			log.Println("error:", err)
-			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 			return
 		}
 		// saving thumbnail
 		err = Utils.SaveImageThumbnail(thumbImg, threadID, fileID, file.Ext)
 		if err != nil {
 			log.Println("error:", err)
-			c.HTML(http.StatusInternalServerError, "500.html", nil)
+			c.HTML(http.StatusInternalServerError, "page_500.html", nil)
 			return
 		}
 	}
