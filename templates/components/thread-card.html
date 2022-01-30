@@ -1,0 +1,26 @@
+{{ define "thread-card" }}
+<div class="col col-sm-6 col-md-4 col-lg-3">
+  <div class="card">
+    {{ $length := len .Files }}
+    {{ if gt $length 0 }}
+    {{ $FirstFile := index .Files 0 }}
+    <img src="/uploads/{{.ID}}/t/{{$FirstFile.ID}}.{{$FirstFile.Ext}}" class="card-img-top" alt="Uploaded picture">
+    {{ end }}
+
+    <div class="card-body">
+      {{ if ne .Title "" }}
+      <h5 class="card-title">{{.Title}}</h5>
+      {{ end }}
+
+      {{ $textLength := len .Text }}
+      {{ if gt $textLength 300 }}
+      <p class="card-text line-break text-break">{{ slice .Text 0 300 }} ...</p>
+      {{ else }}
+      <p class="card-text line-break text-break">{{.Text}}</p>
+      {{ end }}
+
+      <a href="/{{.ID}}" class="btn btn-outline-primary">Open</a>
+    </div>
+  </div>
+</div>
+{{ end }}
