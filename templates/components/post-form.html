@@ -1,46 +1,46 @@
 {{ define "post-form" }}
-<div class="d-flex justify-content-center">
+  <div class="d-flex justify-content-center">
 
-  <div class="col col-lg-6 col-md-8">
-    {{ if eq .FirstPostID 0 }}
-    <form id="postForm" action="/" method="POST" enctype="multipart/form-data">
-    {{ else }}
-    <form id="postForm" action="/{{ .FirstPostID }}" method="POST" enctype="multipart/form-data">
-    {{ end }}
-
+    <div class="col col-lg-6 col-md-8">
       {{ if eq .FirstPostID 0 }}
-      <input class="form-control" id="postTitle" placeholder="Title" name="title">
+      <form id="postForm" action="/" method="POST" enctype="multipart/form-data">
+      {{ else }}
+      <form id="postForm" action="/{{ .FirstPostID }}" method="POST" enctype="multipart/form-data">
       {{ end }}
 
-      <textarea class="form-control" id="postText" rows="5" placeholder="Text" name="text"></textarea>
-      <input class="form-control" type="file" id="postFiles" multiple name="files">
-      
-      {{ if .IsCaptchaActive }}
-      {{ template "captcha" .CaptchaID }}
-      {{ end }}
-
-      <div class="row">
-        {{ if ne .FirstPostID 0 }}
-        <div class="col">
-          <input class="form-check-input" type="checkbox" value="on" id="postSage" name="sage">
-          <label class="form-check-label" for="postSage">
-            Sage
-          </label>
-        </div>
+        {{ if eq .FirstPostID 0 }}
+        <input class="form-control" id="postTitle" placeholder="Title" name="title">
         {{ end }}
 
-        <div class="col text-end">
-          <button class="col btn btn-outline-primary" type="submit" >
-            {{ if ne .FirstPostID 0 }}
-            Send
-            {{ else }}
-            Create thread
-            {{ end }}
-          </button>
-        </div>
-      </div>
-    </form>
-  </div>
+        <textarea class="form-control" id="postText" rows="5" placeholder="Text" name="text"></textarea>
+        <input class="form-control" type="file" id="postFiles" multiple name="files">
+        
+        {{ if .IsCaptchaActive }}
+        {{ template "captcha" .CaptchaID }}
+        {{ end }}
 
-</div>
+        <div class="row">
+          {{ if ne .FirstPostID 0 }}
+          <div class="col">
+            <input class="form-check-input" type="checkbox" value="on" id="postSage" name="sage">
+            <label class="form-check-label" for="postSage">
+              Sage
+            </label>
+          </div>
+          {{ end }}
+
+          <div class="col text-end">
+            <button class="col btn btn-outline-primary" type="submit" >
+              {{ if ne .FirstPostID 0 }}
+              Send
+              {{ else }}
+              Create thread
+              {{ end }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </div>
 {{ end }}

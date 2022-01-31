@@ -1,17 +1,17 @@
 {{ define "header" }}
 
 {{ if . }}
-<a href="/" class="thread-title-link">
-  <h1 class="display-1 text-center thread-title">
-    {{ if ne . "" }}
-    {{ . }}
-    {{ else }}
-    Welcome to Micrach
-    {{ end }}
-  </h1>
-</a>
+  <a href="/" class="thread-title-link">
+    <h1 class="display-1 text-center thread-title">
+      {{ if ne . "" }}
+      {{ . }}
+      {{ else }}
+      Welcome to Micrach
+      {{ end }}
+    </h1>
+  </a>
 {{ else }}
-<h1 class="display-1 text-center">Welcome to Micrach</h1>
+  <h1 class="display-1 text-center">Welcome to Micrach</h1>
 {{ end }}
 
 {{ end }}
