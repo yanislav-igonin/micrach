@@ -18,26 +18,7 @@
 
     <div id="postsСontainer">
       {{ range $Post := .Thread }}
-      <div class="post-container mb-4">
-
-        {{ $filesLength := len $Post.Files }}
-        {{ if gt $filesLength 0 }}
-        <div class="files-container">
-          {{ range $File := $Post.Files }}
-          <div class="file-container">
-            <a href="/uploads/{{$FirstPost.ID}}/o/{{$File.ID}}.{{$File.Ext}}" target="blank">
-              <img src="/uploads/{{$FirstPost.ID}}/t/{{$File.ID}}.{{$File.Ext}}" class="file" alt="Uploaded picture">
-            </a>
-          </div>
-          {{ end }}
-        </div>
-        {{ end }}
-
-        <div class="p-2">
-          <p class="card-text line-break text-break">{{$Post.Text}}</p>
-        </div>
-
-      </div>
+      {{ template "post" $Post }}
       {{ end }}
     </div>
   </div>
