@@ -19,6 +19,13 @@ type Post struct {
 	UpdatedAt time.Time `json:"-"`
 }
 
+func (p *Post) getThreadID() int {
+	if p.IsParent {
+		return p.ID
+	}
+	return p.ParentID
+}
+
 type File struct {
 	ID        int       `json:"-"`
 	PostID    int       `json:"-"`
@@ -39,6 +46,12 @@ type HtmlFormData struct {
 	IsCaptchaActive bool
 }
 
+// index.html
+type HtmlPaginationData struct {
+	PagesCount int
+	Page       int
+}
+
 // thread.html
 type GetThreadHtmlData struct {
 	Thread   []Post
@@ -48,8 +61,7 @@ type GetThreadHtmlData struct {
 // index.html
 type GetThreadsHtmlData struct {
 	Threads    []Post `json:"threads"`
-	PagesCount int    `json:"pagesCount"`
-	Page       int    `json:"page"`
+	Pagination HtmlPaginationData
 	FormData   HtmlFormData
 }
 

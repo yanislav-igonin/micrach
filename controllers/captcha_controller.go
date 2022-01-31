@@ -15,7 +15,7 @@ func GetCaptcha(c *gin.Context) {
 	err := captcha.WriteImage(&content, ID, captcha.StdWidth, captcha.StdHeight)
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "500.html", nil)
+		c.HTML(http.StatusInternalServerError, "pages/500.html", nil)
 		return
 	}
 

@@ -1,0 +1,29 @@
+{{ $FirstPost:= index .Thread 0 }}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {{ template "static" }}
+  {{ template "meta-tags-dynamic" $FirstPost }}
+  <link href="/static/styles/thread.css" rel="stylesheet">
+  <link href="/static/styles/post.css" rel="stylesheet">
+</head>
+
+<body>
+  {{ template "header" $FirstPost.Title }}
+
+  <div class="container">
+    {{ template "post-form" .FormData }}
+
+    <div id="postsСontainer">
+      {{ range $Post := .Thread }}
+      {{ template "post" $Post }}
+      {{ end }}
+    </div>
+  </div>
+
+  {{ template "footer" }}
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {{ template "static" }}
+  <link href="/static/styles/index.css" rel="stylesheet">
+  {{ template "meta-tags-static" }}
+</head>
+
+<body>
+  {{ template "header" }}
+
+  <div class="container">
+    {{ template "post-form" .FormData }}
+
+    <div id="" class="row row-cols-auto gy-4 mb-4 justify-content-center">
+      {{ range $Post := .Threads }}
+      {{ template "thread-card" $Post }}
+      {{ end }}
+    </div>
+
+    {{ template "pagiantion" .Pagination }}
+  </div>
+
+  {{ template "footer" }}
+</body>
+
+</html>

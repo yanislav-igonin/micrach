@@ -54,9 +54,11 @@ func GetThreads(c *gin.Context) {
 
 	captchaID := captcha.New()
 	htmlData := Repositories.GetThreadsHtmlData{
-		Threads:    threads,
-		PagesCount: pagesCount,
-		Page:       page,
+		Threads: threads,
+		Pagination: Repositories.HtmlPaginationData{
+			PagesCount: pagesCount,
+			Page:       page,
+		},
 		FormData: Repositories.HtmlFormData{
 			CaptchaID:       captchaID,
 			IsCaptchaActive: Config.App.IsCaptchaActive,

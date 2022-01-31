@@ -1,0 +1,12 @@
+{{ define "pagiantion" }}
+  <nav aria-label="Page navigation">
+    <ul id="pagesList" class="pagination justify-content-center">
+      {{ $ActivePage := .Page }}
+      {{ range $i := Iterate .PagesCount }}
+      <li class="page-item {{ if (eq $i $ActivePage) }} active {{ end }}">
+        <a class="page-link" href="/?page={{ $i }}">{{ $i }}</a>
+      </li>
+      {{ end }}
+    </ul>
+  </nav>
+{{ end }}

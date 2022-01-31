@@ -1,0 +1,20 @@
+{{ define "post" }}
+  <div class="post-container mb-4">
+    {{ $filesLength := len .Files }}
+    {{ if gt $filesLength 0 }}
+    <div class="files-container">
+      {{ range $File := .Files }}
+      <div class="file-container">
+        <a href="/uploads/{{.getThreadID}}/o/{{$File.ID}}.{{$File.Ext}}" target="blank">
+          <img src="/uploads/{{.getThreadID}}/t/{{$File.ID}}.{{$File.Ext}}" class="file" alt="Uploaded picture">
+        </a>
+      </div>
+      {{ end }}
+    </div>
+    {{ end }}
+
+    <div class="p-2">
+      <p class="card-text line-break text-break">{{.Text}}</p>
+    </div>
+  </div>
+{{ end }}
