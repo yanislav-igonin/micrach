@@ -1,0 +1,8 @@
+{{ define "thread-card-text" }}
+  {{ $length := len . }}
+  {{ if gt $length 300 }}
+  <p class="card-text line-break text-break">{{ slice . 0 300 }} ...</p>
+  {{ else }}
+  <p class="card-text line-break text-break">{{ . }}</p>
+  {{ end }}
+{{ end }}

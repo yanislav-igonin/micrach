@@ -8,17 +8,8 @@
       {{ end }}
 
       <div class="card-body">
-        {{ if ne .Title "" }}
-        <h5 class="card-title">{{.Title}}</h5>
-        {{ end }}
-
-        {{ $textLength := len .Text }}
-        {{ if gt $textLength 300 }}
-        <p class="card-text line-break text-break">{{ slice .Text 0 300 }} ...</p>
-        {{ else }}
-        <p class="card-text line-break text-break">{{.Text}}</p>
-        {{ end }}
-
+        {{ template "thread-card-title" .Title }}
+        {{ template "thread-card-text" .Text }}
         <a href="/{{.ID}}" class="btn btn-outline-primary">Open</a>
       </div>
     </div>
