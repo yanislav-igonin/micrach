@@ -7,17 +7,26 @@ import (
 	"strings"
 )
 
-// Returns all html templates paths from ../templates folder.
-func getHtmlTemplatePaths() []string {
+// Gets file paths from directory recursively.
+func getFilePathsRecursively(dir string) ([]string, error) {
 	var paths []string
-	files, err := ioutil.ReadDir("templates")
+	files, err := ioutil.ReadDir(dir)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	for _, file := range files {
-		paths = append(paths, "templates/"+file.Name())
+		if file.IsDir() {
+			subdir := dir + "/" + file.Name()
+			subpaths, err := getFilePathsRecursively(subdir)
+			if err != nil {
+				return nil, err
+			}
+			paths = append(paths, subpaths...)
+			continue
+		}
+		paths = append(paths, dir+"/"+file.Name())
 	}
-	return paths
+	return paths, nil
 }
 
 // Returns all css files paths in ../static/styles folder.
@@ -80,7 +89,10 @@ func randomString(length int) string {
 // Renames css files to prevent caching old files on production.
 func RenameCss() {
 	cssMap := createCssMap()
-	htmlTemplatePaths := getHtmlTemplatePaths()
+	htmlTemplatePaths, err := getFilePathsRecursively("templates")
+	if err != nil {
+		panic(err)
+	}
 
 	for origPath, newPath := range cssMap {
 		renameFile(origPath, newPath)
