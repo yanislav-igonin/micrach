@@ -9,7 +9,7 @@ import "time"
 type Post struct {
 	ID        int       `json:"id"`
 	IsParent  bool      `json:"-"`
-	ParentID  int       `json:"parentId"`
+	ParentID  *int      `json:"parentId"`
 	IsDeleted bool      `json:"-"`
 	Title     string    `json:"title"`
 	Text      string    `json:"text"`
@@ -23,7 +23,7 @@ func (p Post) GetThreadID() int {
 	if p.IsParent {
 		return p.ID
 	}
-	return p.ParentID
+	return *p.ParentID
 }
 
 type File struct {

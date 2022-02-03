@@ -320,7 +320,7 @@ func UpdateThread(c *gin.Context) {
 	}
 	post := Repositories.Post{
 		IsParent: false,
-		ParentID: threadID,
+		ParentID: &threadID,
 		Title:    "",
 		Text:     text,
 		IsSage:   isSage,

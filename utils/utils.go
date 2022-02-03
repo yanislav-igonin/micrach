@@ -75,11 +75,11 @@ func ValidatePost(title, text string, files []*multipart.FileHeader) string {
 		return Repositories.InvalidTextOrFilesErrorMessage
 	}
 
-	if len(title) > 100 {
+	if len([]rune(title)) > 100 {
 		return Repositories.InvalidTitleLengthErrorMessage
 	}
 
-	if len(text) > 1000 {
+	if len([]rune(text)) > 1000 {
 		return Repositories.InvalidTextLengthErrorMessage
 	}
 

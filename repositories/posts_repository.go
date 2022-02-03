@@ -115,7 +115,8 @@ func (r *PostsRepository) GetThreadByPostID(ID int) ([]Post, error) {
 			text,
 			is_sage,
 			created_at,
-			is_parent
+			is_parent,
+			parent_id
 		FROM posts
 		WHERE
 				(id = $1 AND is_parent = true AND is_deleted != true)
@@ -142,6 +143,7 @@ func (r *PostsRepository) GetThreadByPostID(ID int) ([]Post, error) {
 			&post.IsSage,
 			&post.CreatedAt,
 			&post.IsParent,
+			&post.ParentID,
 		)
 		if err != nil {
 			return nil, err

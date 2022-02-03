@@ -47,7 +47,7 @@ func getPost(id int, pid *int) Post {
 	return Post{
 		ID:        id,
 		IsParent:  isParent,
-		ParentID:  parentID,
+		ParentID:  &parentID,
 		IsDeleted: false,
 		Title:     randSeq(rand.Intn(100)),
 		Text:      randSeq(rand.Intn(100)),
