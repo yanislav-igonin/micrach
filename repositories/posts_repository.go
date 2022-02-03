@@ -276,6 +276,6 @@ func (r *PostsRepository) BumpThreadInTx(tx pgx.Tx, id int) error {
 		WHERE id = $1
 	`
 
-	_, err := tx.Query(context.TODO(), sql, id)
+	_, err := tx.Exec(context.TODO(), sql, id)
 	return err
 }
