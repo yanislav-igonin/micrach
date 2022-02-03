@@ -19,7 +19,7 @@ type Post struct {
 	UpdatedAt time.Time `json:"-"`
 }
 
-func (p *Post) getThreadID() int {
+func (p Post) GetThreadID() int {
 	if p.IsParent {
 		return p.ID
 	}
