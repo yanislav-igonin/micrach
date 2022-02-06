@@ -26,7 +26,7 @@ func main() {
 	Db.Migrate()
 	defer Db.Pool.Close()
 	gin.SetMode(Config.App.Env)
-	if Config.App.SeedDb {
+	if Config.App.IsDbSeeded {
 		Repositories.Seed()
 	}
 

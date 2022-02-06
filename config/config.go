@@ -10,7 +10,7 @@ import (
 type AppConfig struct {
 	Env                  string
 	Port                 int
-	SeedDb               bool
+	IsDbSeeded           bool
 	IsRateLimiterEnabled bool
 	ThreadsMaxCount      int
 	ThreadBumpLimit      int
@@ -49,7 +49,7 @@ func getValueOrDefaultString(value string, defaultValue string) string {
 func getAppConfig() AppConfig {
 	env := getValueOrDefaultString(os.Getenv("ENV"), "release")
 	port := getValueOrDefaultInt(os.Getenv("PORT"), 3000)
-	seedDb := getValueOrDefaultBoolean(os.Getenv("SEED_DB"), false)
+	isDbSeeded := getValueOrDefaultBoolean(os.Getenv("IS_DB_SEEDED"), false)
 	isRateLimiterEnabled := getValueOrDefaultBoolean(os.Getenv("IS_RATE_LIMITER_ENABLED"), true)
 	threadsMaxCount := getValueOrDefaultInt(os.Getenv("THREADS_MAX_COUNT"), 50)
 	threadBumpLimit := getValueOrDefaultInt(os.Getenv("THREAD_BUMP_LIMIT"), 500)
@@ -58,7 +58,7 @@ func getAppConfig() AppConfig {
 	return AppConfig{
 		Env:                  env,
 		Port:                 port,
-		SeedDb:               seedDb,
+		IsDbSeeded:           isDbSeeded,
 		IsRateLimiterEnabled: isRateLimiterEnabled,
 		ThreadsMaxCount:      threadsMaxCount,
 		ThreadBumpLimit:      threadBumpLimit,
