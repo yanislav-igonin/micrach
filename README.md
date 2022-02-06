@@ -12,3 +12,11 @@ Maybe I'll add an api and create a SPA with the Next.js framework in the future,
 2. PostgreSQL.
 3. Create `.env` file from `.env.example`, change env vars to your needs.
 4. Create db with the name that is specified in `.env` file in `POSTGRES_URL` env var.
+
+## Run
+Just run:
+```sh
+go run main.go
+```
+
+**In development** I prefer to run it with [fresh](https://github.com/gravityblast/fresh) for live reload.
