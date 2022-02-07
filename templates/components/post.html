@@ -1,20 +1,27 @@
 {{ define "post" }}
   <div class="post-container mb-4">
-    {{ $filesLength := len .Files }}
-    {{ if gt $filesLength 0 }}
-    <div class="files-container">
-      {{ range $File := .Files }}
-      <div class="file-container">
-        <a href="/uploads/{{$.GetThreadID}}/o/{{$File.ID}}.{{$File.Ext}}" target="blank">
-          <img src="/uploads/{{$.GetThreadID}}/t/{{$File.ID}}.{{$File.Ext}}" class="file" alt="Uploaded picture">
-        </a>
-      </div>
-      {{ end }}
-    </div>
-    {{ end }}
-
     <div class="p-2">
-      <p class="card-text line-break text-break">{{.Text}}</p>
+      <div class="post-info-container">
+        <span>{{ .CreatedAt.Format "Jan 02, 2006 15:04:05" }}</span>
+        <span>#{{ .ID }}</span>
+      </div>
+
+      <div class="post-body-container">
+        {{ $filesLength := len .Files }}
+        {{ if gt $filesLength 0 }}
+        <div class="files-container">
+          {{ range $File := .Files }}
+          <div class="file-container">
+            <a href="/uploads/{{$.GetThreadID}}/o/{{$File.ID}}.{{$File.Ext}}" target="blank">
+              <img src="/uploads/{{$.GetThreadID}}/t/{{$File.ID}}.{{$File.Ext}}" class="file" alt="Uploaded picture">
+            </a>
+          </div>
+          {{ end }}
+        </div>
+        {{ end }}
+        
+        <p class="card-text line-break text-break">{{.Text}}</p>
+      </div>
     </div>
   </div>
 {{ end }}
