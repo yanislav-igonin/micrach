@@ -15,8 +15,10 @@
 
 .file-container {
   max-width: 5rem;
+  padding: 2px;
 }
 
 .file {
   width: 100%;
+  border-radius: 5px;
 }
