@@ -119,15 +119,17 @@ func CreateThread(c *gin.Context) {
 		return
 	}
 
-	captchaID := form.Value["captchaId"][0]
-	captchaString := form.Value["captcha"][0]
-	isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
-	if !isCaptchaValid {
-		errorHtmlData := Repositories.BadRequestHtmlData{
-			Message: Repositories.InvalidCaptchaErrorMessage,
+	if Config.App.IsCaptchaActive {
+		captchaID := form.Value["captchaId"][0]
+		captchaString := form.Value["captcha"][0]
+		isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
+		if !isCaptchaValid {
+			errorHtmlData := Repositories.BadRequestHtmlData{
+				Message: Repositories.InvalidCaptchaErrorMessage,
+			}
+			c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
+			return
 		}
-		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
-		return
 	}
 
 	conn, err := Db.Pool.Acquire(context.TODO())
@@ -279,15 +281,17 @@ func UpdateThread(c *gin.Context) {
 		return
 	}
 
-	captchaID := form.Value["captchaId"][0]
-	captchaString := form.Value["captcha"][0]
-	isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
-	if !isCaptchaValid {
-		errorHtmlData := Repositories.BadRequestHtmlData{
-			Message: Repositories.InvalidCaptchaErrorMessage,
+	if Config.App.IsCaptchaActive {
+		captchaID := form.Value["captchaId"][0]
+		captchaString := form.Value["captcha"][0]
+		isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
+		if !isCaptchaValid {
+			errorHtmlData := Repositories.BadRequestHtmlData{
+				Message: Repositories.InvalidCaptchaErrorMessage,
+			}
+			c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
+			return
 		}
-		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
-		return
 	}
 
 	isSageField := form.Value["sage"]
