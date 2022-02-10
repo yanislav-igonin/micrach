@@ -67,6 +67,9 @@ func main() {
 	}
 	router.Static("/uploads", "./uploads")
 	router.Static("/static", "./static")
+	if Config.App.Gateway.Url != "" {
+		router.GET("/ping", Controllers.Ping)
+	}
 	router.GET("/", Controllers.GetThreads)
 	router.POST("/", Controllers.CreateThread)
 	router.GET("/:threadID", Controllers.GetThread)
