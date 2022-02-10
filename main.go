@@ -1,12 +1,8 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"html/template"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -20,6 +16,7 @@ import (
 	Config "micrach/config"
 	Controllers "micrach/controllers"
 	Db "micrach/db"
+	Gateway "micrach/gateway"
 	Repositories "micrach/repositories"
 	Utils "micrach/utils"
 )
@@ -72,29 +69,8 @@ func main() {
 	router.Static("/uploads", "./uploads")
 	router.Static("/static", "./static")
 	if Config.App.Gateway.Url != "" {
-		router.GET("/ping", Controllers.Ping)
-		// make http request to gateway to tell the board id and description
-		requestBody, _ := json.Marshal(map[string]string{
-			"id":          Config.App.Gateway.BoardId,
-			"description": Config.App.Gateway.BoardDescription,
-		})
-		url := Config.App.Gateway.Url + "/boards"
-		req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
-		if err != nil {
-			log.Panicln(err)
-		}
-		req.Header.Set("Authorization", Config.App.Gateway.ApiKey)
-		req.Header.Set("Content-Type", "application/json")
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			log.Panicln(err)
-		}
-		//We Read the response body on the line below.
-		_, err = ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Panicln(err)
-		}
+		router.GET("/ping", Gateway.Ping)
+		Gateway.Connect()
 	}
 	router.GET("/", Controllers.GetThreads)
 	router.POST("/", Controllers.CreateThread)

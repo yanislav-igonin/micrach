@@ -1,4 +1,4 @@
-package controllers
+package gateway
 
 import (
 	Config "micrach/config"
