@@ -8,8 +8,10 @@ import (
 )
 
 type GatewayConfig struct {
-	Url    string
-	ApiKey string
+	Url              string
+	ApiKey           string
+	BoardId          string
+	BoardDescription string
 }
 
 type AppConfig struct {
@@ -55,10 +57,14 @@ func getValueOrDefaultString(value string, defaultValue string) string {
 func getGatewayConfig() GatewayConfig {
 	url := os.Getenv("GATEWAY_URL")
 	apiKey := os.Getenv("GATEWAY_API_KEY")
+	boardId := os.Getenv("GATEWAY_BOARD_ID")
+	description := os.Getenv("GATEWAY_BOARD_DESCRIPTION")
 
 	return GatewayConfig{
-		Url:    url,
-		ApiKey: apiKey,
+		Url:              url,
+		ApiKey:           apiKey,
+		BoardId:          boardId,
+		BoardDescription: description,
 	}
 }
 
