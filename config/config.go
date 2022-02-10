@@ -7,6 +7,11 @@ import (
 	"strconv"
 )
 
+type GatewayConfig struct {
+	Url    string
+	ApiKey string
+}
+
 type AppConfig struct {
 	Env                  string
 	Port                 int
@@ -15,6 +20,7 @@ type AppConfig struct {
 	ThreadsMaxCount      int
 	ThreadBumpLimit      int
 	IsCaptchaActive      bool
+	Gateway              GatewayConfig
 }
 
 type DbConfig struct {
@@ -46,6 +52,16 @@ func getValueOrDefaultString(value string, defaultValue string) string {
 	return value
 }
 
+func getGatewayConfig() GatewayConfig {
+	url := os.Getenv("GATEWAY_URL")
+	apiKey := os.Getenv("GATEWAY_API_KEY")
+
+	return GatewayConfig{
+		Url:    url,
+		ApiKey: apiKey,
+	}
+}
+
 func getAppConfig() AppConfig {
 	env := getValueOrDefaultString(os.Getenv("ENV"), "release")
 	port := getValueOrDefaultInt(os.Getenv("PORT"), 3000)
@@ -54,6 +70,7 @@ func getAppConfig() AppConfig {
 	threadsMaxCount := getValueOrDefaultInt(os.Getenv("THREADS_MAX_COUNT"), 50)
 	threadBumpLimit := getValueOrDefaultInt(os.Getenv("THREAD_BUMP_LIMIT"), 500)
 	isCaptchaActive := getValueOrDefaultBoolean(os.Getenv("IS_CAPTCHA_ACTIVE"), true)
+	gateway := getGatewayConfig()
 
 	return AppConfig{
 		Env:                  env,
@@ -63,6 +80,7 @@ func getAppConfig() AppConfig {
 		ThreadsMaxCount:      threadsMaxCount,
 		ThreadBumpLimit:      threadBumpLimit,
 		IsCaptchaActive:      isCaptchaActive,
+		Gateway:              gateway,
 	}
 }
 
