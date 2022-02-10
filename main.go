@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"html/template"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -69,6 +73,21 @@ func main() {
 	router.Static("/static", "./static")
 	if Config.App.Gateway.Url != "" {
 		router.GET("/ping", Controllers.Ping)
+		// make http request to gateway to tell the board id and description
+		requestBody, _ := json.Marshal(map[string]string{
+			"id":          Config.App.Gateway.BoardId,
+			"description": Config.App.Gateway.BoardDescription,
+		})
+		requestBodyBuffer := bytes.NewBuffer(requestBody)
+		resp, err := http.Post(Config.App.Gateway.Url+"/boards", "application/json", requestBodyBuffer)
+		if err != nil {
+			log.Panicln(err)
+		}
+		//We Read the response body on the line below.
+		_, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Panicln(err)
+		}
 	}
 	router.GET("/", Controllers.GetThreads)
 	router.POST("/", Controllers.CreateThread)
