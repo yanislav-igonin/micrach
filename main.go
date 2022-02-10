@@ -78,8 +78,15 @@ func main() {
 			"id":          Config.App.Gateway.BoardId,
 			"description": Config.App.Gateway.BoardDescription,
 		})
-		requestBodyBuffer := bytes.NewBuffer(requestBody)
-		resp, err := http.Post(Config.App.Gateway.Url+"/boards", "application/json", requestBodyBuffer)
+		url := Config.App.Gateway.Url + "/boards"
+		req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+		if err != nil {
+			log.Panicln(err)
+		}
+		req.Header.Set("Authorization", Config.App.Gateway.ApiKey)
+		req.Header.Set("Content-Type", "application/json")
+		client := &http.Client{}
+		resp, err := client.Do(req)
 		if err != nil {
 			log.Panicln(err)
 		}
