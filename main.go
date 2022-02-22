@@ -69,7 +69,7 @@ func main() {
 	router.Static("/uploads", "./uploads")
 	router.Static("/static", "./static")
 	if Config.App.Gateway.Url != "" {
-		router.GET("/ping", Gateway.Ping)
+		router.GET("/api/ping", Gateway.Ping)
 		Gateway.Connect()
 	}
 	router.GET("/", Controllers.GetThreads)

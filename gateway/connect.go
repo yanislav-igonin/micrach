@@ -16,7 +16,7 @@ func Connect() {
 		"id":          Config.App.Gateway.BoardId,
 		"description": Config.App.Gateway.BoardDescription,
 	})
-	url := Config.App.Gateway.Url + "/boards"
+	url := Config.App.Gateway.Url + "/api/boards"
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
 	if err != nil {
 		log.Panicln(err)
