@@ -1,6 +1,6 @@
 {{ define "header" }}
 
-{{ if . }}
+{{ if NotNil . }}
   <a href="/" class="thread-title-link">
     <h1 class="display-1 text-center thread-title">
       {{ if ne . "" }}

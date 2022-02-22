@@ -17,6 +17,7 @@ import (
 	Controllers "micrach/controllers"
 	Db "micrach/db"
 	Repositories "micrach/repositories"
+	Templates "micrach/templates"
 	Utils "micrach/utils"
 )
 
@@ -51,14 +52,8 @@ func main() {
 	router.Use(gin.Recovery())
 
 	router.SetFuncMap(template.FuncMap{
-		"Iterate": func(count int) []int {
-			var i int
-			var Items []int
-			for i = 1; i < count+1; i++ {
-				Items = append(Items, i)
-			}
-			return Items
-		},
+		"Iterate": Templates.Iterate,
+		"NotNil":  Templates.NotNil,
 	})
 	router.LoadHTMLGlob("templates/**/*")
 	router.ForwardedByClientIP = true
