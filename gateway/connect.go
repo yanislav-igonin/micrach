@@ -13,8 +13,9 @@ import (
 // Make http request to gateway to tell the board id and description
 func Connect() {
 	requestBody, _ := json.Marshal(map[string]string{
-		"id":          Config.App.Gateway.BoardId,
-		"description": Config.App.Gateway.BoardDescription,
+		"id":   Config.App.Gateway.BoardId,
+		"name": Config.App.Gateway.BoardDescription,
+		"url":  Config.App.Gateway.Url,
 	})
 	url := Config.App.Gateway.Url + "/api/boards"
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
@@ -33,4 +34,5 @@ func Connect() {
 	if err != nil {
 		log.Panicln(err)
 	}
+	log.Println("gateway - online")
 }

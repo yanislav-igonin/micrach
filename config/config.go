@@ -11,6 +11,7 @@ type GatewayConfig struct {
 	Url              string
 	ApiKey           string
 	BoardId          string
+	BoardUrl         string
 	BoardDescription string
 }
 
@@ -59,11 +60,13 @@ func getGatewayConfig() GatewayConfig {
 	apiKey := os.Getenv("GATEWAY_API_KEY")
 	boardId := os.Getenv("GATEWAY_BOARD_ID")
 	description := os.Getenv("GATEWAY_BOARD_DESCRIPTION")
+	boardUrl := os.Getenv("GATEWAY_BOARD_URL")
 
 	return GatewayConfig{
 		Url:              url,
 		ApiKey:           apiKey,
 		BoardId:          boardId,
+		BoardUrl:         boardUrl,
 		BoardDescription: description,
 	}
 }
