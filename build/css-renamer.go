@@ -57,16 +57,16 @@ func createCssMap() map[string]string {
 // Renames file by paths.
 func renameFile(oldPath, newPath string) {
 	// rename the file
-	err := os.Rename(oldPath, newPath)
+	err := os.Rename(removeFirstChar(oldPath), removeFirstChar(newPath))
 	if err != nil {
 		panic(err)
 	}
 }
 
 // Removes first character from string.
-// func removeFirstChar(s string) string {
-// 	return s[1:]
-// }
+func removeFirstChar(s string) string {
+	return s[1:]
+}
 
 // Generates a random string.
 func randomString(length int) string {
