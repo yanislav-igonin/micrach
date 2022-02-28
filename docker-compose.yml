@@ -38,18 +38,19 @@ services:
         traefik.http.services.micrach.loadbalancer.server.port: ${PORT}
 
         traefik.http.middlewares.micrach-https-redirect.redirectscheme.scheme: "https"
+        traefik.http.middlewares.prefixstripper.stripprefix.prefixes: "/${GATEWAY_BOARD_ID}"
+        traefik.http.middlewares.prefixstripper.stripprefix.forceSlash: "false"
 
         traefik.http.routers.micrach.entrypoints: "http"
         traefik.http.routers.micrach.rule: "Host(`micrach.igonin.dev`) && PathPrefix(`/${GATEWAY_BOARD_ID}`)"
         traefik.http.routers.micrach.middlewares: "micrach-https-redirect"
-
-        traefik.http.middlewares.micrach-secure.stripprefix.prefixes: "/${GATEWAY_BOARD_ID}"
-        traefik.http.middlewares.micrach-secure.stripprefix.forceSlash: "false"
+        traefik.http.routers.micrach.middlewares: "prefixstripper"
 
         traefik.http.routers.micrach-secure.entrypoints: "https"
         traefik.http.routers.micrach-secure.rule: "Host(`micrach.igonin.dev`) && PathPrefix(`/${GATEWAY_BOARD_ID}`)"
         traefik.http.routers.micrach-secure.tls: "true"
         traefik.http.routers.micrach-secure.service: "micrach"
+        traefik.http.routers.micrach-secure.middlewares: "prefixstripper"
 
 networks:
   web:
