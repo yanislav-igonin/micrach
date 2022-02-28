@@ -4,7 +4,7 @@
       {{ $length := len .Files }}
       {{ if gt $length 0 }}
       {{ $FirstFile := index .Files 0 }}
-      <img src="uploads/{{.ID}}/t/{{$FirstFile.ID}}.{{$FirstFile.Ext}}" class="card-img-top" alt="Uploaded picture">
+      <img src="/uploads/{{.ID}}/t/{{$FirstFile.ID}}.{{$FirstFile.Ext}}" class="card-img-top" alt="Uploaded picture">
       {{ end }}
 
       <div class="card-body">
