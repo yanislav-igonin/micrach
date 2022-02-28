@@ -40,14 +40,14 @@ services:
         traefik.http.middlewares.micrach-https-redirect.redirectscheme.scheme: "https"
 
         traefik.http.routers.micrach.entrypoints: "http"
-        traefik.http.routers.micrach.rule: "Host(`micrach.igonin.dev`) && Path(`/${GATEWAY_BOARD_ID}`)"
+        traefik.http.routers.micrach.rule: "Host(`micrach.igonin.dev`) && PathPrefix(`/${GATEWAY_BOARD_ID}`)"
         traefik.http.routers.micrach.middlewares: "micrach-https-redirect"
 
         traefik.http.middlewares.micrach-secure.stripprefix.prefixes: "/${GATEWAY_BOARD_ID}"
         traefik.http.middlewares.micrach-secure.stripprefix.forceSlash: "false"
 
         traefik.http.routers.micrach-secure.entrypoints: "https"
-        traefik.http.routers.micrach-secure.rule: "Host(`micrach.igonin.dev`) && Path(`/${GATEWAY_BOARD_ID}`)"
+        traefik.http.routers.micrach-secure.rule: "Host(`micrach.igonin.dev`) && PathPrefix(`/${GATEWAY_BOARD_ID}`)"
         traefik.http.routers.micrach-secure.tls: "true"
         traefik.http.routers.micrach-secure.service: "micrach"
 
