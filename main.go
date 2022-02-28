@@ -16,6 +16,7 @@ import (
 	Config "micrach/config"
 	Controllers "micrach/controllers"
 	Db "micrach/db"
+	Gateway "micrach/gateway"
 	Repositories "micrach/repositories"
 	Templates "micrach/templates"
 	Utils "micrach/utils"
@@ -62,6 +63,10 @@ func main() {
 	}
 	router.Static("/uploads", "./uploads")
 	router.Static("/static", "./static")
+	if Config.App.Gateway.Url != "" {
+		router.GET("/api/ping", Gateway.Ping)
+		Gateway.Connect()
+	}
 	router.GET("/", Controllers.GetThreads)
 	router.POST("/", Controllers.CreateThread)
 	router.GET("/:threadID", Controllers.GetThread)

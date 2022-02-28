@@ -1,3 +1,7 @@
 #pagesList {
   flex-wrap: wrap
 }
+
+.github-icon {
+  width: 2.5rem;
+}
