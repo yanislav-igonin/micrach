@@ -37,14 +37,16 @@ services:
         
         traefik.http.services.micrach.loadbalancer.server.port: ${PORT}
 
+        traefik.http.middlewares.haiku-bot-secure.stripprefix.prefixes: ${GATEWAY_BOARD_ID}
+        traefik.http.middlewares.haiku-bot-secure.stripprefix.forceSlash: false
         traefik.http.middlewares.micrach-https-redirect.redirectscheme.scheme: "https"
 
         traefik.http.routers.micrach.entrypoints: "http"
-        traefik.http.routers.micrach.rule: "Host(`micrach.igonin.dev`) && PathPrefix(`/${GATEWAY_BOARD_ID}`)"
+        traefik.http.routers.micrach.rule: "Host(`micrach.igonin.dev`) && Path(`/${GATEWAY_BOARD_ID}`)"
         traefik.http.routers.micrach.middlewares: "micrach-https-redirect"
 
         traefik.http.routers.micrach-secure.entrypoints: "https"
-        traefik.http.routers.micrach-secure.rule: "Host(`micrach.igonin.dev`) && PathPrefix(`/${GATEWAY_BOARD_ID}`)"
+        traefik.http.routers.micrach-secure.rule: "Host(`micrach.igonin.dev`) && Path(`/${GATEWAY_BOARD_ID}`)"
         traefik.http.routers.micrach-secure.tls: "true"
         traefik.http.routers.micrach-secure.service: "micrach"
 
@@ -52,3 +54,5 @@ networks:
   web:
     driver: overlay
     external: true
+
+POSTGRES_URL=postgres://qzvyzlyk:OKTJEahUUPJ_1mB_s7-27Wqcp2GE64sS@tai.db.elephantsql.com/qzvyzlyk?pool_max_conns=5 GATEWAY_BOARD_ID=b GATEWAY_BOARD_DESCRIPTION=Random GATEWAY_BOARD_URL=https://micrach.igonin.dev/b ENV=release PORT=3000 docker stack deploy -c docker-compose.yml micrach
