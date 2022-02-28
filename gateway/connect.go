@@ -30,9 +30,10 @@ func Connect() {
 		log.Panicln(err)
 	}
 	//We Read the response body on the line below.
-	_, err = ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Panicln(err)
 	}
+	log.Println(string(body))
 	log.Println("gateway - online")
 }
