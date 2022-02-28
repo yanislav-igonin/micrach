@@ -37,7 +37,7 @@ func getCssFilesPaths() []string {
 		panic(err)
 	}
 	for _, file := range files {
-		paths = append(paths, "static/styles/"+file.Name())
+		paths = append(paths, "/static/styles/"+file.Name())
 	}
 	return paths
 }
@@ -47,7 +47,7 @@ func createCssMap() map[string]string {
 	var cssMap = make(map[string]string)
 	origPaths := getCssFilesPaths()
 	for _, origPath := range origPaths {
-		newPath := "static/styles/" + randomString(10) + ".css"
+		newPath := "/static/styles/" + randomString(10) + ".css"
 		cssMap[origPath] = newPath
 	}
 
