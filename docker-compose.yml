@@ -12,6 +12,13 @@ services:
       IS_RATE_LIMITER_ENABLED: ${IS_RATE_LIMITER_ENABLED}
       THREADS_MAX_COUNT: ${THREADS_MAX_COUNT}
       POSTGRES_URL: ${POSTGRES_URL}
+      THREAD_BUMP_LIMIT: ${THREAD_BUMP_LIMIT}
+      IS_CAPTCHA_ACTIVE: ${IS_CAPTCHA_ACTIVE}
+      GATEWAY_URL: ${GATEWAY_URL}
+      GATEWAY_API_KEY: ${GATEWAY_API_KEY}
+      GATEWAY_BOARD_ID: ${GATEWAY_BOARD_ID}
+      GATEWAY_BOARD_URL: ${GATEWAY_BOARD_URL}
+      GATEWAY_BOARD_DESCRIPTION: ${GATEWAY_BOARD_DESCRIPTION}
     volumes:
       - /root/micrach-go/uploads:/app/uploads
     deploy:
@@ -33,11 +40,11 @@ services:
         traefik.http.middlewares.micrach-https-redirect.redirectscheme.scheme: "https"
 
         traefik.http.routers.micrach.entrypoints: "http"
-        traefik.http.routers.micrach.rule: "Host(`micrach.igonin.dev`) && PathPrefix(`/b`)"
+        traefik.http.routers.micrach.rule: "Host(`micrach.igonin.dev`) && PathPrefix(`/${GATEWAY_BOARD_ID}`)"
         traefik.http.routers.micrach.middlewares: "micrach-https-redirect"
 
         traefik.http.routers.micrach-secure.entrypoints: "https"
-        traefik.http.routers.micrach-secure.rule: "Host(`micrach.igonin.dev`) && PathPrefix(`/b`)"
+        traefik.http.routers.micrach-secure.rule: "Host(`micrach.igonin.dev`) && PathPrefix(`/${GATEWAY_BOARD_ID}`)"
         traefik.http.routers.micrach-secure.tls: "true"
         traefik.http.routers.micrach-secure.service: "micrach"
 
