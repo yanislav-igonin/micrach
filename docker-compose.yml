@@ -43,7 +43,7 @@ services:
         traefik.http.routers.micrach.rule: "Host(`micrach.igonin.dev`) && Path(`/${GATEWAY_BOARD_ID}`)"
         traefik.http.routers.micrach.middlewares: "micrach-https-redirect"
 
-        traefik.http.middlewares.micrach-secure.stripprefix.prefixes: ${GATEWAY_BOARD_ID}
+        traefik.http.middlewares.micrach-secure.stripprefix.prefixes: "/${GATEWAY_BOARD_ID}"
         traefik.http.middlewares.micrach-secure.stripprefix.forceSlash: "false"
 
         traefik.http.routers.micrach-secure.entrypoints: "https"
