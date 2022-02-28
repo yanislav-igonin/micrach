@@ -54,5 +54,3 @@ networks:
   web:
     driver: overlay
     external: true
-
-POSTGRES_URL=postgres://qzvyzlyk:OKTJEahUUPJ_1mB_s7-27Wqcp2GE64sS@tai.db.elephantsql.com/qzvyzlyk?pool_max_conns=5 GATEWAY_BOARD_ID=b GATEWAY_BOARD_DESCRIPTION=Random GATEWAY_BOARD_URL=https://micrach.igonin.dev/b ENV=release PORT=3000 docker stack deploy -c docker-compose.yml micrach
