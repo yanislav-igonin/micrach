@@ -38,7 +38,7 @@ services:
         traefik.http.services.micrach.loadbalancer.server.port: ${PORT}
 
         traefik.http.middlewares.haiku-bot-secure.stripprefix.prefixes: ${GATEWAY_BOARD_ID}
-        traefik.http.middlewares.haiku-bot-secure.stripprefix.forceSlash: false
+        traefik.http.middlewares.haiku-bot-secure.stripprefix.forceSlash: "false"
         traefik.http.middlewares.micrach-https-redirect.redirectscheme.scheme: "https"
 
         traefik.http.routers.micrach.entrypoints: "http"
