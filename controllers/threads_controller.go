@@ -39,7 +39,7 @@ func GetThreads(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "500.html", nil)
 		return
 	}
-	count, err := Repositories.Posts.GetCount()
+	count, err := Repositories.Posts.GetThreadsCount()
 	if err != nil {
 		log.Println("error:", err)
 		c.HTML(http.StatusInternalServerError, "500.html", nil)
@@ -140,7 +140,7 @@ func CreateThread(c *gin.Context) {
 	}
 	defer conn.Release()
 
-	threadsCount, err := Repositories.Posts.GetCount()
+	threadsCount, err := Repositories.Posts.GetThreadsCount()
 	if err != nil {
 		log.Println("error:", err)
 		c.HTML(http.StatusInternalServerError, "500.html", nil)

@@ -61,7 +61,7 @@ func (r *PostsRepository) Get(limit, offset int) ([]Post, error) {
 	return posts, nil
 }
 
-func (r *PostsRepository) GetCount() (int, error) {
+func (r *PostsRepository) GetThreadsCount() (int, error) {
 	sql := `
 		SELECT COUNT(*)
 		FROM posts
