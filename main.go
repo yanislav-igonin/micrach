@@ -1,80 +1,95 @@
 package main
 
 import (
-	"html/template"
-	"log"
-	"strconv"
-	"time"
-
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	_ "github.com/joho/godotenv/autoload"
-	limiter "github.com/ulule/limiter/v3"
-	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
-	memory "github.com/ulule/limiter/v3/drivers/store/memory"
-
-	Build "micrach/build"
-	Config "micrach/config"
-	Controllers "micrach/controllers"
-	Db "micrach/db"
-	Gateway "micrach/gateway"
-	Repositories "micrach/repositories"
-	Templates "micrach/templates"
-	Utils "micrach/utils"
 )
 
+// import (
+// 	"html/template"
+// 	"log"
+// 	"strconv"
+// 	"time"
+
+// 	"github.com/gin-gonic/gin"
+// 	_ "github.com/joho/godotenv/autoload"
+// 	limiter "github.com/ulule/limiter/v3"
+// 	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
+// 	memory "github.com/ulule/limiter/v3/drivers/store/memory"
+
+// 	Build "micrach/build"
+// 	Config "micrach/config"
+// 	Controllers "micrach/controllers"
+// 	Db "micrach/db"
+// 	Gateway "micrach/gateway"
+// 	Repositories "micrach/repositories"
+// 	Templates "micrach/templates"
+// 	Utils "micrach/utils"
+// )
+
+// func main() {
+// 	Config.Init()
+// 	Db.Init()
+// 	Db.Migrate()
+// 	defer Db.Pool.Close()
+// 	gin.SetMode(Config.App.Env)
+// 	if Config.App.IsDbSeeded {
+// 		Repositories.Seed()
+// 	}
+
+// 	if Config.App.Env == "release" {
+// 		Build.RenameCss()
+// 	}
+
+// 	err := Utils.CreateUploadsFolder()
+// 	if err != nil {
+// 		log.Panicln(err)
+// 	}
+
+// 	rate := limiter.Rate{
+// 		Period: 1 * time.Hour,
+// 		Limit:  1000,
+// 	}
+// 	rateLimiterStore := memory.NewStore()
+// 	instance := limiter.New(rateLimiterStore, rate)
+// 	middleware := mgin.NewMiddleware(instance)
+
+// 	router := gin.New()
+// 	router.Use(gin.Recovery())
+
+// 	router.SetFuncMap(template.FuncMap{
+// 		"Iterate": Templates.Iterate,
+// 		"NotNil":  Templates.NotNil,
+// 	})
+// 	router.LoadHTMLGlob("templates/**/*")
+// 	router.ForwardedByClientIP = true
+// 	if Config.App.IsRateLimiterEnabled {
+// 		router.Use(middleware)
+// 	}
+// 	router.Static("/uploads", "./uploads")
+// 	router.Static("/static", "./static")
+// 	if Config.App.Gateway.Url != "" {
+// 		router.GET("/api/ping", Gateway.Ping)
+// 		Gateway.Connect()
+// 	}
+// 	router.GET("/", Controllers.GetThreads)
+// 	router.POST("/", Controllers.CreateThread)
+// 	router.GET("/:threadID", Controllers.GetThread)
+// 	router.POST("/:threadID", Controllers.UpdateThread)
+// 	router.GET("/captcha/:captchaID", Controllers.GetCaptcha)
+
+// 	log.Println("port", Config.App.Port, "- online")
+// 	log.Println("all systems nominal")
+
+// 	router.Run(":" + strconv.Itoa(Config.App.Port))
+// }
+
 func main() {
-	Config.Init()
-	Db.Init()
-	Db.Migrate()
-	defer Db.Pool.Close()
-	gin.SetMode(Config.App.Env)
-	if Config.App.IsDbSeeded {
-		Repositories.Seed()
-	}
+	app := fiber.New()
 
-	if Config.App.Env == "release" {
-		Build.RenameCss()
-	}
-
-	err := Utils.CreateUploadsFolder()
-	if err != nil {
-		log.Panicln(err)
-	}
-
-	rate := limiter.Rate{
-		Period: 1 * time.Hour,
-		Limit:  1000,
-	}
-	rateLimiterStore := memory.NewStore()
-	instance := limiter.New(rateLimiterStore, rate)
-	middleware := mgin.NewMiddleware(instance)
-
-	router := gin.New()
-	router.Use(gin.Recovery())
-
-	router.SetFuncMap(template.FuncMap{
-		"Iterate": Templates.Iterate,
-		"NotNil":  Templates.NotNil,
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
 	})
-	router.LoadHTMLGlob("templates/**/*")
-	router.ForwardedByClientIP = true
-	if Config.App.IsRateLimiterEnabled {
-		router.Use(middleware)
-	}
-	router.Static("/uploads", "./uploads")
-	router.Static("/static", "./static")
-	if Config.App.Gateway.Url != "" {
-		router.GET("/api/ping", Gateway.Ping)
-		Gateway.Connect()
-	}
-	router.GET("/", Controllers.GetThreads)
-	router.POST("/", Controllers.CreateThread)
-	router.GET("/:threadID", Controllers.GetThread)
-	router.POST("/:threadID", Controllers.UpdateThread)
-	router.GET("/captcha/:captchaID", Controllers.GetCaptcha)
 
-	log.Println("port", Config.App.Port, "- online")
-	log.Println("all systems nominal")
-
-	router.Run(":" + strconv.Itoa(Config.App.Port))
+	app.Listen(":3000")
 }
