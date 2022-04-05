@@ -1,6 +1,14 @@
 package main
 
 import (
+	"log"
+	"micrach/build"
+	"micrach/config"
+	"micrach/db"
+	"micrach/repositories"
+	"micrach/utils"
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 	_ "github.com/joho/godotenv/autoload"
 )
@@ -85,11 +93,35 @@ import (
 // }
 
 func main() {
+	config.Init()
+	db.Init()
+	db.Migrate()
+	defer db.Pool.Close()
+
+	if config.App.IsDbSeeded {
+		repositories.Seed()
+	}
+
+	if config.App.Env == "release" {
+		build.RenameCss()
+	}
+
+	err := utils.CreateUploadsFolder()
+	if err != nil {
+		log.Panicln(err)
+	}
+
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Hello, World!")
 	})
 
-	app.Listen(":3000")
+	log.Println("app - online, port -", strconv.Itoa(config.App.Port))
+	log.Println("all systems nominal")
+	err = app.Listen(":" + strconv.Itoa(config.App.Port))
+	if err != nil {
+		log.Println("app - ofline")
+		log.Panicln(err)
+	}
 }
