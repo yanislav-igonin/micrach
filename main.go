@@ -114,7 +114,19 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
+		return c.SendString("get threads")
+	})
+	app.Post("/", func(c *fiber.Ctx) error {
+		return c.SendString("create thread")
+	})
+	app.Get("/:threadID", func(c *fiber.Ctx) error {
+		return c.SendString("get thread by id")
+	})
+	app.Post("/threadID", func(c *fiber.Ctx) error {
+		return c.SendString("create post in thread")
+	})
+	app.Get("/captcha/:captchaID", func(c *fiber.Ctx) error {
+		return c.SendString("get captcha by id")
 	})
 
 	log.Println("app - online, port -", strconv.Itoa(config.App.Port))
