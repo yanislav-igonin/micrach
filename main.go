@@ -102,7 +102,7 @@ func main() {
 		repositories.Seed()
 	}
 
-	if config.App.Env == "release" {
+	if config.App.Env == "production" {
 		build.RenameCss()
 	}
 
