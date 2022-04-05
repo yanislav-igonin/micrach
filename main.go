@@ -6,10 +6,12 @@ import (
 	"micrach/config"
 	"micrach/db"
 	"micrach/repositories"
+	"micrach/templates"
 	"micrach/utils"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html"
 	_ "github.com/joho/godotenv/autoload"
 )
 
@@ -111,11 +113,18 @@ func main() {
 		log.Panicln(err)
 	}
 
-	app := fiber.New()
+	engine := html.New("./templates", ".html")
+	engine.AddFunc("Iterate", templates.Iterate)
+	engine.AddFunc("NotNil", templates.NotNil)
+	engine.Debug(true)
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
 	app.Static("/uploads", "./uploads")
 	app.Static("/static", "./static")
 
 	app.Get("/", func(c *fiber.Ctx) error {
+		// return c.Render("components/index", fiber.Map{})
 		return c.SendString("get threads")
 	})
 	app.Post("/", func(c *fiber.Ctx) error {
