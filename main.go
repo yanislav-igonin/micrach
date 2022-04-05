@@ -112,6 +112,8 @@ func main() {
 	}
 
 	app := fiber.New()
+	app.Static("/uploads", "./uploads")
+	app.Static("/static", "./static")
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("get threads")
