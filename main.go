@@ -59,7 +59,7 @@ func main() {
 
 	app.Use(recover.New())
 	app.Use(limiter.New(limiter.Config{
-		Next: func(c *fiber.Ctx) bool { return c.IP() == "127.0.0.1" },
+		Next: func(c *fiber.Ctx) bool { return c.IsFromLocal() },
 	}))
 	app.Use(compress.New())
 	app.Use(etag.New())
