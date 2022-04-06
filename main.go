@@ -10,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/html"
 
 	"micrach/build"
@@ -22,9 +23,6 @@ import (
 )
 
 // func main() {
-
-// 	router.Use(gin.Recovery())
-
 // 	if Config.App.IsRateLimiterEnabled {
 // 		router.Use(middleware)
 // 	}
@@ -59,6 +57,7 @@ func main() {
 
 	app := fiber.New(fiber.Config{Views: engine})
 
+	app.Use(recover.New())
 	app.Use(limiter.New(limiter.Config{
 		Next: func(c *fiber.Ctx) bool { return c.IP() == "127.0.0.1" },
 	}))
