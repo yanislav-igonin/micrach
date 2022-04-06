@@ -7,6 +7,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/template/html"
 
@@ -20,7 +21,6 @@ import (
 )
 
 // func main() {
-// 	gin.SetMode(Config.App.Env)
 
 // 	router.Use(gin.Recovery())
 
@@ -65,6 +65,7 @@ func main() {
 			return c.IP() == "127.0.0.1"
 		},
 	}))
+	app.Use(compress.New())
 	app.Static("/uploads", "./uploads")
 	app.Static("/static", "./static")
 
