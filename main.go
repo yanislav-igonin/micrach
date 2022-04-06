@@ -2,17 +2,20 @@ package main
 
 import (
 	"log"
+	"strconv"
+
+	_ "github.com/joho/godotenv/autoload"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
+	"github.com/gofiber/template/html"
+
 	"micrach/build"
 	"micrach/config"
 	"micrach/db"
 	"micrach/repositories"
 	"micrach/templates"
 	"micrach/utils"
-	"strconv"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/template/html"
-	_ "github.com/joho/godotenv/autoload"
 )
 
 // import (
@@ -120,6 +123,11 @@ func main() {
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
+	app.Use(limiter.New(limiter.Config{
+		Next: func(c *fiber.Ctx) bool {
+			return c.IP() == "127.0.0.1"
+		},
+	}))
 	app.Static("/uploads", "./uploads")
 	app.Static("/static", "./static")
 
