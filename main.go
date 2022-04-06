@@ -8,6 +8,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/template/html"
 
@@ -55,7 +56,6 @@ func main() {
 	engine := html.New("./templates", ".html")
 	engine.AddFunc("Iterate", templates.Iterate)
 	engine.AddFunc("NotNil", templates.NotNil)
-	engine.Debug(true)
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
@@ -66,6 +66,7 @@ func main() {
 		},
 	}))
 	app.Use(compress.New())
+	app.Use(etag.New())
 	app.Static("/uploads", "./uploads")
 	app.Static("/static", "./static")
 
