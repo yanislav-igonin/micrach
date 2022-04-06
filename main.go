@@ -124,6 +124,7 @@ func main() {
 		Views: engine,
 	})
 	app.Use(limiter.New(limiter.Config{
+		// skip on localhost
 		Next: func(c *fiber.Ctx) bool {
 			return c.IP() == "127.0.0.1"
 		},
