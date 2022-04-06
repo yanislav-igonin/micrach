@@ -12,6 +12,7 @@ import (
 
 	"micrach/build"
 	"micrach/config"
+	"micrach/controllers"
 	"micrach/db"
 	"micrach/repositories"
 	"micrach/templates"
@@ -132,10 +133,7 @@ func main() {
 	app.Static("/uploads", "./uploads")
 	app.Static("/static", "./static")
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		// return c.Render("components/index", fiber.Map{})
-		return c.SendString("get threads")
-	})
+	app.Get("/", controllers.GetThreads)
 	app.Post("/", func(c *fiber.Ctx) error {
 		return c.SendString("create thread")
 	})
