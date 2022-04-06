@@ -56,17 +56,15 @@ func main() {
 	engine := html.New("./templates", ".html")
 	engine.AddFunc("Iterate", templates.Iterate)
 	engine.AddFunc("NotNil", templates.NotNil)
-	app := fiber.New(fiber.Config{
-		Views: engine,
-	})
+
+	app := fiber.New(fiber.Config{Views: engine})
+
 	app.Use(limiter.New(limiter.Config{
-		// skip on localhost
-		Next: func(c *fiber.Ctx) bool {
-			return c.IP() == "127.0.0.1"
-		},
+		Next: func(c *fiber.Ctx) bool { return c.IP() == "127.0.0.1" },
 	}))
 	app.Use(compress.New())
 	app.Use(etag.New())
+
 	app.Static("/uploads", "./uploads")
 	app.Static("/static", "./static")
 
