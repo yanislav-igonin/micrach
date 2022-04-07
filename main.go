@@ -70,9 +70,7 @@ func main() {
 	app.Get("/", controllers.GetThreads)
 	app.Post("/", controllers.CreateThread)
 	app.Get("/:threadID", controllers.GetThread)
-	app.Post("/threadID", func(c *fiber.Ctx) error {
-		return c.SendString("create post in thread")
-	})
+	app.Post("/:threadID", controllers.UpdateThread)
 	app.Get("/captcha/:captchaID", controllers.GetCaptcha)
 
 	log.Println("app - online, port -", strconv.Itoa(config.App.Port))
