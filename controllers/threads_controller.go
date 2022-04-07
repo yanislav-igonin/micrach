@@ -1,15 +1,20 @@
 package controllers
 
 import (
+	"context"
 	"log"
 	"math"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/dchest/captcha"
 	"github.com/gofiber/fiber/v2"
 
 	"micrach/config"
+	"micrach/db"
 	"micrach/repositories"
+	"micrach/utils"
 )
 
 func GetThreads(c *fiber.Ctx) error {
@@ -83,146 +88,132 @@ func GetThread(c *fiber.Ctx) error {
 	return c.Render("pages/thread", htmlData)
 }
 
-// func CreateThread(c *gin.Context) {
-// 	form, err := c.MultipartForm()
-// 	if err != nil {
-// 		log.Println("error:", err)
-// 		c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 		return
-// 	}
+func CreateThread(c *fiber.Ctx) error {
+	form, err := c.MultipartForm()
+	if err != nil {
+		log.Println("error:", err)
+		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+	}
 
-// 	// TODO: dat shit crashes if no fields in request
-// 	text := form.Value["text"][0]
-// 	title := form.Value["title"][0]
-// 	filesInRequest := form.File["files"]
-// 	validationErrorMessage := Utils.ValidatePost(title, text, filesInRequest)
-// 	if validationErrorMessage != "" {
-// 		errorHtmlData := Repositories.BadRequestHtmlData{
-// 			Message: validationErrorMessage,
-// 		}
-// 		c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
-// 		return
-// 	}
+	// TODO: dat shit crashes if no fields in request
+	text := form.Value["text"][0]
+	title := form.Value["title"][0]
+	filesInRequest := form.File["files"]
+	validationErrorMessage := utils.ValidatePost(title, text, filesInRequest)
+	if validationErrorMessage != "" {
+		errorHtmlData := repositories.BadRequestHtmlData{
+			Message: validationErrorMessage,
+		}
+		return c.Status(fiber.StatusBadRequest).Render("pages/400", errorHtmlData)
+	}
 
-// 	if Config.App.IsCaptchaActive {
-// 		captchaID := form.Value["captchaId"][0]
-// 		captchaString := form.Value["captcha"][0]
-// 		isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
-// 		if !isCaptchaValid {
-// 			errorHtmlData := Repositories.BadRequestHtmlData{
-// 				Message: Repositories.InvalidCaptchaErrorMessage,
-// 			}
-// 			c.HTML(http.StatusBadRequest, "400.html", errorHtmlData)
-// 			return
-// 		}
-// 	}
+	if config.App.IsCaptchaActive {
+		captchaID := form.Value["captchaId"][0]
+		captchaString := form.Value["captcha"][0]
+		isCaptchaValid := captcha.VerifyString(captchaID, captchaString)
+		if !isCaptchaValid {
+			errorHtmlData := repositories.BadRequestHtmlData{
+				Message: repositories.InvalidCaptchaErrorMessage,
+			}
+			return c.Status(fiber.StatusBadRequest).Render("pages/400", errorHtmlData)
+		}
+	}
 
-// 	conn, err := Db.Pool.Acquire(context.TODO())
-// 	if err != nil {
-// 		log.Println("error:", err)
-// 		c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 		return
-// 	}
-// 	defer conn.Release()
+	conn, err := db.Pool.Acquire(context.TODO())
+	if err != nil {
+		log.Println("error:", err)
+		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+	}
+	defer conn.Release()
 
-// 	threadsCount, err := Repositories.Posts.GetThreadsCount()
-// 	if err != nil {
-// 		log.Println("error:", err)
-// 		c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 		return
-// 	}
+	threadsCount, err := repositories.Posts.GetThreadsCount()
+	if err != nil {
+		log.Println("error:", err)
+		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+	}
 
-// 	if threadsCount >= Config.App.ThreadsMaxCount {
-// 		oldestThreadUpdatedAt, err := Repositories.Posts.GetOldestThreadUpdatedAt()
-// 		if err != nil {
-// 			log.Println("error:", err)
-// 			c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 			return
-// 		}
-// 		err = Repositories.Posts.ArchiveThreadsFrom(oldestThreadUpdatedAt)
-// 		if err != nil {
-// 			log.Println("error:", err)
-// 			c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 			return
-// 		}
-// 	}
+	if threadsCount >= config.App.ThreadsMaxCount {
+		oldestThreadUpdatedAt, err := repositories.Posts.GetOldestThreadUpdatedAt()
+		if err != nil {
+			log.Println("error:", err)
+			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+		}
+		err = repositories.Posts.ArchiveThreadsFrom(oldestThreadUpdatedAt)
+		if err != nil {
+			log.Println("error:", err)
+			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+		}
+	}
 
-// 	tx, err := conn.Begin(context.TODO())
-// 	if err != nil {
-// 		log.Println("error:", err)
-// 		c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 		return
-// 	}
-// 	defer tx.Rollback(context.TODO())
+	tx, err := conn.Begin(context.TODO())
+	if err != nil {
+		log.Println("error:", err)
+		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+	}
+	defer tx.Rollback(context.TODO())
 
-// 	post := Repositories.Post{
-// 		IsParent: true,
-// 		Title:    title,
-// 		Text:     text,
-// 		IsSage:   false,
-// 	}
-// 	threadID, err := Repositories.Posts.CreateInTx(tx, post)
-// 	if err != nil {
-// 		log.Println("error:", err)
-// 		c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 		return
-// 	}
+	post := repositories.Post{
+		IsParent: true,
+		Title:    title,
+		Text:     text,
+		IsSage:   false,
+	}
+	threadID, err := repositories.Posts.CreateInTx(tx, post)
+	if err != nil {
+		log.Println("error:", err)
+		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+	}
 
-// 	err = Utils.CreateThreadFolder(threadID)
-// 	if err != nil {
-// 		log.Println("error:", err)
-// 		c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 		return
-// 	}
+	err = utils.CreateThreadFolder(threadID)
+	if err != nil {
+		log.Println("error:", err)
+		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+	}
 
-// 	for _, fileInRequest := range filesInRequest {
-// 		file := Repositories.File{
-// 			PostID: threadID,
-// 			Name:   fileInRequest.Filename,
-// 			// image/jpeg -> jpeg
-// 			Ext:  strings.Split(fileInRequest.Header["Content-Type"][0], "/")[1],
-// 			Size: int(fileInRequest.Size),
-// 		}
+	for _, fileInRequest := range filesInRequest {
+		file := repositories.File{
+			PostID: threadID,
+			Name:   fileInRequest.Filename,
+			// image/jpeg -> jpeg
+			Ext:  strings.Split(fileInRequest.Header["Content-Type"][0], "/")[1],
+			Size: int(fileInRequest.Size),
+		}
 
-// 		fileID, err := Repositories.Files.CreateInTx(tx, file)
-// 		if err != nil {
-// 			log.Println("error:", err)
-// 			c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 			return
-// 		}
+		fileID, err := repositories.Files.CreateInTx(tx, file)
+		if err != nil {
+			log.Println("error:", err)
+			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+		}
 
-// 		path := filepath.Join(
-// 			Utils.UPLOADS_DIR_PATH,
-// 			strconv.Itoa(threadID),
-// 			"o",
-// 			strconv.Itoa(fileID)+"."+file.Ext,
-// 		)
-// 		err = c.SaveUploadedFile(fileInRequest, path)
-// 		if err != nil {
-// 			log.Println("error:", err)
-// 			c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 			return
-// 		}
-// 		// creating thumbnail
-// 		thumbImg, err := Utils.MakeImageThumbnail(path, file.Ext, threadID, fileID)
-// 		if err != nil {
-// 			log.Println("error:", err)
-// 			c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 			return
-// 		}
-// 		// saving thumbnail
-// 		err = Utils.SaveImageThumbnail(thumbImg, threadID, fileID, file.Ext)
-// 		if err != nil {
-// 			log.Println("error:", err)
-// 			c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 			return
-// 		}
-// 	}
+		path := filepath.Join(
+			utils.UPLOADS_DIR_PATH,
+			strconv.Itoa(threadID),
+			"o",
+			strconv.Itoa(fileID)+"."+file.Ext,
+		)
+		err = c.SaveFile(fileInRequest, path)
+		if err != nil {
+			log.Println("error:", err)
+			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+		}
+		// creating thumbnail
+		thumbImg, err := utils.MakeImageThumbnail(path, file.Ext, threadID, fileID)
+		if err != nil {
+			log.Println("error:", err)
+			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+		}
+		// saving thumbnail
+		err = utils.SaveImageThumbnail(thumbImg, threadID, fileID, file.Ext)
+		if err != nil {
+			log.Println("error:", err)
+			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+		}
+	}
 
-// 	tx.Commit(context.TODO())
+	tx.Commit(context.TODO())
 
-// 	c.Redirect(http.StatusFound, "/"+strconv.Itoa(threadID))
-// }
+	return c.Redirect("/"+strconv.Itoa(threadID), fiber.StatusFound)
+}
 
 // // Add new post in thread
 // func UpdateThread(c *gin.Context) {
