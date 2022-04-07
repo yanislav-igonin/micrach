@@ -53,39 +53,35 @@ func GetThreads(c *fiber.Ctx) error {
 			IsCaptchaActive: config.App.IsCaptchaActive,
 		},
 	}
-	return c.Status(fiber.StatusOK).Render("pages/index", htmlData)
+	return c.Render("pages/index", htmlData)
 }
 
-// func GetThread(c *gin.Context) {
-// 	threadIDString := c.Param("threadID")
-// 	threadID, err := strconv.Atoi(threadIDString)
-// 	if err != nil {
-// 		c.HTML(http.StatusNotFound, "404.html", nil)
-// 		return
-// 	}
-// 	thread, err := Repositories.Posts.GetThreadByPostID(threadID)
-// 	if err != nil {
-// 		log.Println("error:", err)
-// 		c.HTML(http.StatusInternalServerError, "500.html", nil)
-// 		return
-// 	}
-// 	if thread == nil {
-// 		c.HTML(http.StatusNotFound, "404.html", nil)
-// 		return
-// 	}
+func GetThread(c *fiber.Ctx) error {
+	threadID, err := c.ParamsInt("threadID")
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).Render("pages/404", nil)
+	}
+	thread, err := repositories.Posts.GetThreadByPostID(threadID)
+	if err != nil {
+		log.Println("error:", err)
+		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+	}
+	if thread == nil {
+		return c.Status(fiber.StatusNotFound).Render("pages/404", nil)
+	}
 
-// 	firstPost := thread[0]
-// 	captchaID := captcha.New()
-// 	htmlData := Repositories.GetThreadHtmlData{
-// 		Thread: thread,
-// 		FormData: Repositories.HtmlFormData{
-// 			FirstPostID:     firstPost.ID,
-// 			CaptchaID:       captchaID,
-// 			IsCaptchaActive: Config.App.IsCaptchaActive,
-// 		},
-// 	}
-// 	c.HTML(http.StatusOK, "thread.html", htmlData)
-// }
+	firstPost := thread[0]
+	captchaID := captcha.New()
+	htmlData := repositories.GetThreadHtmlData{
+		Thread: thread,
+		FormData: repositories.HtmlFormData{
+			FirstPostID:     firstPost.ID,
+			CaptchaID:       captchaID,
+			IsCaptchaActive: config.App.IsCaptchaActive,
+		},
+	}
+	return c.Render("pages/thread", htmlData)
+}
 
 // func CreateThread(c *gin.Context) {
 // 	form, err := c.MultipartForm()

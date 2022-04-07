@@ -71,9 +71,7 @@ func main() {
 	app.Post("/", func(c *fiber.Ctx) error {
 		return c.SendString("create thread")
 	})
-	app.Get("/:threadID", func(c *fiber.Ctx) error {
-		return c.SendString("get thread by id")
-	})
+	app.Get("/:threadID", controllers.GetThread)
 	app.Post("/threadID", func(c *fiber.Ctx) error {
 		return c.SendString("create post in thread")
 	})
