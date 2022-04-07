@@ -73,9 +73,7 @@ func main() {
 	app.Post("/threadID", func(c *fiber.Ctx) error {
 		return c.SendString("create post in thread")
 	})
-	app.Get("/captcha/:captchaID", func(c *fiber.Ctx) error {
-		return c.SendString("get captcha by id")
-	})
+	app.Get("/captcha/:captchaID", controllers.GetCaptcha)
 
 	log.Println("app - online, port -", strconv.Itoa(config.App.Port))
 	log.Println("all systems nominal")
