@@ -17,20 +17,11 @@ import (
 	"micrach/config"
 	"micrach/controllers"
 	"micrach/db"
+	"micrach/gateway"
 	"micrach/repositories"
 	"micrach/templates"
 	"micrach/utils"
 )
-
-// func main() {
-// 	if Config.App.IsRateLimiterEnabled {
-// 		router.Use(middleware)
-// 	}
-// 	if Config.App.Gateway.Url != "" {
-// 		router.GET("/api/ping", Gateway.Ping)
-// 		Gateway.Connect()
-// 	}
-// }
 
 func main() {
 	config.Init()
@@ -72,6 +63,11 @@ func main() {
 	app.Get("/:threadID", controllers.GetThread)
 	app.Post("/:threadID", controllers.UpdateThread)
 	app.Get("/captcha/:captchaID", controllers.GetCaptcha)
+
+	if config.App.Gateway.Url != "" {
+		app.Get("/api/ping", gateway.Ping)
+		gateway.Connect()
+	}
 
 	log.Println("app - online, port -", strconv.Itoa(config.App.Port))
 	log.Println("all systems nominal")
