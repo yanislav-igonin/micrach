@@ -3,21 +3,20 @@ package controllers
 import (
 	"bytes"
 	"log"
-	"net/http"
 
 	"github.com/dchest/captcha"
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
-func GetCaptcha(c *gin.Context) {
-	ID := c.Param("captchaID")
+func GetCaptcha(c *fiber.Ctx) error {
+	ID := c.Params("captchaID")
 	var content bytes.Buffer
 	err := captcha.WriteImage(&content, ID, captcha.StdWidth, captcha.StdHeight)
 	if err != nil {
 		log.Println("error:", err)
-		c.HTML(http.StatusInternalServerError, "pages/500.html", nil)
-		return
+		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 	}
 
-	c.Data(200, "image/png", content.Bytes())
+	c.Context().SetContentType("image/png")
+	return c.Send(content.Bytes())
 }

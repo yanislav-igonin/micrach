@@ -1,80 +1,79 @@
 package main
 
 import (
-	"html/template"
 	"log"
 	"strconv"
-	"time"
 
-	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
-	limiter "github.com/ulule/limiter/v3"
-	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
-	memory "github.com/ulule/limiter/v3/drivers/store/memory"
 
-	Build "micrach/build"
-	Config "micrach/config"
-	Controllers "micrach/controllers"
-	Db "micrach/db"
-	Gateway "micrach/gateway"
-	Repositories "micrach/repositories"
-	Templates "micrach/templates"
-	Utils "micrach/utils"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/gofiber/fiber/v2/middleware/etag"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/gofiber/template/html"
+
+	"micrach/build"
+	"micrach/config"
+	"micrach/controllers"
+	"micrach/db"
+	"micrach/gateway"
+	"micrach/repositories"
+	"micrach/templates"
+	"micrach/utils"
 )
 
 func main() {
-	Config.Init()
-	Db.Init()
-	Db.Migrate()
-	defer Db.Pool.Close()
-	gin.SetMode(Config.App.Env)
-	if Config.App.IsDbSeeded {
-		Repositories.Seed()
+	config.Init()
+	db.Init()
+	db.Migrate()
+	defer db.Pool.Close()
+
+	if config.App.IsDbSeeded {
+		repositories.Seed()
 	}
 
-	if Config.App.Env == "release" {
-		Build.RenameCss()
+	if config.App.Env == "production" {
+		build.RenameCss()
 	}
 
-	err := Utils.CreateUploadsFolder()
+	err := utils.CreateUploadsFolder()
 	if err != nil {
 		log.Panicln(err)
 	}
 
-	rate := limiter.Rate{
-		Period: 1 * time.Hour,
-		Limit:  1000,
-	}
-	rateLimiterStore := memory.NewStore()
-	instance := limiter.New(rateLimiterStore, rate)
-	middleware := mgin.NewMiddleware(instance)
+	engine := html.New("./templates", ".html")
+	engine.AddFunc("Iterate", templates.Iterate)
+	engine.AddFunc("NotNil", templates.NotNil)
 
-	router := gin.New()
-	router.Use(gin.Recovery())
+	app := fiber.New(fiber.Config{Views: engine})
 
-	router.SetFuncMap(template.FuncMap{
-		"Iterate": Templates.Iterate,
-		"NotNil":  Templates.NotNil,
-	})
-	router.LoadHTMLGlob("templates/**/*")
-	router.ForwardedByClientIP = true
-	if Config.App.IsRateLimiterEnabled {
-		router.Use(middleware)
-	}
-	router.Static("/uploads", "./uploads")
-	router.Static("/static", "./static")
-	if Config.App.Gateway.Url != "" {
-		router.GET("/api/ping", Gateway.Ping)
-		Gateway.Connect()
-	}
-	router.GET("/", Controllers.GetThreads)
-	router.POST("/", Controllers.CreateThread)
-	router.GET("/:threadID", Controllers.GetThread)
-	router.POST("/:threadID", Controllers.UpdateThread)
-	router.GET("/captcha/:captchaID", Controllers.GetCaptcha)
+	app.Use(recover.New())
+	app.Use(limiter.New(limiter.Config{
+		Next: func(c *fiber.Ctx) bool { return c.IsFromLocal() },
+	}))
+	app.Use(compress.New())
+	app.Use(etag.New())
 
-	log.Println("port", Config.App.Port, "- online")
+	app.Static("/uploads", "./uploads")
+	app.Static("/static", "./static")
+
+	app.Get("/", controllers.GetThreads)
+	app.Post("/", controllers.CreateThread)
+	app.Get("/:threadID", controllers.GetThread)
+	app.Post("/:threadID", controllers.UpdateThread)
+	app.Get("/captcha/:captchaID", controllers.GetCaptcha)
+
+	if config.App.Gateway.Url != "" {
+		app.Get("/api/ping", gateway.Ping)
+		gateway.Connect()
+	}
+
+	log.Println("app - online, port -", strconv.Itoa(config.App.Port))
 	log.Println("all systems nominal")
-
-	router.Run(":" + strconv.Itoa(Config.App.Port))
+	err = app.Listen(":" + strconv.Itoa(config.App.Port))
+	if err != nil {
+		log.Println("app - ofline")
+		log.Panicln(err)
+	}
 }
