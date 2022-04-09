@@ -1,9 +1,9 @@
 .error-image-link {
   max-width: 200px;
-  transition: 0.2s;
+  transition: 0.3s;
 }
 .error-image-link:hover {
-  max-width: 300px;
+  transform: rotate(360deg) scale(1.5, 1.5);
 }
 
 .error-image {
