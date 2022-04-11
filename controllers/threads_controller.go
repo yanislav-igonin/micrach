@@ -212,7 +212,8 @@ func CreateThread(c *fiber.Ctx) error {
 
 	tx.Commit(context.TODO())
 
-	return c.Redirect("/"+strconv.Itoa(threadID), fiber.StatusFound)
+	path := "/" + strconv.Itoa(threadID)
+	return c.Redirect(path, fiber.StatusFound)
 }
 
 // Add new post in thread
@@ -363,6 +364,6 @@ func UpdateThread(c *fiber.Ctx) error {
 
 	tx.Commit(context.TODO())
 
-	c.Append("Refresh", "0")
-	return c.SendStatus(fiber.StatusCreated)
+	path := "/" + strconv.Itoa(threadID) + "#" + strconv.Itoa(postID)
+	return c.Redirect(path)
 }
