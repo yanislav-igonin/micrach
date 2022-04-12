@@ -40,7 +40,7 @@ type File struct {
 // HTML Templates Structs
 
 // post-form.html
-type HtmlFormErrors struct {
+type Inputs struct {
 	Title string
 	Text  string
 	Files string
@@ -51,7 +51,8 @@ type HtmlFormData struct {
 	FirstPostID     int
 	CaptchaID       string
 	IsCaptchaActive bool
-	Errors          HtmlFormErrors
+	Errors          Inputs
+	Inputs
 }
 
 // index.html
