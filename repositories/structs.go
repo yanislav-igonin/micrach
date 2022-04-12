@@ -40,10 +40,18 @@ type File struct {
 // HTML Templates Structs
 
 // post-form.html
+type HtmlFormErrors struct {
+	Title string
+	Text  string
+	Files string
+}
+
+// post-form.html
 type HtmlFormData struct {
 	FirstPostID     int
 	CaptchaID       string
 	IsCaptchaActive bool
+	Errors          HtmlFormErrors
 }
 
 // index.html
@@ -70,11 +78,11 @@ type BadRequestHtmlData struct {
 	Message string
 }
 
-const InvalidCaptchaErrorMessage = "INVALID CAPTCHA"
-const InvalidTextOrFilesErrorMessage = "TEXT OR FILES SHOULD NOT BE EMPTY"
-const InvalidTitleLengthErrorMessage = "TITLE SHOULD NOT EXCEED 100 CHARS"
-const InvalidTextLengthErrorMessage = "TEXT SHOULD NOT EXCEED 1000 CHARS"
-const InvalidFilesLengthErrorMessage = "MAXIMUM 4 FILES CAN BE UPLOADED"
-const InvalidFileSizeErrorMessage = "FILE SIZE EXCIDED (3MB PER FILE)"
-const InvalidFileExtErrorMessage = "AVALIABLE FILE EXT: PNG, JPG"
-const ThreadIsArchivedErrorMessage = "THREAD IS ARCHIVED"
+const InvalidCaptchaErrorMessage = "Invalid captcha"
+const InvalidTextOrFilesErrorMessage = "Text or files should not be empty"
+const InvalidTitleLengthErrorMessage = "Title should not exceed 100 chars"
+const InvalidTextLengthErrorMessage = "Text should not exceed 1000 chars"
+const InvalidFilesLengthErrorMessage = "Maximum 4 files can be uploaded"
+const InvalidFileSizeErrorMessage = "File size exceeded (3MB PER FILE)"
+const InvalidFileExtErrorMessage = "Available file ext: PNG, JPG"
+const ThreadIsArchivedErrorMessage = "Thread is archived"

@@ -1,3 +1,7 @@
-#postForm > * {
+.form-control {
   margin-bottom: 1rem;
+}
+
+.form-error-label {
+  color: #f00;
 }

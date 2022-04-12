@@ -244,12 +244,28 @@ func UpdateThread(c *fiber.Ctx) error {
 	// TODO: dat shit crashes if no fields in request
 	text := form.Value["text"][0]
 	filesInRequest := form.File["files"]
-	validationErrorMessage := utils.ValidatePost("", text, filesInRequest)
-	if validationErrorMessage != "" {
-		errorHtmlData := repositories.BadRequestHtmlData{
-			Message: validationErrorMessage,
+
+	validationErrors := utils.ValidatePost2("", text, filesInRequest)
+	if validationErrors != nil {
+		thread, err := repositories.Posts.GetThreadByPostID(threadID)
+		if err != nil {
+			log.Println("error:", err)
+			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 		}
-		return c.Status(fiber.StatusBadRequest).Render("pages/400", errorHtmlData)
+
+		firstPost := thread[0]
+		captchaID := form.Value["captchaId"][0]
+		htmlData := repositories.GetThreadHtmlData{
+			Thread: thread,
+			FormData: repositories.HtmlFormData{
+				FirstPostID:     firstPost.ID,
+				CaptchaID:       captchaID,
+				IsCaptchaActive: config.App.IsCaptchaActive,
+				Errors:          *validationErrors,
+			},
+		}
+
+		return c.Render("pages/thread", htmlData)
 	}
 
 	if config.App.IsCaptchaActive {

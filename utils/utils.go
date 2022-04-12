@@ -6,7 +6,7 @@ import (
 	"image"
 	"image/jpeg"
 	"image/png"
-	Repositories "micrach/repositories"
+	"micrach/repositories"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -70,34 +70,79 @@ func CreateThreadFolder(postID int) error {
 	return nil
 }
 
+// TODO: Delete after
 func ValidatePost(title, text string, files []*multipart.FileHeader) string {
 	if text == "" && len(files) == 0 {
-		return Repositories.InvalidTextOrFilesErrorMessage
+		return repositories.InvalidTextOrFilesErrorMessage
 	}
 
 	if len([]rune(title)) > 100 {
-		return Repositories.InvalidTitleLengthErrorMessage
+		return repositories.InvalidTitleLengthErrorMessage
 	}
 
 	if len([]rune(text)) > 1000 {
-		return Repositories.InvalidTextLengthErrorMessage
+		return repositories.InvalidTextLengthErrorMessage
 	}
 
 	if len(files) > 4 {
-		return Repositories.InvalidFilesLengthErrorMessage
+		return repositories.InvalidFilesLengthErrorMessage
 	}
 
 	isFilesExtsValid := CheckFilesExt(files)
 	if !isFilesExtsValid {
-		return Repositories.InvalidFileExtErrorMessage
+		return repositories.InvalidFileExtErrorMessage
 	}
 
 	isFilesSizesNotToBig := CheckFilesSize(files)
 	if !isFilesSizesNotToBig {
-		return Repositories.InvalidFileSizeErrorMessage
+		return repositories.InvalidFileSizeErrorMessage
 	}
 
 	return ""
+}
+
+func ValidatePost2(title, text string, files []*multipart.FileHeader) *repositories.HtmlFormErrors {
+	validationError := new(repositories.HtmlFormErrors)
+	hasErrors := false
+
+	if text == "" && len(files) == 0 {
+		validationError.Text = repositories.InvalidTextOrFilesErrorMessage
+		validationError.Files = repositories.InvalidTextOrFilesErrorMessage
+		hasErrors = true
+	}
+
+	if len([]rune(title)) > 100 {
+		validationError.Title = repositories.InvalidTitleLengthErrorMessage
+		hasErrors = true
+	}
+
+	if len([]rune(text)) > 1000 {
+		validationError.Text = repositories.InvalidTextLengthErrorMessage
+		hasErrors = true
+	}
+
+	if len(files) > 4 {
+		validationError.Files = repositories.InvalidFilesLengthErrorMessage
+		hasErrors = true
+	}
+
+	isFilesExtsValid := CheckFilesExt(files)
+	if !isFilesExtsValid {
+		validationError.Files = repositories.InvalidFileExtErrorMessage
+		hasErrors = true
+	}
+
+	isFilesSizesNotToBig := CheckFilesSize(files)
+	if !isFilesSizesNotToBig {
+		validationError.Files = repositories.InvalidFileSizeErrorMessage
+		hasErrors = true
+	}
+
+	if hasErrors {
+		return validationError
+	}
+
+	return nil
 }
 
 func CheckFilesSize(files []*multipart.FileHeader) bool {
