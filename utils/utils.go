@@ -102,44 +102,44 @@ func ValidatePost(title, text string, files []*multipart.FileHeader) string {
 }
 
 func ValidatePost2(title, text string, files []*multipart.FileHeader) *repositories.Inputs {
-	validationError := new(repositories.Inputs)
+	validationErrors := new(repositories.Inputs)
 	hasErrors := false
 
 	if text == "" && len(files) == 0 {
-		validationError.Text = repositories.InvalidTextOrFilesErrorMessage
-		validationError.Files = repositories.InvalidTextOrFilesErrorMessage
+		validationErrors.Text = repositories.InvalidTextOrFilesErrorMessage
+		validationErrors.Files = repositories.InvalidTextOrFilesErrorMessage
 		hasErrors = true
 	}
 
 	if len([]rune(title)) > 100 {
-		validationError.Title = repositories.InvalidTitleLengthErrorMessage
+		validationErrors.Title = repositories.InvalidTitleLengthErrorMessage
 		hasErrors = true
 	}
 
 	if len([]rune(text)) > 1000 {
-		validationError.Text = repositories.InvalidTextLengthErrorMessage
+		validationErrors.Text = repositories.InvalidTextLengthErrorMessage
 		hasErrors = true
 	}
 
 	if len(files) > 4 {
-		validationError.Files = repositories.InvalidFilesLengthErrorMessage
+		validationErrors.Files = repositories.InvalidFilesLengthErrorMessage
 		hasErrors = true
 	}
 
 	isFilesExtsValid := CheckFilesExt(files)
 	if !isFilesExtsValid {
-		validationError.Files = repositories.InvalidFileExtErrorMessage
+		validationErrors.Files = repositories.InvalidFileExtErrorMessage
 		hasErrors = true
 	}
 
 	isFilesSizesNotToBig := CheckFilesSize(files)
 	if !isFilesSizesNotToBig {
-		validationError.Files = repositories.InvalidFileSizeErrorMessage
+		validationErrors.Files = repositories.InvalidFileSizeErrorMessage
 		hasErrors = true
 	}
 
 	if hasErrors {
-		return validationError
+		return validationErrors
 	}
 
 	return nil
