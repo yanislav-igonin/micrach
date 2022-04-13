@@ -1,6 +1,9 @@
 package repositories
 
-import "time"
+import (
+	"mime/multipart"
+	"time"
+)
 
 // DB Structs
 // DB Structs
@@ -40,10 +43,15 @@ type File struct {
 // HTML Templates Structs
 
 // post-form.html
-type Inputs struct {
+type Errors struct {
 	Title string
 	Text  string
 	Files string
+}
+type Inputs struct {
+	Title string
+	Text  string
+	Files []*multipart.FileHeader
 }
 
 // post-form.html
@@ -51,7 +59,7 @@ type HtmlFormData struct {
 	FirstPostID     int
 	CaptchaID       string
 	IsCaptchaActive bool
-	Errors          Inputs
+	Errors
 	Inputs
 }
 

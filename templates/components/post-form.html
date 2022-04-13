@@ -10,13 +10,13 @@
 
         {{ if eq .FirstPostID 0 }}
         <label class="form-error-label" for="title">{{ .Errors.Title }}</label>
-        <input class="form-control" id="postTitle" placeholder="Title" name="title">
+        <input class="form-control" id="postTitle" placeholder="Title" name="title" value={{ .Inputs.Title }}>
         {{ end }}
 
         <label class="form-error-label" for="text">{{ .Errors.Text }}</label>
-        <textarea class="form-control" id="postText" rows="5" placeholder="Text" name="text"></textarea>
+        <textarea class="form-control" id="postText" rows="5" placeholder="Text" name="text">{{ .Inputs.Text }}</textarea>
         <label class="form-error-label" for="files">{{ .Errors.Files }}</label>
-        <input class="form-control" type="file" id="postFiles" multiple name="files">
+        <input class="form-control" type="file" id="postFiles" multiple name="files" accept="image/jpeg, image/png"}>
         
         {{ if .IsCaptchaActive }}
         {{ template "captcha" .CaptchaID }}

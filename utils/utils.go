@@ -101,8 +101,8 @@ func ValidatePost(title, text string, files []*multipart.FileHeader) string {
 	return ""
 }
 
-func ValidatePost2(title, text string, files []*multipart.FileHeader) *repositories.Inputs {
-	validationErrors := new(repositories.Inputs)
+func ValidatePost2(title, text string, files []*multipart.FileHeader) *repositories.Errors {
+	validationErrors := repositories.Errors{}
 	hasErrors := false
 
 	if text == "" && len(files) == 0 {
@@ -139,7 +139,7 @@ func ValidatePost2(title, text string, files []*multipart.FileHeader) *repositor
 	}
 
 	if hasErrors {
-		return validationErrors
+		return &validationErrors
 	}
 
 	return nil

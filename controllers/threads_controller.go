@@ -262,6 +262,10 @@ func UpdateThread(c *fiber.Ctx) error {
 				CaptchaID:       captchaID,
 				IsCaptchaActive: config.App.IsCaptchaActive,
 				Errors:          *validationErrors,
+				Inputs: repositories.Inputs{
+					Text:  text,
+					Files: filesInRequest,
+				},
 			},
 		}
 
