@@ -99,12 +99,62 @@ func CreateThread(c *fiber.Ctx) error {
 	text := form.Value["text"][0]
 	title := form.Value["title"][0]
 	filesInRequest := form.File["files"]
-	validationErrorMessage := utils.ValidatePost(title, text, filesInRequest)
-	if validationErrorMessage != "" {
-		errorHtmlData := repositories.BadRequestHtmlData{
-			Message: validationErrorMessage,
+	// validationErrorMessage := utils.ValidatePost(title, text, filesInRequest)
+	// if validationErrorMessage != "" {
+	// 	errorHtmlData := repositories.BadRequestHtmlData{
+	// 		Message: validationErrorMessage,
+	// 	}
+	// 	return c.Status(fiber.StatusBadRequest).Render("pages/400", errorHtmlData)
+	// }
+
+	validationErrors := utils.ValidatePost2("", text, filesInRequest)
+	if validationErrors != nil {
+
+		pageString := c.Query("page", "1")
+		page, err := strconv.Atoi(pageString)
+		if err != nil {
+			return c.Status(fiber.StatusNotFound).Render("pages/404", nil)
 		}
-		return c.Status(fiber.StatusBadRequest).Render("pages/400", errorHtmlData)
+
+		if page <= 0 {
+			return c.Status(fiber.StatusNotFound).Render("pages/404", nil)
+		}
+
+		limit := 10
+		offset := limit * (page - 1)
+		threads, err := repositories.Posts.Get(limit, offset)
+		if err != nil {
+			log.Println("error:", err)
+			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+		}
+		count, err := repositories.Posts.GetThreadsCount()
+		if err != nil {
+			log.Println("error:", err)
+			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
+		}
+
+		pagesCount := int(math.Ceil(float64(count) / 10))
+		if page > pagesCount && count != 0 {
+			return c.Status(fiber.StatusNotFound).Render("pages/404", nil)
+		}
+
+		htmlData := repositories.GetThreadsHtmlData{
+			Threads: threads,
+			Pagination: repositories.HtmlPaginationData{
+				PagesCount: pagesCount,
+				Page:       page,
+			},
+			FormData: repositories.HtmlFormData{
+				CaptchaID:       form.Value["captchaId"][0],
+				IsCaptchaActive: config.App.IsCaptchaActive,
+				Errors:          *validationErrors,
+				Inputs: repositories.Inputs{
+					Text: text,
+					// Files: filesInRequest,
+				},
+			},
+		}
+		return c.Render("pages/index", htmlData)
 	}
 
 	if config.App.IsCaptchaActive {
