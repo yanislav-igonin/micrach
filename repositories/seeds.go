@@ -111,5 +111,5 @@ func seedDb() {
 
 func Seed() {
 	seedDb()
-	log.Println("mocks - online")
+	log.Println("seeds - online")
 }

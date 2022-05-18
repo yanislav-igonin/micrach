@@ -49,11 +49,11 @@ func Migrate() {
 		if !isMigrationInDb {
 			sql := Files.ReadFileText(m)
 			runMigration(id, name, sql)
-			log.Println("database migration - " + name + " - online")
+			log.Println("migration - " + name + " - online")
 		}
 	}
 
-	log.Println("database migrations - online")
+	log.Println("migrations - online")
 }
 
 func runMigration(mid int, mname, msql string) {
@@ -72,11 +72,11 @@ func runMigration(mid int, mname, msql string) {
 func getDbMigrations() MigrationsMap {
 	sql := `SELECT id, name FROM migrations`
 	rows, err := Pool.Query(context.TODO(), sql)
-	if err != nil {
+	if err != nil && isNotNonExistentMigrationsTable(err) {
 		log.Panicln(err)
 	}
 
-	if rows.Err() != nil {
+	if rows.Err() != nil && isNotNonExistentMigrationsTable(rows.Err()) {
 		log.Panicln(rows.Err())
 	}
 
@@ -92,4 +92,8 @@ func getDbMigrations() MigrationsMap {
 	}
 
 	return migrationsMap
+}
+
+func isNotNonExistentMigrationsTable(err error) bool {
+	return err.Error() != `ERROR: relation "migrations" does not exist (SQLSTATE 42P01)`
 }

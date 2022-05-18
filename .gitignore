@@ -25,3 +25,8 @@ uploads/
 .env
 
 *.bin
+
+tests/metrics.json
+tests/plot.html
+
+.DS_Store
