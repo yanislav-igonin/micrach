@@ -49,15 +49,17 @@ func main() {
 	app := fiber.New(fiber.Config{Views: engine})
 
 	app.Use(recover.New())
-	app.Use(limiter.New(limiter.Config{
-		Next: func(c *fiber.Ctx) bool {
-			isDev := c.IsFromLocal()
-			path := c.Path()
-			isRequestForStatic := strings.Contains(path, "/static") || strings.Contains(path, "/uploads") || strings.Contains(path, "/captcha")
-			return (isRequestForStatic || isDev) && config.App.IsRateLimiterEnabled
-		},
-		Max: 50,
-	}))
+	if config.App.IsRateLimiterEnabled {
+		app.Use(limiter.New(limiter.Config{
+			Next: func(c *fiber.Ctx) bool {
+				isDev := c.IsFromLocal()
+				path := c.Path()
+				isRequestForStatic := strings.Contains(path, "/static") || strings.Contains(path, "/uploads") || strings.Contains(path, "/captcha")
+				return isRequestForStatic || isDev
+			},
+			Max: 50,
+		}))
+	}
 	app.Use(compress.New())
 
 	app.Static("/uploads", "./uploads")
