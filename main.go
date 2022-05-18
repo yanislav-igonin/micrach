@@ -54,7 +54,7 @@ func main() {
 			isDev := c.IsFromLocal()
 			path := c.Path()
 			isRequestForStatic := strings.Contains(path, "/static") || strings.Contains(path, "/uploads") || strings.Contains(path, "/captcha")
-			return isRequestForStatic || isDev
+			return (isRequestForStatic || isDev) && config.App.IsRateLimiterEnabled
 		},
 		Max: 50,
 	}))
