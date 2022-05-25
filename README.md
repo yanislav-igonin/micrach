@@ -19,4 +19,4 @@ Just run:
 go run main.go
 ```
 
-**In development** I prefer to run it with [fresh](https://github.com/gravityblast/fresh) for live reload.
+**In development** I prefer to run it with [nodemon](https://github.com/remy/nodemon) for live reload.
