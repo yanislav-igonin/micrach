@@ -7,7 +7,7 @@ import (
 )
 
 func Ping(c *fiber.Ctx) error {
-	headerKey := c.GetReqHeaders()["Authorization"]
+	headerKey := c.Get("Authorization")
 	if config.App.Gateway.ApiKey != headerKey {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Unauthorized"})
 	}

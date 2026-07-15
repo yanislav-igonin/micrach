@@ -11,7 +11,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/gofiber/template/html"
+	"github.com/gofiber/template/html/v2"
 
 	"micrach/build"
 	"micrach/config"
