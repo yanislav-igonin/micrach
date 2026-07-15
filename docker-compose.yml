@@ -1,58 +1,20 @@
-version: "3.7"
-
 services:
-  app:
-    image: ghcr.io/yanislav-igonin/micrach-go/micrach:latest
-    networks:
-      - web
-    environment: 
-      ENV: release
-      PORT: ${PORT}
-      IS_DB_SEEDED: ${IS_DB_SEEDED}
-      IS_RATE_LIMITER_ENABLED: ${IS_RATE_LIMITER_ENABLED}
-      THREADS_MAX_COUNT: ${THREADS_MAX_COUNT}
-      POSTGRES_URL: ${POSTGRES_URL}
-      THREAD_BUMP_LIMIT: ${THREAD_BUMP_LIMIT}
-      IS_CAPTCHA_ACTIVE: ${IS_CAPTCHA_ACTIVE}
-      GATEWAY_URL: ${GATEWAY_URL}
-      GATEWAY_API_KEY: ${GATEWAY_API_KEY}
-      GATEWAY_BOARD_ID: ${GATEWAY_BOARD_ID}
-      GATEWAY_BOARD_URL: ${GATEWAY_BOARD_URL}
-      GATEWAY_BOARD_DESCRIPTION: ${GATEWAY_BOARD_DESCRIPTION}
+  db:
+    image: postgres:18.4-alpine3.23
+    environment:
+      POSTGRES_DB: micrach
+      POSTGRES_USER: micrach
+      POSTGRES_PASSWORD: micrach
+    ports:
+      - "5432:5432"
     volumes:
-      - /root/micrach-go/uploads:/app/uploads
-    deploy:
-      mode: global
-      placement:
-        constraints:
-          - node.role == manager
-      update_config:
-        parallelism: 1
-        delay: 10s
-      restart_policy:
-        condition: on-failure
-      labels:
-        traefik.enable: "true"
-        traefik.docker.network: "web"
-        
-        traefik.http.services.micrach.loadbalancer.server.port: ${PORT}
+      - micrach-postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U micrach -d micrach"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
 
-        traefik.http.middlewares.micrach-https-redirect.redirectscheme.scheme: "https"
-        traefik.http.middlewares.prefixstripper.stripprefix.prefixes: "/${GATEWAY_BOARD_ID}"
-        traefik.http.middlewares.prefixstripper.stripprefix.forceSlash: "false"
-
-        traefik.http.routers.micrach.entrypoints: "http"
-        traefik.http.routers.micrach.rule: "Host(`micrach.igonin.dev`) && PathPrefix(`/${GATEWAY_BOARD_ID}`)"
-        traefik.http.routers.micrach.middlewares: "micrach-https-redirect"
-        traefik.http.routers.micrach.middlewares: "prefixstripper"
-
-        traefik.http.routers.micrach-secure.entrypoints: "https"
-        traefik.http.routers.micrach-secure.rule: "Host(`micrach.igonin.dev`) && PathPrefix(`/${GATEWAY_BOARD_ID}`)"
-        traefik.http.routers.micrach-secure.tls: "true"
-        traefik.http.routers.micrach-secure.service: "micrach"
-        traefik.http.routers.micrach-secure.middlewares: "prefixstripper"
-
-networks:
-  web:
-    driver: overlay
-    external: true
+volumes:
+  micrach-postgres:
