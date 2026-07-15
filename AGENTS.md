@@ -52,13 +52,17 @@ so review both paths when changing upload behavior.
 
 ## Local Setup and Commands
 
-Create a PostgreSQL database, then:
+Use Go 1.26. From the repository root, copy the development configuration,
+start the PostgreSQL 18 service, and run micrach on the host:
 
 ```sh
 cp .env.example .env
-# Edit POSTGRES_URL and normally set IS_DB_SEEDED=false.
+docker compose up -d db
 go run .
 ```
+
+The example `POSTGRES_URL` matches the Compose service. `make dev` provides
+automatic reload and requires `nodemon`.
 
 Common checks:
 
@@ -67,16 +71,12 @@ go fmt ./...
 go test ./...
 go vet ./...
 go build .
-GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build .
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /tmp/micrach-linux-amd64 .
 ```
 
-`make dev` requires `nodemon`. `sh tests/load.sh` requires Vegeta and targets a
-historical public URL by default; change the target to a controlled environment
-before use. Do not run the load test as routine verification.
-
-The module declares Go 1.15 and CI installs Go 1.17. Avoid language or standard
-library features newer than Go 1.17 unless the task also upgrades the supported
-Go version and CI configuration.
+`sh tests/load.sh` requires Vegeta and targets a historical public URL by
+default; change the target to a controlled environment before use. Do not run
+the load test as routine verification.
 
 ## Configuration and Generated State
 
@@ -120,18 +120,21 @@ Go version and CI configuration.
   Check catalog, thread, error, empty, and pagination states as relevant.
 - Upload changes: inspect controller transaction flow, `utils/`, repository file
   records, original/thumbnail paths, validation limits, and cleanup behavior.
-- Config changes: update `config/config.go`, `.env.example`, README config table,
-  and deployment environment forwarding together.
-- Deployment changes: note that `Dockerfile` expects a prebuilt Linux binary and
-  `docker-compose.yml` assumes Swarm, Traefik, an external network, and a
-  persistent host upload mount.
+- Config changes: update `config/config.go`, `.env.example`, and the README
+  config table together.
+- Deployment changes:
+  - `Dockerfile` builds the application in a pinned Go builder stage and runs it
+    as a non-root user in a small runtime image.
+  - `docker-compose.yml` starts local PostgreSQL only; run micrach on the host.
+  - CI verifies the project and container build but does not publish or deploy.
 
 ## Testing Expectations
 
-There are currently no checked-in Go unit tests and no coverage threshold. Add
-`*_test.go` files beside changed code, use `TestXxx`, and prefer table-driven
-cases when practical. Repository tests must use disposable test data or a
-dedicated database, never a shared production database.
+Go unit tests are checked in across the application packages; there is no
+coverage threshold. Add `*_test.go` files beside changed code, use `TestXxx`,
+and prefer table-driven cases when practical. Repository tests must use
+disposable test data or a dedicated database, never a shared production
+database.
 
 Minimum verification for code changes:
 

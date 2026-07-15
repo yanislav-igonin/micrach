@@ -21,45 +21,45 @@ provide; the source remains available for local use and development.
 
 ## Stack
 
-- Go (the module declares Go 1.15; CI builds with Go 1.17)
-- [Fiber v2](https://github.com/gofiber/fiber)
-- PostgreSQL via `pgx`
+- Go 1.26
+- Fiber v2
+- PostgreSQL 18 for local development
+- PostgreSQL access through [`pgx`](https://github.com/jackc/pgx)
 - Plain HTML templates and CSS
 
 ## Run locally
 
 ### Prerequisites
 
-- Go 1.17 or newer
-- PostgreSQL
-- A PostgreSQL database that the configured user can create tables in
+- Go 1.26
+- Docker with Docker Compose
+- `nodemon` when using automatic reload
 
 ### Setup
 
-1. Create the database. With standard local PostgreSQL tooling:
+From the repository root:
 
-   ```sh
-   createdb micrach
-   ```
+```sh
+cp .env.example .env
+docker compose up -d db
+go run .
+```
 
-2. Copy the example configuration:
+The example configuration matches the PostgreSQL 18 service started by
+Compose. Compose runs PostgreSQL only; the micrach application runs on the
+host. Edit `.env` when you need different local settings. For normal
+development, keep `IS_DB_SEEDED=false`; when true, sample rows are inserted
+every time the application starts.
 
-   ```sh
-   cp .env.example .env
-   ```
+For automatic reload, install `nodemon`, start PostgreSQL as shown above, and
+run:
 
-3. Edit `.env`. At minimum, make `POSTGRES_URL` match your local database.
-   For normal development, set `IS_DB_SEEDED=false`; when true, sample rows are
-   inserted every time the application starts.
+```sh
+make dev
+```
 
-4. Start the application from the repository root:
-
-   ```sh
-   go run .
-   ```
-
-5. Open [http://localhost:3000](http://localhost:3000), or the port configured
-   by `PORT`.
+Open [http://localhost:3000](http://localhost:3000), or the port configured by
+`PORT`.
 
 Startup connects to PostgreSQL, applies missing files from `migrations/`, and
 creates the ignored local `uploads/` directory. Uploaded originals and
@@ -91,9 +91,6 @@ See [.env.example](.env.example) for a complete example.
 ## Development commands
 
 ```sh
-# Run with automatic restart; requires nodemon.
-make dev
-
 # Format, test, vet, and build.
 go fmt ./...
 go test ./...
@@ -101,20 +98,25 @@ go vet ./...
 go build .
 
 # Reproduce the Linux CI build.
-GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build .
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /tmp/micrach-linux-amd64 .
 ```
 
 `tests/load.sh` is an optional Vegeta load test. Its checked-in target is a
 historical public URL, so change it to an environment you own before running
 the script. Generated load-test files are ignored by Git.
 
-## Containers and deployment
+## Containers and CI
 
-The `Dockerfile` packages a prebuilt `micrach` binary together with templates,
-static assets, and migrations. Build the Linux binary before building the
-image. The checked-in `docker-compose.yml` is production-oriented: it expects
-Docker Swarm, an existing `web` overlay network, Traefik, a published image,
-and host-mounted upload storage. It is not a standalone local PostgreSQL setup.
+The multi-stage `Dockerfile` builds micrach in a pinned Go builder image and
+runs it as a non-root user in a small runtime image. Verify the image locally:
+
+```sh
+docker build -t micrach:local .
+```
+
+CI checks formatting, tests, vet, native and Linux builds, reachable
+vulnerabilities, and Docker image construction. It has read-only repository
+permissions and does not publish or deploy images.
 
 ## Project layout
 
