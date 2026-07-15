@@ -3,7 +3,7 @@ package gateway
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 
@@ -29,8 +29,9 @@ func Connect() {
 	if err != nil {
 		log.Panicln(err)
 	}
+	defer resp.Body.Close()
 	//We Read the response body on the line below.
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Panicln(err)
 	}

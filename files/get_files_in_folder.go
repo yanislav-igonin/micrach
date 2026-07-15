@@ -1,7 +1,6 @@
 package files
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"path"
@@ -15,7 +14,7 @@ func GetFullFilePathsInFolder(folder string) []string {
 	}
 
 	fullFolderPath := path.Join(currentPath, folder)
-	files, err := ioutil.ReadDir(fullFolderPath)
+	files, err := os.ReadDir(fullFolderPath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -31,7 +30,7 @@ func GetFullFilePathsInFolder(folder string) []string {
 
 // Reads file contents by full path and returns string
 func ReadFileText(fullFilePath string) string {
-	file, err := ioutil.ReadFile(fullFilePath)
+	file, err := os.ReadFile(fullFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
