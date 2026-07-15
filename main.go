@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"strconv"
 	"strings"
@@ -24,13 +25,14 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
 	config.Init()
-	db.Init()
-	db.Migrate()
+	db.Init(ctx)
+	db.Migrate(ctx)
 	defer db.Pool.Close()
 
 	if config.App.IsDbSeeded {
-		repositories.Seed()
+		repositories.Seed(ctx)
 	}
 
 	if config.App.Env == "production" {

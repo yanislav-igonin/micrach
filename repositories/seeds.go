@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"context"
 	"log"
 	"math/rand"
 	"time"
@@ -63,7 +64,7 @@ func getPost(id int, pid *int) Post {
 	}
 }
 
-func seedDb() {
+func seedDb(ctx context.Context) {
 	// preparing seed data with parent posts with files
 	var parentPosts []Post
 	for i := 1; i < 10; i++ {
@@ -73,7 +74,7 @@ func seedDb() {
 
 	for _, parentPost := range parentPosts {
 		// saving parent post in db
-		parentPostID, err := Posts.Create(parentPost)
+		parentPostID, err := Posts.Create(ctx, parentPost)
 		if err != nil {
 			log.Panicln(err)
 		}
@@ -81,7 +82,7 @@ func seedDb() {
 		// saving parent post files
 		for _, file := range parentPost.Files {
 			file.PostID = parentPostID
-			err = Files.Create(file)
+			err = Files.Create(ctx, file)
 			if err != nil {
 				log.Panicln(err)
 			}
@@ -91,7 +92,7 @@ func seedDb() {
 		for i := 0; i < 10; i++ {
 			// getting child post with files
 			childPost := getPost(0, &parentPostID)
-			childPostID, err := Posts.Create(childPost)
+			childPostID, err := Posts.Create(ctx, childPost)
 			if err != nil {
 				log.Panicln(err)
 			}
@@ -99,7 +100,7 @@ func seedDb() {
 			// saving child post files
 			for _, file := range childPost.Files {
 				file.PostID = childPostID
-				err = Files.Create(file)
+				err = Files.Create(ctx, file)
 				if err != nil {
 					log.Panicln(err)
 				}
@@ -109,7 +110,7 @@ func seedDb() {
 	}
 }
 
-func Seed() {
-	seedDb()
+func Seed(ctx context.Context) {
+	seedDb(ctx)
 	log.Println("seeds - online")
 }

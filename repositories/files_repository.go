@@ -4,22 +4,33 @@ import (
 	"context"
 	Db "micrach/db"
 
-	"github.com/jackc/pgtype"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v5"
 )
 
 type FilesRepository struct{}
 
 var Files FilesRepository
 
-func (r *FilesRepository) Create(f File) error {
+func toInt32s(values []int) []int32 {
+	if values == nil {
+		return nil
+	}
+
+	result := make([]int32, len(values))
+	for i, value := range values {
+		result[i] = int32(value)
+	}
+	return result
+}
+
+func (r *FilesRepository) Create(ctx context.Context, f File) error {
 	sql := `
 		INSERT INTO files (post_id, name, ext, size)
 		VALUES ($1, $2, $3, $4)
 	`
 
 	row := Db.Pool.QueryRow(
-		context.TODO(), sql, f.PostID, f.Name, f.Ext, f.Size,
+		ctx, sql, f.PostID, f.Name, f.Ext, f.Size,
 	)
 
 	err := row.Scan()
@@ -30,7 +41,7 @@ func (r *FilesRepository) Create(f File) error {
 	return nil
 }
 
-func (r *FilesRepository) GetByPostIDs(postIDs []int) (map[int][]File, error) {
+func (r *FilesRepository) GetByPostIDs(ctx context.Context, postIDs []int) (map[int][]File, error) {
 	sql := `
 		SELECT id, post_id, name, size, ext
 		FROM files
@@ -38,16 +49,11 @@ func (r *FilesRepository) GetByPostIDs(postIDs []int) (map[int][]File, error) {
 		ORDER BY id ASC
 	`
 
-	ids := &pgtype.Int4Array{}
-	ids.Set(postIDs)
-
-	rows, err := Db.Pool.Query(context.TODO(), sql, ids)
+	rows, err := Db.Pool.Query(ctx, sql, toInt32s(postIDs))
 	if err != nil {
 		return nil, err
 	}
-	if rows.Err() != nil {
-		return nil, rows.Err()
-	}
+	defer rows.Close()
 
 	filesMapByPostId := make(map[int][]File)
 	for rows.Next() {
@@ -66,11 +72,14 @@ func (r *FilesRepository) GetByPostIDs(postIDs []int) (map[int][]File, error) {
 			file,
 		)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
 	return filesMapByPostId, nil
 }
 
-func (r *FilesRepository) CreateInTx(tx pgx.Tx, f File) (int, error) {
+func (r *FilesRepository) CreateInTx(ctx context.Context, tx pgx.Tx, f File) (int, error) {
 	sql := `
 		INSERT INTO files (post_id, name, ext, size)
 		VALUES ($1, $2, $3, $4)
@@ -78,7 +87,7 @@ func (r *FilesRepository) CreateInTx(tx pgx.Tx, f File) (int, error) {
 	`
 
 	row := tx.QueryRow(
-		context.TODO(), sql, f.PostID, f.Name, f.Ext, f.Size,
+		ctx, sql, f.PostID, f.Name, f.Ext, f.Size,
 	)
 
 	createdFile := new(File)

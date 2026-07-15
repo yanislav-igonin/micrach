@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"log"
 	"path/filepath"
 	"strconv"
@@ -10,7 +11,8 @@ import (
 	Config "micrach/config"
 	Files "micrach/files"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 var Pool *pgxpool.Pool
@@ -21,9 +23,9 @@ type Migration struct {
 	Name string
 }
 
-func Init() {
+func Init(ctx context.Context) {
 	var err error
-	Pool, err = pgxpool.Connect(context.TODO(), Config.Db.Url)
+	Pool, err = pgxpool.New(ctx, Config.Db.Url)
 	if err != nil {
 		log.Println("database - offline")
 		log.Panicln(err)
@@ -32,8 +34,8 @@ func Init() {
 	log.Println("database - online")
 }
 
-func Migrate() {
-	dbMigrations := getDbMigrations()
+func Migrate(ctx context.Context) {
+	dbMigrations := getDbMigrations(ctx)
 	sqlMigrations := Files.GetFullFilePathsInFolder("migrations")
 	for _, m := range sqlMigrations {
 		filename := filepath.Base(m)
@@ -48,7 +50,7 @@ func Migrate() {
 		_, isMigrationInDb := dbMigrations[id]
 		if !isMigrationInDb {
 			sql := Files.ReadFileText(m)
-			runMigration(id, name, sql)
+			runMigration(ctx, id, name, sql)
 			log.Println("migration - " + name + " - online")
 		}
 	}
@@ -56,29 +58,27 @@ func Migrate() {
 	log.Println("migrations - online")
 }
 
-func runMigration(mid int, mname, msql string) {
-	_, err := Pool.Exec(context.TODO(), msql)
+func runMigration(ctx context.Context, mid int, mname, msql string) {
+	_, err := Pool.Exec(ctx, msql)
 	if err != nil {
 		log.Panicln(err)
 	}
 
-	sql := `INSERT INTO migrations (id, name) VALUES ($1, $2)`
-	_, err = Pool.Query(context.TODO(), sql, mid, mname)
+	_, err = Pool.Exec(ctx, `INSERT INTO migrations (id, name) VALUES ($1, $2)`, mid, mname)
 	if err != nil {
 		log.Panicln(err)
 	}
 }
 
-func getDbMigrations() MigrationsMap {
-	sql := `SELECT id, name FROM migrations`
-	rows, err := Pool.Query(context.TODO(), sql)
-	if err != nil && isNotNonExistentMigrationsTable(err) {
+func getDbMigrations(ctx context.Context) MigrationsMap {
+	rows, err := Pool.Query(ctx, `SELECT id, name FROM migrations`)
+	if err != nil {
+		if isUndefinedTable(err) {
+			return make(MigrationsMap)
+		}
 		log.Panicln(err)
 	}
-
-	if rows.Err() != nil && isNotNonExistentMigrationsTable(rows.Err()) {
-		log.Panicln(rows.Err())
-	}
+	defer rows.Close()
 
 	migrationsMap := make(MigrationsMap)
 	for rows.Next() {
@@ -90,10 +90,14 @@ func getDbMigrations() MigrationsMap {
 
 		migrationsMap[m.ID] = m.Name
 	}
+	if err := rows.Err(); err != nil {
+		log.Panicln(err)
+	}
 
 	return migrationsMap
 }
 
-func isNotNonExistentMigrationsTable(err error) bool {
-	return err.Error() != `ERROR: relation "migrations" does not exist (SQLSTATE 42P01)`
+func isUndefinedTable(err error) bool {
+	var pgErr *pgconn.PgError
+	return errors.As(err, &pgErr) && pgErr.Code == "42P01"
 }
