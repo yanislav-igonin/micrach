@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/limiter"
 )
 
 func TestRegisterStaticRoutes(t *testing.T) {
@@ -30,7 +30,7 @@ func TestRegisterStaticRoutes(t *testing.T) {
 
 	app := fiber.New()
 	registerStaticRoutes(app)
-	app.Get("/static/fallback", func(c *fiber.Ctx) error {
+	app.Get("/static/fallback", func(c fiber.Ctx) error {
 		return c.SendString("fallback")
 	})
 
@@ -89,12 +89,12 @@ func TestSkipRateLimit(t *testing.T) {
 func TestLimiterRejectsOrdinaryRemoteRequests(t *testing.T) {
 	app := fiber.New()
 	app.Use(limiter.New(limiter.Config{
-		Next: func(c *fiber.Ctx) bool {
+		Next: func(c fiber.Ctx) bool {
 			return skipRateLimit(c.IsFromLocal(), c.Path())
 		},
 		Max: 2,
 	}))
-	app.Get("/", func(c *fiber.Ctx) error {
+	app.Get("/", func(c fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusOK)
 	})
 

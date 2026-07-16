@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/dchest/captcha"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 	"github.com/jackc/pgx/v5"
 
 	"micrach/config"
@@ -18,8 +18,7 @@ import (
 	"micrach/utils"
 )
 
-func GetThreads(c *fiber.Ctx) error {
-	ctx := c.UserContext()
+func GetThreads(c fiber.Ctx) error {
 	pageString := c.Query("page", "1")
 	page, err := strconv.Atoi(pageString)
 	if err != nil {
@@ -32,12 +31,12 @@ func GetThreads(c *fiber.Ctx) error {
 
 	limit := 10
 	offset := limit * (page - 1)
-	threads, err := repositories.Posts.Get(ctx, limit, offset)
+	threads, err := repositories.Posts.Get(c, limit, offset)
 	if err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 	}
-	count, err := repositories.Posts.GetThreadsCount(ctx)
+	count, err := repositories.Posts.GetThreadsCount(c)
 	if err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
@@ -63,13 +62,12 @@ func GetThreads(c *fiber.Ctx) error {
 	return c.Render("pages/index", htmlData)
 }
 
-func GetThread(c *fiber.Ctx) error {
-	ctx := c.UserContext()
-	threadID, err := c.ParamsInt("threadID")
+func GetThread(c fiber.Ctx) error {
+	threadID, err := strconv.Atoi(c.Params("threadID"))
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).Render("pages/404", nil)
 	}
-	thread, err := repositories.Posts.GetThreadByPostID(ctx, threadID)
+	thread, err := repositories.Posts.GetThreadByPostID(c, threadID)
 	if err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
@@ -91,8 +89,7 @@ func GetThread(c *fiber.Ctx) error {
 	return c.Render("pages/thread", htmlData)
 }
 
-func CreateThread(c *fiber.Ctx) error {
-	ctx := c.UserContext()
+func CreateThread(c fiber.Ctx) error {
 	form, err := c.MultipartForm()
 	if err != nil {
 		log.Println("error:", err)
@@ -123,39 +120,39 @@ func CreateThread(c *fiber.Ctx) error {
 		}
 	}
 
-	conn, err := db.Pool.Acquire(ctx)
+	conn, err := db.Pool.Acquire(c)
 	if err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 	}
 	defer conn.Release()
 
-	threadsCount, err := repositories.Posts.GetThreadsCount(ctx)
+	threadsCount, err := repositories.Posts.GetThreadsCount(c)
 	if err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 	}
 
 	if threadsCount >= config.App.ThreadsMaxCount {
-		oldestThreadUpdatedAt, err := repositories.Posts.GetOldestThreadUpdatedAt(ctx)
+		oldestThreadUpdatedAt, err := repositories.Posts.GetOldestThreadUpdatedAt(c)
 		if err != nil {
 			log.Println("error:", err)
 			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 		}
-		err = repositories.Posts.ArchiveThreadsFrom(ctx, oldestThreadUpdatedAt)
+		err = repositories.Posts.ArchiveThreadsFrom(c, oldestThreadUpdatedAt)
 		if err != nil {
 			log.Println("error:", err)
 			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 		}
 	}
 
-	tx, err := conn.Begin(ctx)
+	tx, err := conn.Begin(c)
 	if err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 	}
 	defer func() {
-		rollbackErr := tx.Rollback(ctx)
+		rollbackErr := tx.Rollback(c)
 		if rollbackErr != nil && !errors.Is(rollbackErr, pgx.ErrTxClosed) {
 			log.Println("error:", rollbackErr)
 		}
@@ -167,7 +164,7 @@ func CreateThread(c *fiber.Ctx) error {
 		Text:     text,
 		IsSage:   false,
 	}
-	threadID, err := repositories.Posts.CreateInTx(ctx, tx, post)
+	threadID, err := repositories.Posts.CreateInTx(c, tx, post)
 	if err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
@@ -188,7 +185,7 @@ func CreateThread(c *fiber.Ctx) error {
 			Size: int(fileInRequest.Size),
 		}
 
-		fileID, err := repositories.Files.CreateInTx(ctx, tx, file)
+		fileID, err := repositories.Files.CreateInTx(c, tx, file)
 		if err != nil {
 			log.Println("error:", err)
 			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
@@ -219,24 +216,23 @@ func CreateThread(c *fiber.Ctx) error {
 		}
 	}
 
-	if err := tx.Commit(ctx); err != nil {
+	if err := tx.Commit(c); err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 	}
 
 	path := "/" + strconv.Itoa(threadID)
-	return c.Redirect(path, fiber.StatusFound)
+	return c.Redirect().Status(fiber.StatusFound).To(path)
 }
 
 // Add new post in thread
-func UpdateThread(c *fiber.Ctx) error {
-	ctx := c.UserContext()
-	threadID, err := c.ParamsInt("threadID")
+func UpdateThread(c fiber.Ctx) error {
+	threadID, err := strconv.Atoi(c.Params("threadID"))
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).Render("pages/404", nil)
 	}
 
-	isArchived, err := repositories.Posts.GetIfThreadIsArchived(ctx, threadID)
+	isArchived, err := repositories.Posts.GetIfThreadIsArchived(c, threadID)
 	if isArchived {
 		errorHtmlData := repositories.BadRequestHtmlData{
 			Message: repositories.ThreadIsArchivedErrorMessage,
@@ -284,7 +280,7 @@ func UpdateThread(c *fiber.Ctx) error {
 	}
 	isSage := isSageString == "on"
 
-	conn, err := db.Pool.Acquire(ctx)
+	conn, err := db.Pool.Acquire(c)
 	if err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
@@ -292,14 +288,14 @@ func UpdateThread(c *fiber.Ctx) error {
 	}
 	defer conn.Release()
 
-	tx, err := conn.Begin(ctx)
+	tx, err := conn.Begin(c)
 	if err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 
 	}
 	defer func() {
-		rollbackErr := tx.Rollback(ctx)
+		rollbackErr := tx.Rollback(c)
 		if rollbackErr != nil && !errors.Is(rollbackErr, pgx.ErrTxClosed) {
 			log.Println("error:", rollbackErr)
 		}
@@ -312,14 +308,14 @@ func UpdateThread(c *fiber.Ctx) error {
 		Text:     text,
 		IsSage:   isSage,
 	}
-	postID, err := repositories.Posts.CreateInTx(ctx, tx, post)
+	postID, err := repositories.Posts.CreateInTx(c, tx, post)
 	if err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 
 	}
 
-	postsCountInThread, err := repositories.Posts.GetThreadPostsCount(ctx, threadID)
+	postsCountInThread, err := repositories.Posts.GetThreadPostsCount(c, threadID)
 	if err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
@@ -328,7 +324,7 @@ func UpdateThread(c *fiber.Ctx) error {
 	isBumpLimit := postsCountInThread >= config.App.ThreadBumpLimit
 	isThreadBumped := !isBumpLimit && !isSage && !post.IsParent
 	if isThreadBumped {
-		err = repositories.Posts.BumpThreadInTx(ctx, tx, threadID)
+		err = repositories.Posts.BumpThreadInTx(c, tx, threadID)
 		if err != nil {
 			log.Println("error:", err)
 			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
@@ -345,7 +341,7 @@ func UpdateThread(c *fiber.Ctx) error {
 			Size: int(fileInRequest.Size),
 		}
 
-		fileID, err := repositories.Files.CreateInTx(ctx, tx, file)
+		fileID, err := repositories.Files.CreateInTx(c, tx, file)
 		if err != nil {
 			log.Println("error:", err)
 			return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
@@ -380,11 +376,11 @@ func UpdateThread(c *fiber.Ctx) error {
 		}
 	}
 
-	if err := tx.Commit(ctx); err != nil {
+	if err := tx.Commit(c); err != nil {
 		log.Println("error:", err)
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 	}
 
 	path := "/" + strconv.Itoa(threadID) + "#" + strconv.Itoa(postID)
-	return c.Redirect(path)
+	return c.Redirect().Status(fiber.StatusFound).To(path)
 }

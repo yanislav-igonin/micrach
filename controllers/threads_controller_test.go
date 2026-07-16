@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 
 	"micrach/config"
 )
@@ -17,7 +17,7 @@ type testViews struct{}
 
 func (testViews) Load() error { return nil }
 
-func (testViews) Render(out io.Writer, name string, _ interface{}, _ ...string) error {
+func (testViews) Render(out io.Writer, name string, _ any, _ ...string) error {
 	_, err := io.WriteString(out, name)
 	return err
 }

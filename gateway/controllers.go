@@ -3,10 +3,10 @@ package gateway
 import (
 	"micrach/config"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
-func Ping(c *fiber.Ctx) error {
+func Ping(c fiber.Ctx) error {
 	headerValues := c.GetReqHeaders()["Authorization"]
 	headerKey := ""
 	if len(headerValues) > 0 {
