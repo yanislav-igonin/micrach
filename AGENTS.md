@@ -7,7 +7,7 @@ all claims with fresh commands.
 ## Project Overview
 
 micrach is a small, server-rendered, single-board imageboard. It uses Go,
-Fiber v2, Fiber HTML templates, PostgreSQL through `pgx`, and filesystem-backed
+Fiber v3, Fiber HTML templates, PostgreSQL through `pgx`, and filesystem-backed
 image uploads. It intentionally uses little browser-side JavaScript.
 
 The service supports thread creation, replies, JPEG/PNG attachments,
@@ -135,6 +135,11 @@ coverage threshold. Add `*_test.go` files beside changed code, use `TestXxx`,
 and prefer table-driven cases when practical. Repository tests must use
 disposable test data or a dedicated database, never a shared production
 database.
+
+Routine `go test ./...` must remain DB-free. Fiber handler and middleware tests
+must use in-memory apps and temporary directories; PostgreSQL-backed behavior
+belongs to the explicit manual smoke pass unless a later design approves an
+integration-test harness.
 
 Minimum verification for code changes:
 
