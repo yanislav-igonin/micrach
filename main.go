@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"strconv"
 	"strings"
@@ -11,7 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/gofiber/template/html"
+	"github.com/gofiber/template/html/v2"
 
 	"micrach/build"
 	"micrach/config"
@@ -24,13 +25,14 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
 	config.Init()
-	db.Init()
-	db.Migrate()
+	db.Init(ctx)
+	db.Migrate(ctx)
 	defer db.Pool.Close()
 
 	if config.App.IsDbSeeded {
-		repositories.Seed()
+		repositories.Seed(ctx)
 	}
 
 	if config.App.Env == "production" {

@@ -1,7 +1,6 @@
 package build
 
 import (
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"strings"
@@ -10,7 +9,7 @@ import (
 // Gets file paths from directory recursively.
 func getFilePathsRecursively(dir string) ([]string, error) {
 	var paths []string
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +31,7 @@ func getFilePathsRecursively(dir string) ([]string, error) {
 // Returns all css files paths in ../static/styles folder.
 func getCssFilesPaths() []string {
 	var paths []string
-	files, err := ioutil.ReadDir("static/styles")
+	files, err := os.ReadDir("static/styles")
 	if err != nil {
 		panic(err)
 	}
@@ -99,7 +98,7 @@ func RenameCss() {
 	}
 
 	for _, htmlTemplatePath := range htmlTemplatePaths {
-		htmlTemplate, err := ioutil.ReadFile(htmlTemplatePath)
+		htmlTemplate, err := os.ReadFile(htmlTemplatePath)
 		if err != nil {
 			panic(err)
 		}
@@ -108,7 +107,7 @@ func RenameCss() {
 			htmlTemplate = []byte(strings.Replace(string(htmlTemplate), origPath, newPath, -1))
 		}
 		// write html template to file
-		err = ioutil.WriteFile(htmlTemplatePath, htmlTemplate, 0644)
+		err = os.WriteFile(htmlTemplatePath, htmlTemplate, 0644)
 		if err != nil {
 			panic(err)
 		}
