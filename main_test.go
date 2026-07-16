@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"net/textproto"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/gofiber/fiber/v3"
@@ -166,5 +168,56 @@ func TestMultipartBodyLimitAllowsApplicationFileSizeValidation(t *testing.T) {
 	defer resp.Body.Close()
 	if resp.StatusCode != fiber.StatusBadRequest {
 		t.Fatalf("status = %d, want %d", resp.StatusCode, fiber.StatusBadRequest)
+	}
+}
+
+func TestMultipartBodyLimitAllowsMaximumUploadEnvelope(t *testing.T) {
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	if err := writer.WriteField("title", strings.Repeat("t", 100)); err != nil {
+		t.Fatal(err)
+	}
+	if err := writer.WriteField("text", strings.Repeat("t", 1000)); err != nil {
+		t.Fatal(err)
+	}
+	for fileNumber := 1; fileNumber <= 4; fileNumber++ {
+		header := make(textproto.MIMEHeader)
+		header.Set("Content-Disposition", fmt.Sprintf(`form-data; name="files"; filename="maximum-%d.png"`, fileNumber))
+		header.Set("Content-Type", "image/png")
+		part, err := writer.CreatePart(header)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := part.Write(bytes.Repeat([]byte("x"), utils.FILE_SIZE_IN_BYTES)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if body.Len() >= multipartBodyLimit {
+		t.Fatalf("maximum valid multipart body = %d bytes, limit = %d", body.Len(), multipartBodyLimit)
+	}
+
+	app := fiber.New(fiber.Config{BodyLimit: multipartBodyLimit})
+	app.Post("/", func(c fiber.Ctx) error {
+		form, err := c.MultipartForm()
+		if err != nil {
+			return err
+		}
+		if got := len(form.File["files"]); got != 4 {
+			return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("files = %d, want 4", got))
+		}
+		return c.SendStatus(fiber.StatusNoContent)
+	})
+	req := httptest.NewRequest(http.MethodPost, "/", &body)
+	req.Header.Set(fiber.HeaderContentType, writer.FormDataContentType())
+	resp, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != fiber.StatusNoContent {
+		t.Fatalf("status = %d, want %d", resp.StatusCode, fiber.StatusNoContent)
 	}
 }

@@ -25,7 +25,8 @@ import (
 	"micrach/utils"
 )
 
-const multipartBodyLimit = 13 * 1024 * 1024
+// Reserve 1 MiB for multipart boundaries, filenames, title, and text.
+const multipartBodyLimit = 4*utils.FILE_SIZE_IN_BYTES + (1 << 20)
 
 func skipRateLimit(isLocal bool, path string) bool {
 	isRequestForStatic := strings.Contains(path, "/static") ||
