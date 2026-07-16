@@ -24,6 +24,18 @@ import (
 	"micrach/utils"
 )
 
+func skipRateLimit(isLocal bool, path string) bool {
+	isRequestForStatic := strings.Contains(path, "/static") ||
+		strings.Contains(path, "/uploads") ||
+		strings.Contains(path, "/captcha")
+	return isRequestForStatic || isLocal
+}
+
+func registerStaticRoutes(app *fiber.App) {
+	app.Static("/uploads", "./uploads")
+	app.Static("/static", "./static")
+}
+
 func main() {
 	ctx := context.Background()
 	config.Init()
@@ -54,18 +66,14 @@ func main() {
 	if config.App.IsRateLimiterEnabled {
 		app.Use(limiter.New(limiter.Config{
 			Next: func(c *fiber.Ctx) bool {
-				isDev := c.IsFromLocal()
-				path := c.Path()
-				isRequestForStatic := strings.Contains(path, "/static") || strings.Contains(path, "/uploads") || strings.Contains(path, "/captcha")
-				return isRequestForStatic || isDev
+				return skipRateLimit(c.IsFromLocal(), c.Path())
 			},
 			Max: 50,
 		}))
 	}
 	app.Use(compress.New())
 
-	app.Static("/uploads", "./uploads")
-	app.Static("/static", "./static")
+	registerStaticRoutes(app)
 
 	app.Get("/", controllers.GetThreads)
 	app.Post("/", controllers.CreateThread)
