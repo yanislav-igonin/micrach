@@ -25,6 +25,8 @@ import (
 	"micrach/utils"
 )
 
+const multipartBodyLimit = 13 * 1024 * 1024
+
 func skipRateLimit(isLocal bool, path string) bool {
 	isRequestForStatic := strings.Contains(path, "/static") ||
 		strings.Contains(path, "/uploads") ||
@@ -61,7 +63,10 @@ func main() {
 	engine.AddFunc("Iterate", templates.Iterate)
 	engine.AddFunc("NotNil", templates.NotNil)
 
-	app := fiber.New(fiber.Config{Views: engine})
+	app := fiber.New(fiber.Config{
+		Views:     engine,
+		BodyLimit: multipartBodyLimit,
+	})
 
 	app.Use(recover.New())
 	if config.App.IsRateLimiterEnabled {

@@ -1,16 +1,32 @@
 package main
 
 import (
+	"bytes"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"net/textproto"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/limiter"
+
+	"micrach/config"
+	"micrach/controllers"
+	"micrach/utils"
 )
+
+type mainTestViews struct{}
+
+func (mainTestViews) Load() error { return nil }
+
+func (mainTestViews) Render(out io.Writer, name string, _ any, _ ...string) error {
+	_, err := io.WriteString(out, name)
+	return err
+}
 
 func TestRegisterStaticRoutes(t *testing.T) {
 	t.Chdir(t.TempDir())
@@ -107,5 +123,48 @@ func TestLimiterRejectsOrdinaryRemoteRequests(t *testing.T) {
 		if resp.StatusCode != want {
 			t.Fatalf("request %d status = %d, want %d", requestNumber+1, resp.StatusCode, want)
 		}
+	}
+}
+
+func TestMultipartBodyLimitAllowsApplicationFileSizeValidation(t *testing.T) {
+	previousConfig := config.App
+	t.Cleanup(func() {
+		config.App = previousConfig
+	})
+	config.App.IsCaptchaActive = false
+
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	if err := writer.WriteField("title", "oversize"); err != nil {
+		t.Fatal(err)
+	}
+	if err := writer.WriteField("text", "oversize upload"); err != nil {
+		t.Fatal(err)
+	}
+	header := make(textproto.MIMEHeader)
+	header.Set("Content-Disposition", `form-data; name="files"; filename="oversize.png"`)
+	header.Set("Content-Type", "image/png")
+	part, err := writer.CreatePart(header)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := part.Write(bytes.Repeat([]byte("x"), utils.FILE_SIZE_IN_BYTES+(1<<20))); err != nil {
+		t.Fatal(err)
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	app := fiber.New(fiber.Config{Views: mainTestViews{}, BodyLimit: multipartBodyLimit})
+	app.Post("/", controllers.CreateThread)
+	req := httptest.NewRequest(http.MethodPost, "/", &body)
+	req.Header.Set(fiber.HeaderContentType, writer.FormDataContentType())
+	resp, err := app.Test(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != fiber.StatusBadRequest {
+		t.Fatalf("status = %d, want %d", resp.StatusCode, fiber.StatusBadRequest)
 	}
 }
