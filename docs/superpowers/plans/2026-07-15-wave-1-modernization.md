@@ -67,7 +67,7 @@
 - Consumes: existing unexported configuration helpers, `utils.ValidatePost`, `controllers.GetThreads`, and `controllers.GetThread`.
 - Produces: regression tests that must pass before and after dependency migration.
 
-- [ ] **Step 1: Record the pre-change baseline**
+- [x] **Step 1: Record the pre-change baseline**
 
 Run:
 
@@ -79,7 +79,7 @@ go build ./...
 
 Expected: all commands exit 0; packages report no test files.
 
-- [ ] **Step 2: Add configuration characterization tests**
+- [x] **Step 2: Add configuration characterization tests**
 
 Create `config/config_test.go`:
 
@@ -153,7 +153,7 @@ func TestDefaultConfigs(t *testing.T) {
 }
 ```
 
-- [ ] **Step 3: Add post and upload validation tests**
+- [x] **Step 3: Add post and upload validation tests**
 
 Create `utils/utils_test.go`:
 
@@ -208,7 +208,7 @@ func TestValidatePost(t *testing.T) {
 }
 ```
 
-- [ ] **Step 4: Add DB-free Fiber error-path smoke tests**
+- [x] **Step 4: Add DB-free Fiber error-path smoke tests**
 
 Create `controllers/threads_controller_test.go`:
 
@@ -261,7 +261,7 @@ func TestGetThreadRejectsInvalidID(t *testing.T) {
 }
 ```
 
-- [ ] **Step 5: Run the new safety net**
+- [x] **Step 5: Run the new safety net**
 
 Run:
 
@@ -273,7 +273,7 @@ go vet ./...
 
 Expected: all tests pass and vet exits 0.
 
-- [ ] **Step 6: Commit the safety net**
+- [x] **Step 6: Commit the safety net**
 
 ```bash
 git add config/config_test.go utils/utils_test.go controllers/threads_controller_test.go
@@ -295,7 +295,7 @@ git commit -m "test: characterize legacy behavior"
 - Consumes: characterization tests from Task 1.
 - Produces: Go 1.26 module baseline using Fiber v2.52.14 and HTML template v2.1.3; no route or handler API change.
 
-- [ ] **Step 1: Set the module Go line**
+- [x] **Step 1: Set the module Go line**
 
 Run:
 
@@ -312,7 +312,7 @@ go 1.26.0
 toolchain go1.26.5
 ```
 
-- [ ] **Step 2: Upgrade direct non-database dependencies deliberately**
+- [x] **Step 2: Upgrade direct non-database dependencies deliberately**
 
 Run:
 
@@ -326,7 +326,7 @@ go get github.com/disintegration/imaging@v1.6.2
 
 Expected: each command exits 0; Fiber remains on major version 2.
 
-- [ ] **Step 3: Switch the template import to its current module path**
+- [x] **Step 3: Switch the template import to its current module path**
 
 In `main.go`, replace:
 
@@ -346,7 +346,7 @@ Keep initialization unchanged:
 engine := html.New("./templates", ".html")
 ```
 
-- [ ] **Step 4: Normalize the module graph**
+- [x] **Step 4: Normalize the module graph**
 
 Run:
 
@@ -367,7 +367,7 @@ github.com/joho/godotenv v1.5.1
 
 The old root `github.com/gofiber/template` requirement must be absent.
 
-- [ ] **Step 5: Verify behavior on the new HTTP dependency baseline**
+- [x] **Step 5: Verify behavior on the new HTTP dependency baseline**
 
 Run:
 
@@ -379,7 +379,7 @@ go build ./...
 
 Expected: all commands exit 0.
 
-- [ ] **Step 6: Commit the toolchain and Fiber v2 baseline**
+- [x] **Step 6: Commit the toolchain and Fiber v2 baseline**
 
 ```bash
 git add go.mod go.sum main.go
@@ -408,7 +408,7 @@ git commit -m "build: update Go and Fiber v2"
 - Consumes: `fiber.Ctx.UserContext() context.Context`; startup uses `context.Background()`.
 - Produces: repository and DB operations accepting `context.Context`; pgx v5 transaction types; `toInt32s([]int) []int32` for PostgreSQL `integer[]` parameters.
 
-- [ ] **Step 1: Write the integer-array conversion test**
+- [x] **Step 1: Write the integer-array conversion test**
 
 Create `repositories/files_repository_test.go`:
 
@@ -441,7 +441,7 @@ func TestToInt32s(t *testing.T) {
 }
 ```
 
-- [ ] **Step 2: Run the focused test and confirm the missing helper**
+- [x] **Step 2: Run the focused test and confirm the missing helper**
 
 Run:
 
@@ -451,7 +451,7 @@ go test ./repositories -run TestToInt32s -count=1
 
 Expected: build failure containing `undefined: toInt32s`.
 
-- [ ] **Step 3: Add the minimal array conversion helper**
+- [x] **Step 3: Add the minimal array conversion helper**
 
 Add to `repositories/files_repository.go`:
 
@@ -477,7 +477,7 @@ rows, err := Db.Pool.Query(ctx, sql, toInt32s(postIDs))
 
 Do not keep `pgtype.Int4Array` or the standalone `github.com/jackc/pgtype` import.
 
-- [ ] **Step 4: Write SQLSTATE classification tests**
+- [x] **Step 4: Write SQLSTATE classification tests**
 
 Create `db/db_test.go`:
 
@@ -512,7 +512,7 @@ func TestIsUndefinedTable(t *testing.T) {
 }
 ```
 
-- [ ] **Step 5: Upgrade pgx and replace imports**
+- [x] **Step 5: Upgrade pgx and replace imports**
 
 Run:
 
@@ -537,7 +537,7 @@ with:
 
 Only import `pgconn` in `db/db.go` and `db/db_test.go`.
 
-- [ ] **Step 6: Define the contextual DB and repository signatures**
+- [x] **Step 6: Define the contextual DB and repository signatures**
 
 Change signatures to this exact set:
 
@@ -577,7 +577,7 @@ through internal repository calls such as:
 filesMap, err := Files.GetByPostIDs(ctx, postIDs)
 ```
 
-- [ ] **Step 7: Propagate startup and request contexts at call sites**
+- [x] **Step 7: Propagate startup and request contexts at call sites**
 
 In `main.go`:
 
@@ -602,7 +602,7 @@ ctx := c.UserContext()
 Pass `ctx` as the first argument to every repository call, `db.Pool.Acquire`,
 `conn.Begin`, `tx.Rollback`, and `tx.Commit`.
 
-- [ ] **Step 8: Make rows lifecycle and migration error handling correct**
+- [x] **Step 8: Make rows lifecycle and migration error handling correct**
 
 After every successful `Query`, add:
 
@@ -659,7 +659,7 @@ if err != nil {
 defer rows.Close()
 ```
 
-- [ ] **Step 9: Check transaction completion in both write handlers**
+- [x] **Step 9: Check transaction completion in both write handlers**
 
 Import `errors` and `github.com/jackc/pgx/v5` in
 `controllers/threads_controller.go`. Replace each bare rollback defer with:
@@ -682,7 +682,7 @@ if err := tx.Commit(ctx); err != nil {
 }
 ```
 
-- [ ] **Step 10: Normalize and verify the pgx v5 migration**
+- [x] **Step 10: Normalize and verify the pgx v5 migration**
 
 Run:
 
@@ -697,7 +697,7 @@ rg 'jackc/(pgx/v4|pgtype)|context\.TODO' --glob '*.go'
 
 Expected: build and checks pass; final `rg` returns no matches.
 
-- [ ] **Step 11: Commit the database driver migration**
+- [x] **Step 11: Commit the database driver migration**
 
 ```bash
 git add go.mod go.sum main.go controllers/threads_controller.go repositories db
@@ -719,7 +719,7 @@ git commit -m "refactor(db): migrate to pgx v5"
 - Consumes: existing file paths, CSS rewrite behavior, and gateway registration request.
 - Produces: identical behavior through `os` and `io`, with gateway response bodies closed.
 
-- [ ] **Step 1: Replace deprecated filesystem calls**
+- [x] **Step 1: Replace deprecated filesystem calls**
 
 In `build/css.go`, remove `io/ioutil` and use:
 
@@ -739,7 +739,7 @@ file, err := os.ReadFile(fullFilePath)
 
 Preserve existing return values, ordering, permissions, and error policy.
 
-- [ ] **Step 2: Replace gateway body reading and close the response**
+- [x] **Step 2: Replace gateway body reading and close the response**
 
 In `gateway/connect.go`, replace `io/ioutil` with `io`, then use:
 
@@ -756,7 +756,7 @@ if err != nil {
 }
 ```
 
-- [ ] **Step 3: Verify deprecated APIs are gone**
+- [x] **Step 3: Verify deprecated APIs are gone**
 
 Run:
 
@@ -770,7 +770,7 @@ rg 'io/ioutil|ioutil\.' --glob '*.go'
 
 Expected: Go checks pass; final `rg` returns no matches.
 
-- [ ] **Step 4: Commit the compatibility cleanup**
+- [x] **Step 4: Commit the compatibility cleanup**
 
 ```bash
 git add build/css.go files/get_files_in_folder.go gateway/connect.go
@@ -792,7 +792,7 @@ git commit -m "refactor: replace deprecated I/O APIs"
 - Consumes: application `POSTGRES_URL` configuration.
 - Produces: PostgreSQL at `localhost:5432`, database/user/password `micrach`, persistent volume `micrach-postgres`, and host-run development commands.
 
-- [ ] **Step 1: Replace Compose with the PostgreSQL-only definition**
+- [x] **Step 1: Replace Compose with the PostgreSQL-only definition**
 
 Replace `docker-compose.yml` with:
 
@@ -822,7 +822,7 @@ volumes:
 The `/var/lib/postgresql` mount intentionally follows the PostgreSQL 18 image
 layout.
 
-- [ ] **Step 2: Make local environment defaults safe and compatible**
+- [x] **Step 2: Make local environment defaults safe and compatible**
 
 Replace `.env.example` with:
 
@@ -842,7 +842,7 @@ GATEWAY_BOARD_URL=
 GATEWAY_BOARD_DESCRIPTION=
 ```
 
-- [ ] **Step 3: Add explicit host and infrastructure commands**
+- [x] **Step 3: Add explicit host and infrastructure commands**
 
 Replace `Makefile` with:
 
@@ -862,7 +862,7 @@ infra-down:
 	docker compose down
 ```
 
-- [ ] **Step 4: Validate Compose syntax and database health**
+- [x] **Step 4: Validate Compose syntax and database health**
 
 Run:
 
@@ -874,7 +874,7 @@ docker compose ps
 
 Expected: configuration is valid; `db` transitions to `healthy`.
 
-- [ ] **Step 5: Verify clean startup against disposable local data**
+- [x] **Step 5: Verify clean startup against disposable local data**
 
 Run with a copied local environment:
 
@@ -887,7 +887,7 @@ Expected: logs report database and migrations online; application listens on
 port 3000. Stop the process after startup verification. An existing `.env` is
 never overwritten or removed, and `.env` is never staged.
 
-- [ ] **Step 6: Commit local infrastructure**
+- [x] **Step 6: Commit local infrastructure**
 
 ```bash
 git add docker-compose.yml .env.example Makefile
@@ -908,7 +908,7 @@ git commit -m "build: add local PostgreSQL compose"
 - Consumes: Go module, templates, static assets, migrations, and writable `/app/uploads`.
 - Produces: local `micrach:wave1` Linux image; no registry interaction.
 
-- [ ] **Step 1: Replace the Dockerfile**
+- [x] **Step 1: Replace the Dockerfile**
 
 Replace `Dockerfile` with:
 
@@ -939,7 +939,7 @@ USER micrach
 ENTRYPOINT ["./micrach"]
 ```
 
-- [ ] **Step 2: Exclude local state from build context**
+- [x] **Step 2: Exclude local state from build context**
 
 Create `.dockerignore`:
 
@@ -957,7 +957,7 @@ micrach
 *.test
 ```
 
-- [ ] **Step 3: Build and inspect the image**
+- [x] **Step 3: Build and inspect the image**
 
 Run:
 
@@ -972,7 +972,7 @@ Expected inspect output:
 micrach ["./micrach"]
 ```
 
-- [ ] **Step 4: Confirm upload storage is writable by the runtime user**
+- [x] **Step 4: Confirm upload storage is writable by the runtime user**
 
 Run:
 
@@ -982,7 +982,7 @@ docker run --rm --entrypoint sh micrach:wave1 -c 'touch /app/uploads/write-test 
 
 Expected: exit 0.
 
-- [ ] **Step 5: Commit the image build**
+- [x] **Step 5: Commit the image build**
 
 ```bash
 git add Dockerfile .dockerignore
@@ -1004,7 +1004,7 @@ git commit -m "build: add multi-stage image"
 - Consumes: `go.mod`, `go.sum`, Dockerfile, and repository tests.
 - Produces: read-only checks for pushes and pull requests; reviewed dependency update pull requests.
 
-- [ ] **Step 1: Replace the workflow with read-only CI**
+- [x] **Step 1: Replace the workflow with read-only CI**
 
 Replace `.github/workflows/push.yml` with:
 
@@ -1062,7 +1062,7 @@ jobs:
 Do not add registry login, image push, artifact upload, SSH, environment secrets,
 Swarm, or deployment steps.
 
-- [ ] **Step 2: Remove CodeSee**
+- [x] **Step 2: Remove CodeSee**
 
 Delete:
 
@@ -1070,7 +1070,7 @@ Delete:
 .github/workflows/codesee-arch-diagram.yml
 ```
 
-- [ ] **Step 3: Add Dependabot**
+- [x] **Step 3: Add Dependabot**
 
 Create `.github/dependabot.yml`:
 
@@ -1090,7 +1090,7 @@ updates:
     open-pull-requests-limit: 5
 ```
 
-- [ ] **Step 4: Validate workflow syntax and execute its commands locally**
+- [x] **Step 4: Validate workflow syntax and execute its commands locally**
 
 Run:
 
@@ -1108,7 +1108,7 @@ Expected: every command exits 0. If `govulncheck` reports a reachable
 vulnerability, upgrade or document the exact blocking dependency before this
 task can pass; do not suppress findings generically.
 
-- [ ] **Step 5: Commit CI and dependency automation**
+- [x] **Step 5: Commit CI and dependency automation**
 
 ```bash
 git add .github
@@ -1129,7 +1129,7 @@ git commit -m "ci: replace legacy deployment workflow"
 - Consumes: completed Wave 1 commands and versions.
 - Produces: one accurate setup and verification path for humans and coding agents.
 
-- [ ] **Step 1: Update README stack and prerequisites**
+- [x] **Step 1: Update README stack and prerequisites**
 
 State these exact baselines:
 
@@ -1141,7 +1141,7 @@ State these exact baselines:
 
 Remove claims that CI uses Go 1.17 and that Docker requires a prebuilt binary.
 
-- [ ] **Step 2: Replace local setup with the host-run workflow**
+- [x] **Step 2: Replace local setup with the host-run workflow**
 
 Document this command sequence:
 
@@ -1160,7 +1160,7 @@ make dev
 State that Compose runs PostgreSQL only and that nodemon is required by
 `make dev`.
 
-- [ ] **Step 3: Replace container and CI documentation**
+- [x] **Step 3: Replace container and CI documentation**
 
 Document local image verification:
 
@@ -1172,7 +1172,7 @@ State that CI checks formatting, tests, vet, native and Linux builds,
 reachable vulnerabilities, and Docker image construction. State explicitly
 that CI does not publish or deploy images.
 
-- [ ] **Step 4: Update AGENTS guidance**
+- [x] **Step 4: Update AGENTS guidance**
 
 Replace stale Go 1.15/1.17 constraints with Go 1.26. Replace the production
 Docker and Swarm description with:
@@ -1187,7 +1187,7 @@ Docker and Swarm description with:
 Keep all existing architecture, upload, migration, testing, and secret-handling
 rules that remain accurate.
 
-- [ ] **Step 5: Verify documentation**
+- [x] **Step 5: Verify documentation**
 
 Run:
 
@@ -1198,7 +1198,7 @@ git diff --check
 
 Expected: no stale deployment or toolchain matches; `git diff --check` exits 0.
 
-- [ ] **Step 6: Commit documentation**
+- [x] **Step 6: Commit documentation**
 
 ```bash
 git add README.md AGENTS.md
@@ -1218,7 +1218,7 @@ git commit -m "docs: document modern development workflow"
 - Consumes: all Wave 1 tasks.
 - Produces: fresh evidence that Wave 1 is safe to merge and that Wave 2 may be planned separately.
 
-- [ ] **Step 1: Verify repository hygiene**
+- [x] **Step 1: Verify repository hygiene**
 
 Run:
 
@@ -1231,7 +1231,7 @@ git ls-files .env uploads micrach '*.out' '*.test'
 Expected: clean worktree after task commits; no forbidden local artifacts are
 tracked.
 
-- [ ] **Step 2: Run the full Go gate**
+- [x] **Step 2: Run the full Go gate**
 
 Run:
 
@@ -1250,7 +1250,7 @@ go run golang.org/x/vuln/cmd/govulncheck@v1.6.0 ./...
 Expected: every command exits 0; module files remain unchanged after tidy;
 no reachable vulnerability remains unhandled.
 
-- [ ] **Step 3: Run the container and infrastructure gate**
+- [x] **Step 3: Run the container and infrastructure gate**
 
 Run:
 
@@ -1265,7 +1265,7 @@ docker run --rm --entrypoint sh micrach:wave1 -c 'touch /app/uploads/write-test 
 Expected: PostgreSQL is healthy, the image builds, and the runtime user can
 write uploads.
 
-- [ ] **Step 4: Run manual application smoke tests**
+- [x] **Step 4: Run manual application smoke tests**
 
 With `.env` copied from `.env.example`, run `go run .` and verify:
 
@@ -1283,7 +1283,7 @@ limiting, `sage`, bump limit, and archival behavior. Inspect catalog and thread
 pages at narrow and wide viewport widths; Wave 1 must introduce no visual
 change.
 
-- [ ] **Step 5: Remove disposable local state**
+- [x] **Step 5: Remove disposable local state**
 
 Run:
 
