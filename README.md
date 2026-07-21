@@ -22,7 +22,7 @@ provide; the source remains available for local use and development.
 ## Stack
 
 - Go 1.26
-- Fiber v2
+- Fiber v3
 - PostgreSQL 18 for local development
 - PostgreSQL access through [`pgx`](https://github.com/jackc/pgx)
 - Plain HTML templates and CSS

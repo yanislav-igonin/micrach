@@ -5,10 +5,10 @@ import (
 	"log"
 
 	"github.com/dchest/captcha"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
-func GetCaptcha(c *fiber.Ctx) error {
+func GetCaptcha(c fiber.Ctx) error {
 	ID := c.Params("captchaID")
 	var content bytes.Buffer
 	err := captcha.WriteImage(&content, ID, captcha.StdWidth, captcha.StdHeight)
@@ -17,6 +17,6 @@ func GetCaptcha(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).Render("pages/500", nil)
 	}
 
-	c.Context().SetContentType("image/png")
+	c.RequestCtx().SetContentType("image/png")
 	return c.Send(content.Bytes())
 }

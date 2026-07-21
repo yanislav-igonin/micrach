@@ -8,11 +8,12 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/compress"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
-	"github.com/gofiber/fiber/v2/middleware/recover"
-	"github.com/gofiber/template/html/v2"
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/compress"
+	"github.com/gofiber/fiber/v3/middleware/limiter"
+	"github.com/gofiber/fiber/v3/middleware/recover"
+	"github.com/gofiber/fiber/v3/middleware/static"
+	"github.com/gofiber/template/html/v3"
 
 	"micrach/build"
 	"micrach/config"
@@ -23,6 +24,21 @@ import (
 	"micrach/templates"
 	"micrach/utils"
 )
+
+// Reserve 1 MiB for multipart boundaries, filenames, title, and text.
+const multipartBodyLimit = 4*utils.FILE_SIZE_IN_BYTES + (1 << 20)
+
+func skipRateLimit(isLocal bool, path string) bool {
+	isRequestForStatic := strings.Contains(path, "/static") ||
+		strings.Contains(path, "/uploads") ||
+		strings.Contains(path, "/captcha")
+	return isRequestForStatic || isLocal
+}
+
+func registerStaticRoutes(app *fiber.App) {
+	app.Get("/uploads/*", static.New("./uploads"))
+	app.Get("/static/*", static.New("./static"))
+}
 
 func main() {
 	ctx := context.Background()
@@ -48,24 +64,23 @@ func main() {
 	engine.AddFunc("Iterate", templates.Iterate)
 	engine.AddFunc("NotNil", templates.NotNil)
 
-	app := fiber.New(fiber.Config{Views: engine})
+	app := fiber.New(fiber.Config{
+		Views:     engine,
+		BodyLimit: multipartBodyLimit,
+	})
 
 	app.Use(recover.New())
 	if config.App.IsRateLimiterEnabled {
 		app.Use(limiter.New(limiter.Config{
-			Next: func(c *fiber.Ctx) bool {
-				isDev := c.IsFromLocal()
-				path := c.Path()
-				isRequestForStatic := strings.Contains(path, "/static") || strings.Contains(path, "/uploads") || strings.Contains(path, "/captcha")
-				return isRequestForStatic || isDev
+			Next: func(c fiber.Ctx) bool {
+				return skipRateLimit(c.IsFromLocal(), c.Path())
 			},
 			Max: 50,
 		}))
 	}
 	app.Use(compress.New())
 
-	app.Static("/uploads", "./uploads")
-	app.Static("/static", "./static")
+	registerStaticRoutes(app)
 
 	app.Get("/", controllers.GetThreads)
 	app.Post("/", controllers.CreateThread)
