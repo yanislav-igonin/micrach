@@ -44,7 +44,7 @@ creates `uploads/`, then starts Fiber.
 | `GET` | `/:threadID` | Render one thread and its replies. |
 | `POST` | `/:threadID` | Validate and add a reply. |
 | `GET` | `/captcha/:captchaID` | Render CAPTCHA PNG. |
-| `GET` | `/api/ping` | Gateway health endpoint; registered only when `GATEWAY_URL` is set. |
+| `GET` | `/api/ping` | Public gateway health endpoint (`{"ok":true}`); registered only when `GATEWAY_URL` is set. |
 
 Static content is served from `/static`; generated files are served from
 `/uploads`. Thread and reply creation spans PostgreSQL plus filesystem writes,
@@ -85,7 +85,7 @@ the load test as routine verification.
 - `IS_DB_SEEDED=true` adds sample data on every startup, not only once.
 - `ENV=production` renames CSS files and rewrites templates in place at startup.
   Do not use this mode in a development checkout unless that mutation is wanted.
-- `GATEWAY_URL=""` disables gateway routes and registration.
+- `GATEWAY_URL=""` disables gateway routes and registration. When set, `GATEWAY_BOARD_TOKEN`, `GATEWAY_BOARD_URL`, and `GATEWAY_BOARD_NAME` are required at startup; registration upserts via `POST /api/boards/me` and connect failures are logged, not fatal.
 - Uploads are limited to four JPEG/PNG files, 3 MiB each. Titles allow 100
   runes; post text allows 1,000 runes.
 - Runtime uploads, built binaries, `.env`, and load-test artifacts are ignored

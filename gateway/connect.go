@@ -7,34 +7,31 @@ import (
 	"log"
 	"net/http"
 
-	Config "micrach/config"
+	"micrach/config"
 )
 
-// Make http request to gateway to tell the board id and description
 func Connect() {
-	requestBody, _ := json.Marshal(map[string]string{
-		"id":   Config.App.Gateway.BoardId,
-		"name": Config.App.Gateway.BoardDescription,
-		"url":  Config.App.Gateway.Url,
+	body, _ := json.Marshal(map[string]string{
+		"name": config.App.Gateway.BoardName,
+		"url":  config.App.Gateway.BoardUrl,
 	})
-	url := Config.App.Gateway.Url + "/api/boards"
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest(http.MethodPost, config.App.Gateway.Url+"/api/boards/me", bytes.NewReader(body))
 	if err != nil {
-		log.Panicln(err)
+		log.Println("gateway - connect error:", err)
+		return
 	}
-	req.Header.Set("Authorization", Config.App.Gateway.ApiKey)
+	req.Header.Set("Authorization", "Bearer "+config.App.Gateway.Token)
 	req.Header.Set("Content-Type", "application/json")
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		log.Panicln(err)
+		log.Println("gateway - connect error:", err)
+		return
 	}
 	defer resp.Body.Close()
-	//We Read the response body on the line below.
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Panicln(err)
+	if resp.StatusCode >= 300 {
+		b, _ := io.ReadAll(resp.Body)
+		log.Println("gateway - connect failed:", resp.StatusCode, string(b))
+		return
 	}
-	log.Println(string(body))
 	log.Println("gateway - online")
 }

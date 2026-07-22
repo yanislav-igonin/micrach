@@ -8,11 +8,10 @@ import (
 )
 
 type GatewayConfig struct {
-	Url              string
-	ApiKey           string
-	BoardId          string
-	BoardUrl         string
-	BoardDescription string
+	Url       string
+	Token     string
+	BoardUrl  string
+	BoardName string
 }
 
 type AppConfig struct {
@@ -56,18 +55,26 @@ func getValueOrDefaultString(value string, defaultValue string) string {
 }
 
 func getGatewayConfig() GatewayConfig {
-	url := os.Getenv("GATEWAY_URL")
-	apiKey := os.Getenv("GATEWAY_API_KEY")
-	boardId := os.Getenv("GATEWAY_BOARD_ID")
-	description := os.Getenv("GATEWAY_BOARD_DESCRIPTION")
-	boardUrl := os.Getenv("GATEWAY_BOARD_URL")
-
 	return GatewayConfig{
-		Url:              url,
-		ApiKey:           apiKey,
-		BoardId:          boardId,
-		BoardUrl:         boardUrl,
-		BoardDescription: description,
+		Url:       os.Getenv("GATEWAY_URL"),
+		Token:     os.Getenv("GATEWAY_BOARD_TOKEN"),
+		BoardUrl:  os.Getenv("GATEWAY_BOARD_URL"),
+		BoardName: os.Getenv("GATEWAY_BOARD_NAME"),
+	}
+}
+
+func validateGatewayConfig(gateway GatewayConfig) {
+	if gateway.Url == "" {
+		return
+	}
+	if gateway.Token == "" {
+		log.Panicln("GATEWAY_BOARD_TOKEN is required when GATEWAY_URL is set")
+	}
+	if gateway.BoardUrl == "" {
+		log.Panicln("GATEWAY_BOARD_URL is required when GATEWAY_URL is set")
+	}
+	if gateway.BoardName == "" {
+		log.Panicln("GATEWAY_BOARD_NAME is required when GATEWAY_URL is set")
 	}
 }
 
@@ -80,6 +87,7 @@ func getAppConfig() AppConfig {
 	threadBumpLimit := getValueOrDefaultInt(os.Getenv("THREAD_BUMP_LIMIT"), 500)
 	isCaptchaActive := getValueOrDefaultBoolean(os.Getenv("IS_CAPTCHA_ACTIVE"), true)
 	gateway := getGatewayConfig()
+	validateGatewayConfig(gateway)
 
 	return AppConfig{
 		Env:                  env,

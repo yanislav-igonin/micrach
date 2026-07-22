@@ -81,10 +81,9 @@ the service in a container.
 | `THREAD_BUMP_LIMIT` | `500` | Reply count after which a thread no longer bumps. |
 | `IS_CAPTCHA_ACTIVE` | `true` | Require CAPTCHA for new threads and replies. |
 | `GATEWAY_URL` | empty | External gateway base URL. Empty disables gateway integration. |
-| `GATEWAY_API_KEY` | empty | Shared key used for gateway registration and `/api/ping`. |
-| `GATEWAY_BOARD_ID` | empty | Board identifier sent to the gateway. |
-| `GATEWAY_BOARD_URL` | empty | Parsed from the environment but not currently used by the gateway client. |
-| `GATEWAY_BOARD_DESCRIPTION` | empty | Board description sent to the gateway. |
+| `GATEWAY_BOARD_TOKEN` | empty | Bearer token from the gateway admin UI. Required when `GATEWAY_URL` is set. |
+| `GATEWAY_BOARD_URL` | empty | Public URL of this board (e.g. `http://localhost:3000`). Required when `GATEWAY_URL` is set. |
+| `GATEWAY_BOARD_NAME` | empty | Display name sent to the gateway catalog. Required when `GATEWAY_URL` is set. |
 
 See [.env.example](.env.example) for a complete example.
 
