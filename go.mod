@@ -7,7 +7,7 @@ toolchain go1.26.5
 require (
 	github.com/dchest/captcha v1.1.0
 	github.com/disintegration/imaging v1.6.2
-	github.com/gofiber/fiber/v2 v2.52.14
+	github.com/gofiber/fiber/v2 v2.52.15
 	github.com/gofiber/template/html/v2 v2.1.3
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/joho/godotenv v1.5.1
